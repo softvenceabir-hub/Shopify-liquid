@@ -1,0 +1,349 @@
+{% comment %}
+  Magnified Dock Section for Shopify
+  Save this file as: sections/magnified-dock.liquid
+{% endcomment %}
+
+<style>
+  .magnified-dock-wrapper {
+    padding: 40px 20px;
+    background: linear-gradient(135deg,rgb(35, 35, 36) 0%,rgb(32, 31, 34) 100%);
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dock-container {
+    position: relative;
+    width: 80%;
+    max-width: 1000px;
+    margin: 0 auto;
+    border-radius: 12px;
+    background: #f3f4f6;
+    box-shadow: inset 1px -1px 4px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+  }
+
+  .preview-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+  }
+
+  .preview-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    cursor: pointer;
+  }
+
+  .preview-slide.active {
+    opacity: 1;
+    z-index: 1;
+  }
+
+  .preview-slide.exit-forward {
+    transform: translateY(-30px);
+  }
+
+  .preview-slide.exit-backward {
+    transform: translateY(30px);
+  }
+
+  .preview-slide.enter-forward {
+    transform: translateY(30px);
+  }
+
+  .preview-slide.enter-backward {
+    transform: translateY(-30px);
+  }
+
+  .preview-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .dock-wrapper {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 20;
+  }
+
+  .dock {
+    width: fit-content;
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 57px;
+    padding: 0 8px 8px 8px;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .dock-icon {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: width 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+                height 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    object-fit: cover;
+    position: relative;
+  }
+
+  .dock-tooltip {
+    position: fixed;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 1000;
+    white-space: nowrap;
+  }
+
+  .dock-tooltip.visible {
+    opacity: 1;
+  }
+
+  @media (max-width: 640px) {
+    .preview-container {
+      height: 400px;
+    }
+
+    .dock {
+      height: 52px;
+    }
+
+    .dock-icon {
+      width: 32px;
+      height: 32px;
+    }
+  }
+</style>
+
+<div class="magnified-dock-wrapper">
+  <div class="dock-container">
+    <div class="preview-container" id="previewContainer-{{ section.id }}">
+      {% for block in section.blocks %}
+        <div class="preview-slide {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}">
+          {% if block.settings.product_image %}
+            <img src="{{ block.settings.product_image | img_url: '1000x1000' }}" 
+                 alt="{{ block.settings.product_title }}"
+                 data-url="{{ block.settings.product_url }}">
+          {% else %}
+            <img src="https://via.placeholder.com/1000x1000/cccccc/666666?text=Add+Image" alt="Placeholder">
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+    
+    <div class="dock-wrapper">
+      <div class="dock" id="dock-{{ section.id }}">
+        {% for block in section.blocks %}
+          <img src="{{ block.settings.product_image | img_url: '100x100', crop: 'center' }}" 
+               alt="{{ block.settings.product_title }}"
+               class="dock-icon"
+               data-index="{{ forloop.index0 }}"
+               data-name="{{ block.settings.product_title }}"
+               data-url="{{ block.settings.product_url }}">
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="dock-tooltip" id="tooltip-{{ section.id }}"></div>
+
+<script>
+(function() {
+  const sectionId = '{{ section.id }}';
+  let currentIndex = 0;
+  let previousIndex = 0;
+  let mouseX = Infinity;
+
+  const previewContainer = document.getElementById('previewContainer-' + sectionId);
+  const dock = document.getElementById('dock-' + sectionId);
+  const tooltip = document.getElementById('tooltip-' + sectionId);
+  const slides = previewContainer.querySelectorAll('.preview-slide');
+  const icons = dock.querySelectorAll('.dock-icon');
+
+  function init() {
+    dock.addEventListener('mousemove', (e) => {
+      mouseX = e.pageX;
+      updateIconSizes();
+    });
+
+    dock.addEventListener('mouseleave', () => {
+      mouseX = Infinity;
+      updateIconSizes();
+    });
+
+    icons.forEach((icon) => {
+      icon.addEventListener('click', () => {
+        const url = icon.dataset.url;
+        if (url) {
+          window.location.href = url;
+        } else {
+          const index = parseInt(icon.dataset.index);
+          changeSlide(index);
+        }
+      });
+
+      icon.addEventListener('mouseenter', (e) => {
+        showTooltip(icon.dataset.name, e);
+      });
+
+      icon.addEventListener('mousemove', (e) => {
+        updateTooltip(e);
+      });
+
+      icon.addEventListener('mouseleave', () => {
+        hideTooltip();
+      });
+    });
+
+    slides.forEach((slide) => {
+      const img = slide.querySelector('img');
+      const url = img.dataset.url;
+      if (url) {
+        slide.addEventListener('click', () => {
+          window.location.href = url;
+        });
+      }
+    });
+  }
+
+  function updateIconSizes() {
+    icons.forEach((icon) => {
+      const rect = icon.getBoundingClientRect();
+      const iconCenterX = rect.left + rect.width / 2;
+      const distance = Math.abs(mouseX - iconCenterX);
+      
+      let size;
+      if (distance < 100) {
+        size = 55 - (distance / 100) * 15;
+      } else {
+        size = 40;
+      }
+      
+      icon.style.width = size + 'px';
+      icon.style.height = size + 'px';
+    });
+  }
+
+  function changeSlide(newIndex) {
+    if (newIndex === currentIndex) return;
+
+    const isForward = newIndex > currentIndex || (newIndex === 0 && currentIndex === slides.length - 1);
+
+    slides[currentIndex].classList.remove('active');
+    slides[currentIndex].classList.add(isForward ? 'exit-forward' : 'exit-backward');
+
+    slides[newIndex].classList.add(isForward ? 'enter-forward' : 'enter-backward');
+    
+    setTimeout(() => {
+      slides[currentIndex].classList.remove('exit-forward', 'exit-backward');
+      slides[newIndex].classList.remove('enter-forward', 'enter-backward');
+      slides[newIndex].classList.add('active');
+      
+      previousIndex = currentIndex;
+      currentIndex = newIndex;
+    }, 300);
+  }
+
+  function showTooltip(name, e) {
+    tooltip.textContent = name;
+    tooltip.classList.add('visible');
+    updateTooltip(e);
+  }
+
+  function updateTooltip(e) {
+    tooltip.style.left = e.pageX + 'px';
+    tooltip.style.top = (e.pageY - 40) + 'px';
+  }
+
+  function hideTooltip() {
+    tooltip.classList.remove('visible');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Magnified Dock",
+  "tag": "section",
+  "class": "magnified-dock-section",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "text",
+          "id": "product_title",
+          "label": "Product Title",
+          "default": "Product Name"
+        },
+        {
+          "type": "image_picker",
+          "id": "product_image",
+          "label": "Product Image"
+        },
+        {
+          "type": "url",
+          "id": "product_url",
+          "label": "Product URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Magnified Dock",
+      "blocks": [
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        },
+        {
+          "type": "product"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
