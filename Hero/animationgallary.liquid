@@ -1,0 +1,628 @@
+{% doc %}
+  @prompt
+    'use client';
+    import React from 'react';
+    import { useState } from 'react';
+    import { AnimatePresence, motion } from 'motion/react';
+    export const items = [
+      {
+        id: 1,
+        url: 'https://images.unsplash.com/photo-1709949908058-a08659bfa922?q=80&w=1200&auto=format',
+        title: 'Misty Mountain Majesty',
+        description:
+          'A breathtaking view of misty mountains shrouded in clouds, creating an ethereal landscape.',
+        tags: ['Misty', 'Mountains', 'Clouds', 'Ethereal', 'Landscape'],
+      },
+      {
+        id: 2,
+        url: 'https://images.unsplash.com/photo-1548192746-dd526f154ed9?q=80&w=1200&auto=format',
+        title: 'Winter Wonderland',
+        description:
+          "A serene winter scene with snow-covered trees and mountains, showcasing nature's pristine beauty.",
+        tags: ['Winter', 'Snow', 'Trees', 'Mountains', 'Serene'],
+      },
+      {
+        id: 3,
+        url: 'https://images.unsplash.com/photo-1693581176773-a5f2362209e6?q=80&w=1200&auto=format',
+        title: 'Autumn Mountain Retreat',
+        description:
+          'A cozy cabin nestled in the mountains, surrounded by the vibrant colors of autumn foliage.',
+        tags: ['Autumn', 'Cabin', 'Mountains', 'Foliage', 'Cozy'],
+      },
+      {
+        id: 4,
+        url: 'https://images.unsplash.com/photo-1584043204475-8cc101d6c77a?q=80&w=1200&auto=format',
+        title: 'Tranquil Lake Reflection',
+        description:
+          'A calm mountain lake perfectly reflecting the surrounding peaks and sky, creating a mirror-like surface.',
+        tags: ['Lake', 'Reflection', 'Mountains', 'Tranquil', 'Mirror'],
+      },
+      {
+        id: 5,
+        url: 'https://images.unsplash.com/photo-1709949908058-a08659bfa922?q=80&w=1200&auto=format',
+        title: 'Misty Mountain Peaks',
+        description:
+          "Majestic mountain peaks emerging from a sea of clouds, showcasing nature's grandeur.",
+        tags: ['Misty', 'Peaks', 'Clouds', 'Majestic', 'Nature'],
+      },
+    ];
+    const article = {
+      hidden: { opacity: 0, y: 20 },
+      show: {
+        opacity: 1,
+        y: 0,
+        transition: {
+          type: 'spring',
+          stiffness: 100,
+          
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-image-gallery-{{ ai_gen_id }} {
+    width: 100%;
+    padding: {{ block.settings.section_padding }}px 20px;
+    background-color: {{ block.settings.background_color }};
+  }
+
+  .ai-image-gallery__container-{{ ai_gen_id }} {
+    max-width: {{ block.settings.container_width }}px;
+    margin: 0 auto;
+  }
+
+  .ai-image-gallery__grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax({{ block.settings.card_min_width }}px, 1fr));
+    gap: {{ block.settings.grid_gap }}px;
+  }
+
+  .ai-image-gallery__card-{{ ai_gen_id }} {
+    position: relative;
+    overflow: hidden;
+    border-radius: {{ block.settings.card_border_radius }}px;
+    cursor: pointer;
+    background-color: {{ block.settings.card_background }};
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .ai-image-gallery__card-{{ ai_gen_id }}:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .ai-image-gallery__image-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    padding-bottom: {{ block.settings.image_aspect_ratio }}%;
+    overflow: hidden;
+  }
+
+  .ai-image-gallery__image-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .ai-image-gallery__card-{{ ai_gen_id }}:hover .ai-image-gallery__image-{{ ai_gen_id }} {
+    transform: scale(1.05);
+  }
+
+  .ai-image-gallery__overlay-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    padding: 20px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+
+  .ai-image-gallery__card-{{ ai_gen_id }}:hover .ai-image-gallery__overlay-{{ ai_gen_id }} {
+    transform: translateY(0);
+  }
+
+  .ai-image-gallery__title-{{ ai_gen_id }} {
+    color: {{ block.settings.overlay_text_color }};
+    font-size: {{ block.settings.title_font_size }}px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    line-height: 1.3;
+  }
+
+  .ai-image-gallery__description-{{ ai_gen_id }} {
+    color: {{ block.settings.overlay_text_color }};
+    font-size: {{ block.settings.description_font_size }}px;
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+    opacity: 0.9;
+  }
+
+  .ai-image-gallery__tags-{{ ai_gen_id }} {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .ai-image-gallery__tag-{{ ai_gen_id }} {
+    background-color: {{ block.settings.tag_background }};
+    color: {{ block.settings.tag_text_color }};
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .ai-image-gallery__placeholder-{{ ai_gen_id }} {
+    background-color: #f4f4f4;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .ai-image-gallery__placeholder-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-image-gallery__grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: {{ block.settings.grid_gap | times: 0.7 }}px;
+    }
+
+    .ai-image-gallery__title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_font_size | times: 0.85 }}px;
+    }
+
+    .ai-image-gallery__description-{{ ai_gen_id }} {
+      font-size: {{ block.settings.description_font_size | times: 0.9 }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-image-gallery-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-image-gallery__container-{{ ai_gen_id }}">
+    <div class="ai-image-gallery__grid-{{ ai_gen_id }}">
+      {% for i in (1..5) %}
+        {% liquid
+          assign image_key = 'image_' | append: i
+          assign title_key = 'title_' | append: i
+          assign description_key = 'description_' | append: i
+          assign tag1_key = 'tag1_' | append: i
+          assign tag2_key = 'tag2_' | append: i
+          assign tag3_key = 'tag3_' | append: i
+          assign url_key = 'url_' | append: i
+
+          assign card_image = block.settings[image_key]
+          assign card_title = block.settings[title_key]
+          assign card_description = block.settings[description_key]
+          assign card_tag1 = block.settings[tag1_key]
+          assign card_tag2 = block.settings[tag2_key]
+          assign card_tag3 = block.settings[tag3_key]
+          assign card_url = block.settings[url_key]
+        %}
+
+        {% if card_image != blank or card_title != blank %}
+          <div class="ai-image-gallery__card-{{ ai_gen_id }}">
+            {% if card_url != blank %}
+              <a href="{{ card_url }}" style="display: block; text-decoration: none;">
+            {% endif %}
+
+            <div class="ai-image-gallery__image-wrapper-{{ ai_gen_id }}">
+              {% if card_image %}
+                <img
+                  src="{{ card_image | image_url: width: 800 }}"
+                  alt="{{ card_title | escape }}"
+                  class="ai-image-gallery__image-{{ ai_gen_id }}"
+                  loading="lazy"
+                  width="800"
+                  height="{{ 800 | times: block.settings.image_aspect_ratio | divided_by: 100 }}"
+                >
+              {% else %}
+                <div class="ai-image-gallery__placeholder-{{ ai_gen_id }}">
+                  {{ 'image' | placeholder_svg_tag }}
+                </div>
+              {% endif %}
+
+              <div class="ai-image-gallery__overlay-{{ ai_gen_id }}">
+                {% if card_title != blank %}
+                  <h3 class="ai-image-gallery__title-{{ ai_gen_id }}">{{ card_title }}</h3>
+                {% endif %}
+
+                {% if card_description != blank %}
+                  <p class="ai-image-gallery__description-{{ ai_gen_id }}">{{ card_description }}</p>
+                {% endif %}
+
+                {% if card_tag1 != blank or card_tag2 != blank or card_tag3 != blank %}
+                  <div class="ai-image-gallery__tags-{{ ai_gen_id }}">
+                    {% if card_tag1 != blank %}
+                      <span class="ai-image-gallery__tag-{{ ai_gen_id }}">{{ card_tag1 }}</span>
+                    {% endif %}
+                    {% if card_tag2 != blank %}
+                      <span class="ai-image-gallery__tag-{{ ai_gen_id }}">{{ card_tag2 }}</span>
+                    {% endif %}
+                    {% if card_tag3 != blank %}
+                      <span class="ai-image-gallery__tag-{{ ai_gen_id }}">{{ card_tag3 }}</span>
+                    {% endif %}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+
+            {% if card_url != blank %}
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Animated image gallery",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "container_width",
+      "min": 800,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "label": "Container width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Section padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "min": 10,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Grid gap",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "card_min_width",
+      "min": 200,
+      "max": 400,
+      "step": 20,
+      "unit": "px",
+      "label": "Card minimum width",
+      "default": 300
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Card border radius",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "image_aspect_ratio",
+      "min": 50,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "label": "Image aspect ratio",
+      "default": 75
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "overlay_text_color",
+      "label": "Overlay text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "tag_background",
+      "label": "Tag background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "tag_text_color",
+      "label": "Tag text",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "min": 14,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Title size",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "description_font_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Description size",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Card 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "title_1",
+      "label": "Title",
+      "default": "Misty Mountain Majesty"
+    },
+    {
+      "type": "textarea",
+      "id": "description_1",
+      "label": "Description",
+      "default": "A breathtaking view of misty mountains shrouded in clouds, creating an ethereal landscape."
+    },
+    {
+      "type": "text",
+      "id": "tag1_1",
+      "label": "Tag 1",
+      "default": "Misty"
+    },
+    {
+      "type": "text",
+      "id": "tag2_1",
+      "label": "Tag 2",
+      "default": "Mountains"
+    },
+    {
+      "type": "text",
+      "id": "tag3_1",
+      "label": "Tag 3",
+      "default": "Ethereal"
+    },
+    {
+      "type": "url",
+      "id": "url_1",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Card 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "title_2",
+      "label": "Title",
+      "default": "Winter Wonderland"
+    },
+    {
+      "type": "textarea",
+      "id": "description_2",
+      "label": "Description",
+      "default": "A serene winter scene with snow-covered trees and mountains, showcasing nature's pristine beauty."
+    },
+    {
+      "type": "text",
+      "id": "tag1_2",
+      "label": "Tag 1",
+      "default": "Winter"
+    },
+    {
+      "type": "text",
+      "id": "tag2_2",
+      "label": "Tag 2",
+      "default": "Snow"
+    },
+    {
+      "type": "text",
+      "id": "tag3_2",
+      "label": "Tag 3",
+      "default": "Serene"
+    },
+    {
+      "type": "url",
+      "id": "url_2",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Card 3"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_3",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "title_3",
+      "label": "Title",
+      "default": "Autumn Mountain Retreat"
+    },
+    {
+      "type": "textarea",
+      "id": "description_3",
+      "label": "Description",
+      "default": "A cozy cabin nestled in the mountains, surrounded by the vibrant colors of autumn foliage."
+    },
+    {
+      "type": "text",
+      "id": "tag1_3",
+      "label": "Tag 1",
+      "default": "Autumn"
+    },
+    {
+      "type": "text",
+      "id": "tag2_3",
+      "label": "Tag 2",
+      "default": "Cabin"
+    },
+    {
+      "type": "text",
+      "id": "tag3_3",
+      "label": "Tag 3",
+      "default": "Cozy"
+    },
+    {
+      "type": "url",
+      "id": "url_3",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Card 4"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_4",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "title_4",
+      "label": "Title",
+      "default": "Tranquil Lake Reflection"
+    },
+    {
+      "type": "textarea",
+      "id": "description_4",
+      "label": "Description",
+      "default": "A calm mountain lake perfectly reflecting the surrounding peaks and sky, creating a mirror-like surface."
+    },
+    {
+      "type": "text",
+      "id": "tag1_4",
+      "label": "Tag 1",
+      "default": "Lake"
+    },
+    {
+      "type": "text",
+      "id": "tag2_4",
+      "label": "Tag 2",
+      "default": "Reflection"
+    },
+    {
+      "type": "text",
+      "id": "tag3_4",
+      "label": "Tag 3",
+      "default": "Tranquil"
+    },
+    {
+      "type": "url",
+      "id": "url_4",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Card 5"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_5",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "title_5",
+      "label": "Title",
+      "default": "Misty Mountain Peaks"
+    },
+    {
+      "type": "textarea",
+      "id": "description_5",
+      "label": "Description",
+      "default": "Majestic mountain peaks emerging from a sea of clouds, showcasing nature's grandeur."
+    },
+    {
+      "type": "text",
+      "id": "tag1_5",
+      "label": "Tag 1",
+      "default": "Peaks"
+    },
+    {
+      "type": "text",
+      "id": "tag2_5",
+      "label": "Tag 2",
+      "default": "Clouds"
+    },
+    {
+      "type": "text",
+      "id": "tag3_5",
+      "label": "Tag 3",
+      "default": "Majestic"
+    },
+    {
+      "type": "url",
+      "id": "url_5",
+      "label": "Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Animated image gallery"
+    }
+  ]
+}
+{% endschema %}
