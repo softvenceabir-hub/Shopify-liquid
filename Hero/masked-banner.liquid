@@ -1,0 +1,52 @@
+{% schema %}
+{
+  "name": "Masked Image Banner",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "banner_image",
+      "label": "Banner Image"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#FF6347"
+    },
+    {
+      "type": "text",
+      "id": "section_height",
+      "label": "Section Aspect Ratio (e.g., 1213/667)",
+      "default": "1213/667"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Masked Image Banner"
+    }
+  ]
+}
+{% endschema %}
+
+<section
+  class="masked-banner relative"
+  style="
+    aspect-ratio: {{ section.settings.section_height }};
+    background-color: {{ section.settings.bg_color }};
+    mask-image: url('data:image/svg+xml,%3Csvg width=\'221\' height=\'122\' viewBox=\'0 0 221 122\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath fill-rule=\'evenodd\' clip-rule=\'evenodd\' d=\'M183 4C183 1.79086 184.791 0 187 0H217C219.209 0 221 1.79086 221 4V14V28V99C221 101.209 219.209 103 217 103H182C179.791 103 178 104.791 178 107V118C178 120.209 176.209 122 174 122H28C25.7909 122 24 120.209 24 118V103V94V46C24 43.7909 22.2091 42 20 42H4C1.79086 42 0 40.2091 0 38V18C0 15.7909 1.79086 14 4 14H24H43H179C181.209 14 183 12.2091 183 10V4Z\' fill=\'%23D9D9D9\'/%3E%3C/svg%3E%0A');
+    -webkit-mask-image: url('data:image/svg+xml,%3Csvg width=\'221\' height=\'122\' viewBox=\'0 0 221 122\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath fill-rule=\'evenodd\' clip-rule=\'evenodd\' d=\'M183 4C183 1.79086 184.791 0 187 0H217C219.209 0 221 1.79086 221 4V14V28V99C221 101.209 219.209 103 217 103H182C179.791 103 178 104.791 178 107V118C178 120.209 176.209 122 174 122H28C25.7909 122 24 120.209 24 118V103V94V46C24 43.7909 22.2091 42 20 42H4C1.79086 42 0 40.2091 0 38V18C0 15.7909 1.79086 14 4 14H24H43H179C181.209 14 183 12.2091 183 10V4Z\' fill=\'%23D9D9D9\'/%3E%3C/svg%3E%0A');
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-size: contain;
+    -webkit-mask-size: contain;
+  "
+>
+  {% if section.settings.banner_image != blank %}
+    <img
+      src="{{ section.settings.banner_image | img_url: 'master' }}"
+      alt=""
+      class="w-full object-cover hover:scale-105 transition-all duration-300"
+      style="height: 100%; width: 100%; display: block;"
+    >
+  {% endif %}
+</section>

@@ -1,0 +1,185 @@
+{% comment %}
+  Image Mouse Trail Section with Background & Button
+{% endcomment %}
+
+<style>
+  .mouse-trail-section {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    overflow: hidden;
+    border-radius: 12px;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .trail-image {
+    position: absolute;
+    width: 160px;
+    height: 190px;
+    object-fit: cover;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+    opacity: 0;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .trail-image[data-status='active'] {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+
+  .trail-text-wrapper {
+    position: relative;
+    z-index: 20;
+    text-align: center;
+    color: white;
+    mix-blend-mode: difference;
+  }
+
+  .trail-text {
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+
+  .trail-button {
+    display: inline-block;
+    padding: 10px 25px;
+    background-color: rgba(255,255,255,0.85);
+    color: #000;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+  }
+
+  .trail-button:hover {
+    transform: translateY(-2px);
+    background-color: rgba(255,255,255,1);
+  }
+
+  @media (max-width: 768px) {
+    .trail-text {
+      font-size: 22px;
+    }
+  }
+</style>
+
+<section 
+  class="mouse-trail-section"
+  id="mouseTrailSection"
+  style="background-image: url('{{ section.settings.background_image | img_url: '2048x' }}')"
+>
+  {% for block in section.blocks %}
+    {% if block.type == "image_block" %}
+      <img 
+        src="{{ block.settings.image | img_url: '400x' }}"
+        class="trail-image"
+        data-status="inactive"
+        data-index="{{ forloop.index0 }}"
+      />
+    {% endif %}
+  {% endfor %}
+
+  <div class="trail-text-wrapper">
+    <article class="trail-text">
+      ✨ Experience Interactive Designs <br>
+      with Dynamic Mouse Trails <br>
+      Built for Shopify
+    </article>
+
+    <a href="{{ section.settings.button_link }}" class="trail-button">
+      {{ section.settings.button_text }}
+    </a>
+  </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const container = document.getElementById("mouseTrailSection");
+  const images = [...container.querySelectorAll(".trail-image")];
+
+  let globalIndex = 0;
+  let last = { x: 0, y: 0 };
+
+  const distance = (x, y) => Math.hypot(x - last.x, y - last.y);
+
+  const activate = (image, x, y) => {
+    const rect = container.getBoundingClientRect();
+    const relX = x - rect.left;
+    const relY = y - rect.top;
+
+    image.style.left = relX + "px";
+    image.style.top = relY + "px";
+    image.style.zIndex = (globalIndex % images.length) + 1;
+    image.dataset.status = "active";
+
+    setTimeout(() => {
+      image.dataset.status = "inactive";
+    }, 1000);
+
+    last = { x, y };
+  };
+
+  const deactivate = (image) => {
+    image.dataset.status = "inactive";
+  };
+
+  const handleMove = (e) => {
+    const x = e.clientX;
+    const y = e.clientY;
+
+    if (distance(x, y) > window.innerWidth / 20) {
+      const lead = images[globalIndex % images.length];
+      const tail = images[(globalIndex - 5) % images.length];
+
+      if (lead) activate(lead, x, y);
+      if (tail) deactivate(tail);
+
+      globalIndex++;
+    }
+  };
+
+  container.addEventListener("mousemove", handleMove);
+  container.addEventListener("touchmove", (e) => handleMove(e.touches[0]));
+});
+</script>
+{% schema %}
+{
+  "name": "Mouse Trail Section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Learn More"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link",
+      "default": "/"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image_block",
+      "name": "Trail Image",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Trail Image" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Mouse Trail Section" }
+  ]
+}
+{% endschema %}
