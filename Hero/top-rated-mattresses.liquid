@@ -1,0 +1,776 @@
+{% comment %}
+  Top Rated Mattresses Section with Functional Tabs
+  Usage: Add this to a section file in your theme
+{% endcomment %}
+
+<style>
+  .mattress-section {
+    background: linear-gradient(135deg, #3b5998 0%, #2d4373 100%);
+    padding: 60px 20px;
+    border-radius: 24px;
+    margin: 40px auto;
+    max-width: 1400px;
+  }
+
+  .mattress-tabs {
+    display: flex;
+    gap: 12px;
+    background: white;
+    padding: 8px;
+    border-radius: 50px;
+    width: fit-content;
+    margin-bottom: 40px;
+  }
+
+  .mattress-tab {
+    padding: 12px 24px;
+    border-radius: 50px;
+    border: none;
+    background: transparent;
+    color: #333;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .mattress-tab.active {
+    background: #4a90e2;
+    color: white;
+  }
+
+  .tab-content {
+    display: none;
+    opacity: 0;
+    animation: fadeOut 0.3s ease-out;
+  }
+
+  .tab-content.active {
+    display: block;
+    animation: fadeIn 0.5s ease-in;
+    opacity: 1;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+  }
+
+  .mattress-header {
+    margin-bottom: 40px;
+  }
+
+  .mattress-header h2 {
+    color: white;
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    line-height: 1.2;
+  }
+
+  .mattress-cta {
+    background: linear-gradient(135deg, #50e3c2 0%, #3dd5b0 100%);
+    color: #1a365d;
+    padding: 16px 40px;
+    border-radius: 50px;
+    border: none;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+
+  .mattress-cta:hover {
+    transform: translateY(-2px);
+  }
+
+  .mattress-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    animation: slideUp 0.6s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .mattress-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: cardFadeIn 0.5s ease-out forwards;
+  }
+
+  .mattress-card:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+
+  .mattress-card:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .mattress-card:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  .mattress-card:nth-child(4) {
+    animation-delay: 0.4s;
+  }
+
+  .mattress-card:nth-child(5) {
+    animation-delay: 0.5s;
+  }
+
+  .mattress-card:nth-child(6) {
+    animation-delay: 0.6s;
+  }
+
+  @keyframes cardFadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .mattress-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .mattress-badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    animation: badgePulse 2s ease-in-out infinite;
+  }
+
+  @keyframes badgePulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  .badge-top-pick {
+    background: #e3f2fd;
+    color: #1976d2;
+  }
+
+  .badge-runner-up {
+    background: #e3f2fd;
+    color: #1976d2;
+  }
+
+  .badge-best-value {
+    background: #e3f2fd;
+    color: #1976d2;
+  }
+
+  .mattress-card h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 16px 0;
+    color: #1a1a1a;
+  }
+
+  .mattress-image {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    margin: 20px 0;
+    transition: transform 0.4s ease;
+  }
+
+  .mattress-card:hover .mattress-image {
+    transform: scale(1.05);
+  }
+
+  .mattress-description {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 20px;
+    min-height: 40px;
+  }
+
+  .mattress-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+
+  .mattress-discount {
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .discount-green {
+    color: #2e7d32;
+  }
+
+  .discount-blue {
+    color: #1976d2;
+  }
+
+  .mattress-shop-btn {
+    background: #2e7d32;
+    color: white;
+    padding: 10px 28px;
+    border-radius: 25px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mattress-shop-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .mattress-shop-btn:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  .mattress-shop-btn:hover {
+    background: #1b5e20;
+    transform: scale(1.05);
+  }
+
+  .mattress-shop-btn:active {
+    transform: scale(0.95);
+  }
+
+  @media (max-width: 1024px) {
+    .mattress-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .mattress-header h2 {
+      font-size: 36px;
+    }
+
+    .mattress-tabs {
+      flex-wrap: wrap;
+    }
+  }
+</style>
+
+<section class="mattress-section">
+  <div class="mattress-tabs">
+    {% assign tab_list = section.settings.tabs | split: ',' %}
+    {% for tab in tab_list %}
+      <button class="mattress-tab {% if forloop.first %}active{% endif %}" 
+              onclick="switchTab(event, 'tab-{{ forloop.index }}')">
+        {{ tab | strip }}
+      </button>
+    {% endfor %}
+  </div>
+
+  {% for tab in tab_list %}
+    <div id="tab-{{ forloop.index }}" class="tab-content {% if forloop.first %}active{% endif %}">
+      <div class="mattress-header">
+        {% assign tab_name = tab | strip | downcase %}
+        {% if tab_name == 'mattresses' %}
+          <h2>{{ section.settings.mattresses_heading | default: "Our Top Rated Mattresses" }}</h2>
+          <button class="mattress-cta">
+            {{ section.settings.mattresses_cta | default: "Find Your Mattress" }}
+          </button>
+        {% elsif tab_name == 'pillows' %}
+          <h2>{{ section.settings.pillows_heading | default: "Our Top Rated Pillows" }}</h2>
+          <button class="mattress-cta">
+            {{ section.settings.pillows_cta | default: "Find Your Pillow" }}
+          </button>
+        {% elsif tab_name == 'home sleep test' %}
+          <h2>{{ section.settings.sleep_test_heading | default: "Our Top Rated Sleep Tests" }}</h2>
+          <button class="mattress-cta">
+            {{ section.settings.sleep_test_cta | default: "Find Your Test" }}
+          </button>
+        {% elsif tab_name == 'cpap' %}
+          <h2>{{ section.settings.cpap_heading | default: "Our Top Rated CPAP" }}</h2>
+          <button class="mattress-cta">
+            {{ section.settings.cpap_cta | default: "Find Your CPAP" }}
+          </button>
+        {% else %}
+          <h2>{{ section.settings.heading | default: "Our Top Rated Products" }}</h2>
+          <button class="mattress-cta">
+            {{ section.settings.cta_text | default: "Find Your Product" }}
+          </button>
+        {% endif %}
+      </div>
+
+      <div class="mattress-grid">
+        {% for block in section.blocks %}
+          {% assign stripped_tab = tab | strip %}
+          {% if block.settings.tab_category == stripped_tab %}
+            <div class="mattress-card" {{ block.shopify_attributes }}>
+              <div class="mattress-badge badge-{{ block.settings.badge_type }}">
+                {{ block.settings.badge_text }}
+              </div>
+              
+              <h3>{{ block.settings.product_title }}</h3>
+              
+              {% if block.settings.product_image %}
+                <img 
+                  src="{{ block.settings.product_image | img_url: '400x' }}" 
+                  alt="{{ block.settings.product_title }}"
+                  class="mattress-image"
+                  loading="lazy"
+                >
+              {% endif %}
+              
+              <p class="mattress-description">
+                {{ block.settings.description }}
+              </p>
+              
+              <div class="mattress-footer">
+                <span class="mattress-discount {% if block.settings.discount_color == 'green' %}discount-green{% else %}discount-blue{% endif %}">
+                  {{ block.settings.discount_text }}
+                </span>
+                
+                <button class="mattress-shop-btn" onclick="window.location.href='{{ block.settings.product_url }}'">
+                  {{ block.settings.button_text | default: "Shop" }}
+                </button>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+</section>
+
+<script>
+function switchTab(event, tabId) {
+  // Get current active content
+  const currentContent = document.querySelector('.tab-content.active');
+  
+  // Fade out current content
+  if (currentContent) {
+    currentContent.style.animation = 'fadeOut 0.3s ease-out';
+    setTimeout(() => {
+      currentContent.classList.remove('active');
+      currentContent.style.animation = '';
+    }, 300);
+  }
+  
+  // Remove active class from all tabs
+  const tabs = document.querySelectorAll('.mattress-tab');
+  tabs.forEach(tab => tab.classList.remove('active'));
+  
+  // Add active class to clicked tab
+  event.currentTarget.classList.add('active');
+  
+  // Show selected tab content with animation
+  setTimeout(() => {
+    const newContent = document.getElementById(tabId);
+    newContent.classList.add('active');
+    
+    // Reset card animations
+    const cards = newContent.querySelectorAll('.mattress-card');
+    cards.forEach((card, index) => {
+      card.style.animation = 'none';
+      setTimeout(() => {
+        card.style.animation = `cardFadeIn 0.5s ease-out ${index * 0.1}s forwards`;
+      }, 10);
+    });
+  }, 300);
+}
+</script>
+
+{% schema %}
+{
+  "name": "Top Rated Mattresses",
+  "settings": [
+    {
+      "type": "text",
+      "id": "tabs",
+      "label": "Tab Names (comma separated)",
+      "default": "Mattresses,Pillows,Home Sleep Test,CPAP"
+    },
+    {
+      "type": "header",
+      "content": "Mattresses Tab"
+    },
+    {
+      "type": "text",
+      "id": "mattresses_heading",
+      "label": "Mattresses Heading",
+      "default": "Our Top Rated Mattresses"
+    },
+    {
+      "type": "text",
+      "id": "mattresses_cta",
+      "label": "Mattresses CTA Text",
+      "default": "Find Your Mattress"
+    },
+    {
+      "type": "header",
+      "content": "Pillows Tab"
+    },
+    {
+      "type": "text",
+      "id": "pillows_heading",
+      "label": "Pillows Heading",
+      "default": "Our Top Rated Pillows"
+    },
+    {
+      "type": "text",
+      "id": "pillows_cta",
+      "label": "Pillows CTA Text",
+      "default": "Find Your Pillow"
+    },
+    {
+      "type": "header",
+      "content": "Home Sleep Test Tab"
+    },
+    {
+      "type": "text",
+      "id": "sleep_test_heading",
+      "label": "Sleep Test Heading",
+      "default": "Our Top Rated Sleep Tests"
+    },
+    {
+      "type": "text",
+      "id": "sleep_test_cta",
+      "label": "Sleep Test CTA Text",
+      "default": "Find Your Test"
+    },
+    {
+      "type": "header",
+      "content": "CPAP Tab"
+    },
+    {
+      "type": "text",
+      "id": "cpap_heading",
+      "label": "CPAP Heading",
+      "default": "Our Top Rated CPAP"
+    },
+    {
+      "type": "text",
+      "id": "cpap_cta",
+      "label": "CPAP CTA Text",
+      "default": "Find Your CPAP"
+    },
+    {
+      "type": "header",
+      "content": "Default (Fallback)"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Default Heading",
+      "default": "Our Top Rated Products"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Default CTA Text",
+      "default": "Find Your Product"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "mattress",
+      "name": "Mattress Product",
+      "settings": [
+        {
+          "type": "text",
+          "id": "tab_category",
+          "label": "Tab Category",
+          "info": "Enter the exact tab name (e.g., Mattresses, Pillows, Home Sleep Test, CPAP)",
+          "default": "Mattresses"
+        },
+        {
+          "type": "select",
+          "id": "badge_type",
+          "label": "Badge Type",
+          "options": [
+            {
+              "value": "top-pick",
+              "label": "Top Pick"
+            },
+            {
+              "value": "runner-up",
+              "label": "Runner Up"
+            },
+            {
+              "value": "best-value",
+              "label": "Best Value"
+            }
+          ],
+          "default": "top-pick"
+        },
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "Badge Text",
+          "default": "TOP PICK"
+        },
+        {
+          "type": "text",
+          "id": "product_title",
+          "label": "Product Title",
+          "default": "Helix Midnight Luxe"
+        },
+        {
+          "type": "image_picker",
+          "id": "product_image",
+          "label": "Product Image"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Product Description",
+          "default": "A premium quality, hybrid mattress created with side sleepers in mind"
+        },
+        {
+          "type": "text",
+          "id": "discount_text",
+          "label": "Discount Text",
+          "default": "27% OFF"
+        },
+        {
+          "type": "select",
+          "id": "discount_color",
+          "label": "Discount Color",
+          "options": [
+            {
+              "value": "green",
+              "label": "Green"
+            },
+            {
+              "value": "blue",
+              "label": "Blue"
+            }
+          ],
+          "default": "green"
+        },
+        {
+          "type": "url",
+          "id": "product_url",
+          "label": "Product URL"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text",
+          "default": "Shop",
+          "info": "Custom text for the shop button (e.g., 'Buy Now', 'Learn More', 'Get Deal')"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Top Rated Mattresses",
+      "blocks": [
+        {
+          "type": "mattress",
+          "settings": {
+            "tab_category": "Mattresses",
+            "badge_type": "top-pick",
+            "badge_text": "TOP PICK",
+            "product_title": "Helix Midnight Luxe",
+            "description": "A premium quality, hybrid mattress created with side sleepers in mind",
+            "discount_text": "27% OFF",
+            "discount_color": "green",
+            "button_text": "Shop Now"
+          }
+        },
+        {
+          "type": "mattress",
+          "settings": {
+            "tab_category": "Mattresses",
+            "badge_type": "runner-up",
+            "badge_text": "RUNNER UP",
+            "product_title": "WinkBed",
+            "description": "High end hybrid bed with support, cushion, and cooling",
+            "discount_text": "$300 OFF",
+            "discount_color": "blue",
+            "button_text": "Get Deal"
+          }
+        },
+        {
+          "type": "mattress",
+          "settings": {
+            "tab_category": "Mattresses",
+            "badge_type": "best-value",
+            "badge_text": "BEST VALUE",
+            "product_title": "DreamCloud Classic Hybrid",
+            "description": "An all-around great hybrid mattress at an affordable price",
+            "discount_text": "Up to 60% OFF",
+            "discount_color": "blue",
+            "button_text": "Buy Now"
+          }
+        },
+        {
+          "type": "mattress",
+          "settings": {
+            "tab_category": "Pillows",
+            "badge_type": "top-pick",
+            "badge_text": "TOP PICK",
+            "product_title": "Saatva Latex Pillow",
+            "description": "Balanced and lofty, with plenty of cushioning for the head and neck",
+            "discount_text": "Use this link for the most current discount",
+            "discount_color": "green",
+            "button_text": "Shop Pillow"
+          }
+        },
+        {
+          "type": "mattress",
+          "settings": {
+            "tab_category": "Pillows",
+            "badge_type": "runner-up",
+            "badge_text": "RUNNER UP",
+            "product_title": "Layla Kapok Pillow",
+            "description": "An adjustable foam and kapok pillow for personalized comfort",
+            "discount_text": "Use this link for the most current discount",
+            "discount_color": "green",
+            "button_text": "Learn More"
+          }
+        },
+        {
+          "type": "mattress",
+          "settings": {
+            "tab_category": "Pillows",
+            "badge_type": "best-value",
+            "badge_text": "BEST VALUE",
+            "product_title": "Silk & Snow Pillow",
+            "description": "A thoughtfully constructed, adjustable, high-quality pillow at a great price",
+            "discount_text": "Use this link for the most current discount",
+            "discount_color": "green",
+            "button_text": "View Deal"
+          }
+        },
+        {
+          "type": "mattress",
+          "settings": {
+            "tab_category": "Home Sleep Test",
+            "badge_type": "top-pick",
+            "badge_text": "TOP PICK",
+            "product_title": "WatchPAT One",
+            "description": "Easy-to-use, disposable home sleep apnea test with quick results",
+            "discount_text": "$50 OFF",
+            "discount_color": "blue",
+            "button_text": "Get Test"
+          }
+        },
+        {
+          "type": "mattress",
+          "settings": {
+            "tab_category": "Home Sleep Test",
+            "badge_type": "runner-up",
+            "badge_text": "RUNNER UP",
+            "product_title": "Lofta Home Sleep Test",
+            "description": "Comprehensive at-home sleep study with physician review",
+            "discount_text": "20% OFF",
+            "discount_color": "green",
+            "button_text": "Order Now"
+          }
+        },
+        {
+          "type": "mattress",
+          "settings": {
+            "tab_category": "Home Sleep Test",
+            "badge_type": "best-value",
+            "badge_text": "BEST VALUE",
+            "product_title": "SleepTest.com Kit",
+            "description": "Affordable home sleep test with detailed analysis and consultation",
+            "discount_text": "$100 OFF",
+            "discount_color": "blue",
+            "button_text": "Start Test"
+          }
+        },
+        {
+          "type": "mattress",
+          "settings": {
+            "tab_category": "CPAP",
+            "badge_type": "top-pick",
+            "badge_text": "TOP PICK",
+            "product_title": "ResMed AirSense 11",
+            "description": "Advanced CPAP machine with smart technology and personalized therapy",
+            "discount_text": "$200 OFF",
+            "discount_color": "blue",
+            "button_text": "Shop CPAP"
+          }
+        },
+        {
+          "type": "mattress",
+          "settings": {
+            "tab_category": "CPAP",
+            "badge_type": "runner-up",
+            "badge_text": "RUNNER UP",
+            "product_title": "Philips DreamStation 2",
+            "description": "Modern CPAP with cloud connectivity and comfort features",
+            "discount_text": "$150 OFF",
+            "discount_color": "green",
+            "button_text": "Buy CPAP"
+          }
+        },
+        {
+          "type": "mattress",
+          "settings": {
+            "tab_category": "CPAP",
+            "badge_type": "best-value",
+            "badge_text": "BEST VALUE",
+            "product_title": "Luna G3 CPAP",
+            "description": "Budget-friendly CPAP with reliable performance and essential features",
+            "discount_text": "Up to 40% OFF",
+            "discount_color": "blue",
+            "button_text": "Get Offer"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
