@@ -1,0 +1,328 @@
+{% comment %}
+  Filename: progressive-carousel.liquid
+  Save as: sections/progressive-carousel.liquid
+{% endcomment %}
+
+<style>
+  .progress-slider {
+    position: relative;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .slider-content {
+    position: relative;
+    width: 100%;
+  }
+  
+  .slider-wrapper {
+    display: none;
+    width: 100%;
+  }
+  
+  .slider-wrapper.active {
+    display: block;
+  }
+  
+  .slider-image {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+  
+  @media (min-width: 1536px) {
+    .slider-image {
+      height: 500px;
+    }
+  }
+  
+  .slider-btn-group {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;
+    height: fit-content;
+    color: #000;
+    background-color: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border-radius: 6px;
+    z-index: 10;
+  }
+  
+  @media (min-width: 768px) {
+    .slider-btn-group {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  
+  .dark-mode .slider-btn-group {
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  
+  .slider-btn {
+    text-align: left;
+    padding: 12px;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+  }
+  
+  .slider-btn:last-child {
+    border-right: none;
+  }
+  
+  .dark-mode .slider-btn {
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    background-color: #fff;
+    transition: width linear;
+    z-index: -1;
+  }
+  
+  .dark-mode .progress-bar {
+    background-color: #000;
+  }
+  
+  .slider-btn.active .progress-bar {
+    width: 100%;
+  }
+  
+  .slider-title {
+    position: relative;
+    padding: 4px 16px;
+    border-radius: 9999px;
+    width: fit-content;
+    color: #fff;
+    background-color: #111827;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  
+  .dark-mode .slider-title {
+    color: #000;
+    background-color: #fff;
+  }
+  
+  .slider-desc {
+    font-size: 14px;
+    font-weight: 500;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+  }
+</style>
+
+{% comment %} Sample data - replace with your actual data {% endcomment %}
+{% assign carousel_items = "
+  bridge::https://images.unsplash.com/photo-1709949908058-a08659bfa922?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D::Bridge::A breathtaking view of a city illuminated by countless lights, showcasing the vibrant and bustling nightlife.|
+  mountains::https://images.unsplash.com/photo-1518972734183-c5b490a7c637?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D::Mountains View::A serene lake reflecting the surrounding mountains and trees, creating a mirror-like surface.|
+  autumn::https://images.unsplash.com/photo-1548192746-dd526f154ed9?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D::Autumn::A picturesque path winding through a dense forest adorned with vibrant autumn foliage.|
+  foggy::https://images.unsplash.com/photo-1628965882741-570e75becd5d?q=80&w=687&auto=format&fit=crop::Foggy::A stunning foggy view over the forest, with the sun casting a golden glow across the forest.
+" | split: "|" %}
+
+<div class="progress-slider" 
+     data-active-slider="bridge" 
+     data-vertical="false" 
+     data-autoplay="true" 
+     data-interval="5000">
+  
+  <div class="slider-content">
+    {% for item in carousel_items %}
+      {% assign item_data = item | split: "::" %}
+      {% assign slider_name = item_data[0] %}
+      {% assign image_url = item_data[1] %}
+      {% assign title = item_data[2] %}
+      {% assign description = item_data[3] %}
+      
+      <div class="slider-wrapper {% if forloop.first %}active{% endif %}" data-value="{{ slider_name }}">
+        <img class="slider-image" 
+             src="{{ image_url }}" 
+             alt="{{ description }}" 
+             loading="lazy"
+             width="1200" 
+             height="600">
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="slider-btn-group">
+    {% for item in carousel_items %}
+      {% assign item_data = item | split: "::" %}
+      {% assign slider_name = item_data[0] %}
+      {% assign title = item_data[2] %}
+      {% assign description = item_data[3] %}
+      
+      <div class="slider-btn {% if forloop.first %}active{% endif %}" 
+           data-value="{{ slider_name }}"
+           role="button"
+           tabindex="0">
+        <div class="progress-bar"></div>
+        <h3 class="slider-title">{{ title }}</h3>
+        <p class="slider-desc">{{ description }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  class ProgressSlider {
+    constructor(container) {
+      this.container = container;
+      this.sliderWrappers = container.querySelectorAll('.slider-wrapper');
+      this.sliderBtns = container.querySelectorAll('.slider-btn');
+      this.activeSlider = container.dataset.activeSlider || 'bridge';
+      this.isVertical = container.dataset.vertical === 'true';
+      this.autoplay = container.dataset.autoplay === 'true';
+      this.interval = parseInt(container.dataset.interval) || 5000;
+      this.currentIndex = 0;
+      this.intervalId = null;
+      this.isPaused = false;
+      
+      this.init();
+    }
+    
+    init() {
+      this.setActiveSlider(this.activeSlider);
+      this.attachEventListeners();
+      
+      if (this.autoplay) {
+        this.startAutoplay();
+      }
+    }
+    
+    setActiveSlider(sliderName) {
+      // Deactivate all
+      this.sliderWrappers.forEach(wrapper => {
+        wrapper.classList.remove('active');
+      });
+      
+      this.sliderBtns.forEach(btn => {
+        btn.classList.remove('active');
+        const progressBar = btn.querySelector('.progress-bar');
+        if (progressBar) {
+          progressBar.style.width = '0%';
+          progressBar.style.transition = 'none';
+        }
+      });
+      
+      // Activate current
+      const activeWrapper = this.container.querySelector(`.slider-wrapper[data-value="${sliderName}"]`);
+      const activeBtn = this.container.querySelector(`.slider-btn[data-value="${sliderName}"]`);
+      
+      if (activeWrapper) {
+        activeWrapper.classList.add('active');
+      }
+      
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+        const progressBar = activeBtn.querySelector('.progress-bar');
+        if (progressBar && this.autoplay && !this.isPaused) {
+          progressBar.style.transition = `width ${this.interval}ms linear`;
+          progressBar.style.width = '100%';
+        }
+      }
+      
+      this.activeSlider = sliderName;
+      this.currentIndex = Array.from(this.sliderBtns).findIndex(btn => 
+        btn.dataset.value === sliderName
+      );
+    }
+    
+    nextSlide() {
+      this.currentIndex = (this.currentIndex + 1) % this.sliderBtns.length;
+      const nextSlider = this.sliderBtns[this.currentIndex].dataset.value;
+      this.setActiveSlider(nextSlider);
+    }
+    
+    attachEventListeners() {
+      this.sliderBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          this.stopAutoplay();
+          this.setActiveSlider(btn.dataset.value);
+        });
+        
+        btn.addEventListener('mouseenter', () => {
+          this.isPaused = true;
+          const progressBar = btn.querySelector('.progress-bar');
+          if (progressBar) {
+            progressBar.style.transition = 'none';
+            progressBar.style.width = '0%';
+          }
+        });
+        
+        btn.addEventListener('mouseleave', () => {
+          this.isPaused = false;
+          if (btn.classList.contains('active') && this.autoplay) {
+            const progressBar = btn.querySelector('.progress-bar');
+            if (progressBar) {
+              progressBar.style.transition = `width ${this.interval}ms linear`;
+              progressBar.style.width = '100%';
+            }
+          }
+        });
+        
+        // Keyboard navigation
+        btn.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            this.stopAutoplay();
+            this.setActiveSlider(btn.dataset.value);
+          }
+        });
+      });
+      
+      // Pause on container hover
+      this.container.addEventListener('mouseenter', () => {
+        this.isPaused = true;
+      });
+      
+      this.container.addEventListener('mouseleave', () => {
+        this.isPaused = false;
+      });
+    }
+    
+    startAutoplay() {
+      if (this.intervalId) {
+        clearInterval(this.intervalId);
+      }
+      
+      this.intervalId = setInterval(() => {
+        if (!this.isPaused) {
+          this.nextSlide();
+        }
+      }, this.interval);
+    }
+    
+    stopAutoplay() {
+      if (this.intervalId) {
+        clearInterval(this.intervalId);
+        this.intervalId = null;
+      }
+    }
+  }
+  
+  // Initialize all sliders on the page
+  document.querySelectorAll('.progress-slider').forEach(container => {
+    new ProgressSlider(container);
+  });
+});
+</script>
