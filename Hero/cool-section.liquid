@@ -1,0 +1,663 @@
+{% comment %}
+  KickCam Hero Section with Image Hover (Desktop) & Scroll Effects (Mobile)
+  Hero image large by default, hovered card expands to 40%
+{% endcomment %}
+
+<style>
+    /* Hero Section with Dynamic Grid */
+    .kickcam-hero-{{ section.id }} {
+        min-height: {{ section.settings.section_height }}vh;
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        background: #1e1e1e;
+        color: #fff;
+        gap: 2px;
+        transition: grid-template-columns 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Grid changes based on which card is active */
+    .kickcam-hero-{{ section.id }}.active-0 {
+        grid-template-columns: 1fr 2fr 1fr 1fr;
+    }
+
+    .kickcam-hero-{{ section.id }}.active-1 {
+        grid-template-columns: 1fr 1fr 2fr 1fr;
+    }
+
+    .kickcam-hero-{{ section.id }}.active-2 {
+        grid-template-columns: 1fr 1fr 1fr 2fr;
+    }
+
+    /* Left Hero Image */
+    .kickcam-left-{{ section.id }} {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #000;
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: {{ section.settings.section_height }}vh;
+    }
+
+    .kickcam-model-img-{{ section.id }} {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(100%) contrast(1.1);
+        transition: transform 0.6s ease;
+    }
+
+    .kickcam-left-{{ section.id }}:hover .kickcam-model-img-{{ section.id }} {
+        transform: scale(1.05);
+    }
+
+    /* Feature Cards */
+    .kickcam-feature-card-{{ section.id }} {
+        background: #1e1e1e;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: {{ section.settings.section_height }}vh;
+        border-right: 3px solid #000;
+    }
+
+    .kickcam-feature-card-{{ section.id }}::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.05) 100%);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: 1;
+    }
+
+    .kickcam-feature-card-{{ section.id }}:hover::before {
+        opacity: 1;
+    }
+
+    /* Card Content - Vertical Text */
+    .kickcam-card-content-{{ section.id }} {
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        transform: rotate(180deg);
+        text-align: center;
+        padding: 3rem 1rem;
+        position: relative;
+        z-index: 2;
+        transition: opacity 0.4s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .kickcam-feature-card-{{ section.id }}.active .kickcam-card-content-{{ section.id }} {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .kickcam-card-num-{{ section.id }} {
+        font-size: 18px;
+        letter-spacing: 0.2em;
+        opacity: 0.5;
+        margin-bottom: 1.5rem;
+        font-weight: 300;
+    }
+
+    .kickcam-card-title-{{ section.id }} {
+        font-size: 35px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    /* Image Container */
+    .kickcam-image-container-{{ section.id }} {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.6s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #000;
+    }
+
+    .kickcam-feature-card-{{ section.id }}.active .kickcam-image-container-{{ section.id }} {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    .kickcam-image-wrapper-{{ section.id }} {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .kickcam-feature-image-{{ section.id }} {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(100%) contrast(1.1);
+    }
+
+    /* Image Overlay */
+    .kickcam-image-overlay-{{ section.id }} {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 3rem 2rem;
+        background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+        z-index: 3;
+        transform: translateY(20px);
+        opacity: 0;
+        transition: all 0.6s ease 0.3s;
+    }
+
+    .kickcam-feature-card-{{ section.id }}.active .kickcam-image-overlay-{{ section.id }} {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .kickcam-image-tagline-{{ section.id }} {
+        font-size: 0.875rem;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        opacity: 0.7;
+        margin-bottom: 0.5rem;
+        font-weight: 300;
+    }
+
+    .kickcam-image-title-{{ section.id }} {
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+
+    .kickcam-image-desc-{{ section.id }} {
+        font-size: 1rem;
+        line-height: 1.6;
+        opacity: 0.8;
+        margin-bottom: 1.5rem;
+        max-width: 500px;
+    }
+
+    .kickcam-image-cta-{{ section.id }} {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 30px;
+        background: #fff;
+        color: #000;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    .kickcam-image-cta-{{ section.id }}:hover {
+        background: #f0f0f0;
+        transform: translateX(5px);
+        gap: 15px;
+    }
+
+    .kickcam-image-cta-{{ section.id }} svg {
+        width: 18px;
+        height: 18px;
+        stroke-width: 2.5;
+    }
+
+    /* Mobile Scroll Active State */
+    @media (max-width: 968px) {
+        .kickcam-feature-card-{{ section.id }}.scroll-active .kickcam-image-container-{{ section.id }} {
+            opacity: 1;
+        }
+
+        .kickcam-feature-card-{{ section.id }}.scroll-active .kickcam-card-content-{{ section.id }} {
+            opacity: 0;
+        }
+
+        .kickcam-feature-card-{{ section.id }}.scroll-active .kickcam-image-overlay-{{ section.id }} {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 968px) {
+        .kickcam-hero-{{ section.id }} {
+            grid-template-columns: 2fr 1fr !important;
+        }
+
+        .kickcam-hero-{{ section.id }}.active-0,
+        .kickcam-hero-{{ section.id }}.active-1,
+        .kickcam-hero-{{ section.id }}.active-2 {
+            grid-template-columns: 1fr 2fr !important;
+        }
+
+        .kickcam-left-{{ section.id }},
+        .kickcam-feature-card-{{ section.id }} {
+            min-height: 40vh;
+        }
+
+        .kickcam-card-content-{{ section.id }} {
+            writing-mode: horizontal-tb;
+            transform: none;
+            padding: 2rem 1rem;
+        }
+
+        .kickcam-card-num-{{ section.id }} {
+            margin-bottom: 0.5rem;
+        }
+
+        .kickcam-image-overlay-{{ section.id }} {
+            padding: 2rem 1.5rem;
+        }
+
+        .kickcam-image-title-{{ section.id }} {
+            font-size: 1.5rem;
+        }
+
+        .kickcam-image-desc-{{ section.id }} {
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .kickcam-hero-{{ section.id }} {
+            grid-template-columns: 1fr !important;
+        }
+
+        .kickcam-hero-{{ section.id }}.active-0,
+        .kickcam-hero-{{ section.id }}.active-1,
+        .kickcam-hero-{{ section.id }}.active-2 {
+            grid-template-columns: 1fr !important;
+        }
+
+        .kickcam-left-{{ section.id }} {
+            min-height: 30vh;
+        }
+
+        .kickcam-feature-card-{{ section.id }} {
+            min-height: 25vh;
+        }
+
+        .kickcam-feature-card-{{ section.id }}.active,
+        .kickcam-feature-card-{{ section.id }}.scroll-active {
+            min-height: 50vh;
+        }
+
+        .kickcam-image-title-{{ section.id }} {
+            font-size: 1.25rem;
+        }
+
+        .kickcam-image-tagline-{{ section.id }} {
+            font-size: 0.75rem;
+        }
+
+        .kickcam-image-cta-{{ section.id }} {
+            padding: 12px 24px;
+            font-size: 0.85rem;
+        }
+    }
+</style>
+
+<div class="kickcam-hero-{{ section.id }}" id="kickcam-hero-{{ section.id }}">
+    <!-- Hero Image - Always shows first -->
+    <div class="kickcam-left-{{ section.id }}">
+        {% if section.settings.hero_image %}
+            <img src="{{ section.settings.hero_image | img_url: '1200x' }}" 
+                 alt="{{ section.settings.hero_image.alt | escape }}" 
+                 class="kickcam-model-img-{{ section.id }}">
+        {% else %}
+            <img src="https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-image_large.png" 
+                 alt="Hero Image" 
+                 class="kickcam-model-img-{{ section.id }}">
+        {% endif %}
+    </div>
+
+    <!-- Feature Cards with Images -->
+    {% for block in section.blocks %}
+        {% if block.type == 'feature_card' %}
+            <div class="kickcam-feature-card-{{ section.id }}" 
+                 data-card-index="{{ forloop.index0 }}"
+                 data-section-id="{{ section.id }}">
+                
+                <div class="kickcam-card-content-{{ section.id }}">
+                    <div class="kickcam-card-num-{{ section.id }}">{{ block.settings.card_number }}</div>
+                    <div class="kickcam-card-title-{{ section.id }}">{{ block.settings.card_title }}</div>
+                </div>
+
+                <div class="kickcam-image-container-{{ section.id }}">
+                    <div class="kickcam-image-wrapper-{{ section.id }}">
+                        {% if block.settings.feature_image %}
+                            <img src="{{ block.settings.feature_image | img_url: '1200x' }}" 
+                                 alt="{{ block.settings.feature_image.alt | escape }}" 
+                                 class="kickcam-feature-image-{{ section.id }}"
+                                 data-image-index="{{ forloop.index0 }}">
+                        {% else %}
+                            <img src="https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-image_large.png" 
+                                 alt="Feature Image" 
+                                 class="kickcam-feature-image-{{ section.id }}"
+                                 data-image-index="{{ forloop.index0 }}">
+                        {% endif %}
+
+                        <div class="kickcam-image-overlay-{{ section.id }}">
+                            {% if block.settings.image_tagline != blank %}
+                                <div class="kickcam-image-tagline-{{ section.id }}">{{ block.settings.image_tagline }}</div>
+                            {% endif %}
+                            {% if block.settings.image_title != blank %}
+                                <h2 class="kickcam-image-title-{{ section.id }}">{{ block.settings.image_title }}</h2>
+                            {% endif %}
+                            {% if block.settings.image_description != blank %}
+                                <p class="kickcam-image-desc-{{ section.id }}">{{ block.settings.image_description }}</p>
+                            {% endif %}
+                            {% if block.settings.cta_text != blank and block.settings.cta_url != blank %}
+                                <a href="{{ block.settings.cta_url }}" class="kickcam-image-cta-{{ section.id }}">
+                                    {{ block.settings.cta_text }}
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        <polyline points="12 5 19 12 12 19"></polyline>
+                                    </svg>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+<script>
+(function() {
+    const sectionId = '{{ section.id }}';
+    const heroContainer = document.getElementById('kickcam-hero-' + sectionId);
+    const cards = document.querySelectorAll('.kickcam-feature-card-' + sectionId);
+    let activeCard = null;
+    let activeIndex = -1;
+    let isMobile = window.innerWidth <= 968;
+
+    // Detect if device is mobile
+    function checkMobile() {
+        isMobile = window.innerWidth <= 968;
+    }
+
+    // Remove all active states
+    function clearActiveStates() {
+        cards.forEach(function(card) {
+            card.classList.remove('active', 'scroll-active');
+        });
+    }
+
+    // Intersection Observer for mobile scroll-based effects
+    function initScrollObserver() {
+        if (!isMobile) return;
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: [0.3, 0.7]
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                const card = entry.target;
+                
+                if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+                    card.classList.add('scroll-active');
+                } else {
+                    card.classList.remove('scroll-active');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards
+        cards.forEach(function(card) {
+            observer.observe(card);
+        });
+
+        // Store observer for cleanup
+        heroContainer.scrollObserver = observer;
+    }
+
+    // Desktop hover functionality
+    function initDesktopHover() {
+        if (isMobile) return;
+
+        cards.forEach(function(card, index) {
+            card.addEventListener('mouseenter', function() {
+                // Remove all active states
+                clearActiveStates();
+                
+                // Remove all grid classes
+                heroContainer.classList.remove('active-0', 'active-1', 'active-2');
+                
+                // Add active class to hovered card
+                card.classList.add('active');
+                heroContainer.classList.add('active-' + index);
+                activeCard = card;
+                activeIndex = index;
+            });
+
+            card.addEventListener('mouseleave', function() {
+                setTimeout(function() {
+                    if (activeCard === card) {
+                        card.classList.remove('active');
+                        heroContainer.classList.remove('active-0', 'active-1', 'active-2');
+                        activeCard = null;
+                        activeIndex = -1;
+                    }
+                }, 100);
+            });
+        });
+
+        // Reset when leaving entire container
+        heroContainer.addEventListener('mouseleave', function() {
+            setTimeout(function() {
+                if (activeCard) {
+                    activeCard.classList.remove('active');
+                    heroContainer.classList.remove('active-0', 'active-1', 'active-2');
+                    activeCard = null;
+                    activeIndex = -1;
+                }
+            }, 150);
+        });
+    }
+
+    // Initialize based on device
+    function init() {
+        checkMobile();
+        
+        if (isMobile) {
+            initScrollObserver();
+        } else {
+            initDesktopHover();
+        }
+    }
+
+    // Reinitialize on window resize with debounce
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            const wasMobile = isMobile;
+            checkMobile();
+            
+            // Reinitialize if mobile state changed
+            if (wasMobile !== isMobile) {
+                // Cleanup
+                if (heroContainer.scrollObserver) {
+                    heroContainer.scrollObserver.disconnect();
+                }
+                
+                // Remove all active states
+                clearActiveStates();
+                heroContainer.classList.remove('active-0', 'active-1', 'active-2');
+                
+                // Reinitialize
+                init();
+            }
+        }, 250);
+    });
+
+    // Start
+    init();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "KickCam Image Hero",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "label": "Section Height",
+      "default": 100,
+      "info": "Adjust the height of the hero section (50vh - 100vh)"
+    },
+    {
+      "type": "header",
+      "content": "Hero Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero Image",
+      "info": "Recommended: 800x1200px. This image stays large (40%) by default."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature_card",
+      "name": "Image Card",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Card Display"
+        },
+        {
+          "type": "text",
+          "id": "card_number",
+          "label": "Card Number",
+          "default": "01"
+        },
+        {
+          "type": "text",
+          "id": "card_title",
+          "label": "Card Title",
+          "default": "Vintage Style"
+        },
+        {
+          "type": "header",
+          "content": "Feature Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "feature_image",
+          "label": "Feature Image",
+          "info": "Recommended: 1200x1600px. Shows when card is hovered/active."
+        },
+        {
+          "type": "header",
+          "content": "Image Overlay"
+        },
+        {
+          "type": "text",
+          "id": "image_tagline",
+          "label": "Tagline",
+          "default": "Clip it, shoot it, share it"
+        },
+        {
+          "type": "text",
+          "id": "image_title",
+          "label": "Title",
+          "default": "Capture Every Moment"
+        },
+        {
+          "type": "textarea",
+          "id": "image_description",
+          "label": "Description",
+          "default": "Experience the perfect blend of vintage aesthetics and modern technology."
+        },
+        {
+          "type": "header",
+          "content": "Call to Action"
+        },
+        {
+          "type": "text",
+          "id": "cta_text",
+          "label": "Button Text",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "cta_url",
+          "label": "Button Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "KickCam Image Hero",
+      "blocks": [
+        {
+          "type": "feature_card",
+          "settings": {
+            "card_number": "01",
+            "card_title": "Vintage Style",
+            "image_tagline": "Clip it, shoot it, share it",
+            "image_title": "Capture Every Moment",
+            "cta_text": "Shop Now"
+          }
+        },
+        {
+          "type": "feature_card",
+          "settings": {
+            "card_number": "02",
+            "card_title": "HD Lens",
+            "image_tagline": "Crystal Clear Quality",
+            "image_title": "Professional Optics",
+            "cta_text": "Learn More"
+          }
+        },
+        {
+          "type": "feature_card",
+          "settings": {
+            "card_number": "03",
+            "card_title": "Compact Design",
+            "image_tagline": "Go Anywhere",
+            "image_title": "Pocket Power",
+            "cta_text": "Discover"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

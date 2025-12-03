@@ -1,0 +1,424 @@
+{% schema %}
+{
+  "name": "Treendi FAQ",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": "FAQS"
+    },
+    {
+      "type": "text",
+      "id": "main_title",
+      "label": "Main Title",
+      "default": "Lumi Q&A"
+    },
+    {
+      "type": "image_picker",
+      "id": "faq_image",
+      "label": "Right Side Image"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "What's included?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Your answer goes here</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Treendi FAQ",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What's included?"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is this safe?"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Does it hurt?"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "When will I start seeing results?"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Are results permanent?"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Okay, but why have I never heard of this before?"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What if it doesn't work for me?"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Free shipping?"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  /* Maximum specificity - Override ALL global styles */
+
+  #lumi-faq-section-{{ section.id }}.lumi-faq-wrapper {
+    display: flex !important;
+    gap: 60px !important;
+    align-items: center !important;
+    max-width: 100% !important;
+    padding: 60px 20px !important;
+    box-sizing: border-box !important;
+        background-color: #1C1818 !important;
+
+  }
+
+    #lumi-faq-section-{{ section.id }}.treendi-wrapper {
+    max-width:1400px !important;
+       
+            display: flex !important;
+            margin: 0 auto !important;
+    gap: 60px !important;
+    align-items: center !important;
+
+    background-color: #1C1818 !important;
+  }
+  
+  
+  #lumi-faq-section-{{ section.id }}.lumi-faq-wrapper::before,
+  #lumi-faq-section-{{ section.id }}.lumi-faq-wrapper::after {
+    display: none !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} .lumi-faq-left {
+    display: block !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    text-align: center;
+  }
+
+  #lumi-faq-section-{{ section.id }} .lumi-faq-image-container {
+    display: block !important;
+    width: 100% !important;
+    position: relative !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} .lumi-faq-image-wrapper {
+    display: block !important;
+    width: 100% !important;
+    aspect-ratio: 3 / 4 !important;
+    height: auto !important;
+    overflow: hidden !important;
+    border-radius: 12px !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} .lumi-faq-image-wrapper img.lumi-faq-image {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    image-rendering: auto !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} .lumi-faq-label {
+    display: block !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    letter-spacing: 2px !important;
+    color:rgb(255, 255, 255) !important;
+    margin: 0 0 15px 0 !important;
+    padding: 0 !important;
+    text-transform: uppercase !important;
+    line-height: 1.4 !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} .lumi-faq-label p {
+    color:rgb(251, 254, 255) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} .lumi-faq-title {
+    display: block !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    margin: 0 0 40px 0 !important;
+    padding: 0 !important;
+    color: #ffffff !important;
+    font-size: 2.5em !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} ul.lumi-faq-list {
+    display: block !important;
+    list-style: none !important;
+    list-style-type: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+    background: none !important;
+  }
+
+  .lumi-faq-list {
+    border-top: 1px solid #ffffff !important;
+    border-bottom: 1px solid #ffffff !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} ul.lumi-faq-list li.lumi-faq-item {
+    display: block !important;
+    list-style: none !important;
+    list-style-type: none !important;
+    border-bottom: 1px solid #ffffff !important;
+    padding: 20px 0 !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+    background: none !important;
+    position: relative !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} ul.lumi-faq-list li.lumi-faq-item::before,
+  #lumi-faq-section-{{ section.id }} ul.lumi-faq-list li.lumi-faq-item::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} ul.lumi-faq-list li.lumi-faq-item:last-child {
+    border-bottom: none !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} ul.lumi-faq-list li.lumi-faq-item button.lumi-faq-question {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    cursor: pointer !important;
+    padding: 10px 0 !important;
+    background: none !important;
+    border: none !important;
+    width: 100% !important;
+    text-align: left !important;
+    font-weight: 500 !important;
+    font-size: inherit !important;
+    color:rgb(255, 253, 253) !important;
+    transition: color 0.3s ease !important;
+    margin: 0 !important;
+    outline: none !important;
+    line-height: 1.4 !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} ul.lumi-faq-list li.lumi-faq-item button.lumi-faq-question:hover {
+    color: #ffffff !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} ul.lumi-faq-list li.lumi-faq-item button.lumi-faq-question.active {
+    color: #ffffff !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} ul.lumi-faq-list li.lumi-faq-item button.lumi-faq-question span {
+    display: inline !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    line-height: 1.4 !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} ul.lumi-faq-list li.lumi-faq-item button.lumi-faq-question span.lumi-faq-toggle {
+    display: inline-block !important;
+    transition: transform 0.3s ease !important;
+    min-width: 24px !important;
+    text-align: left !important;
+    font-size: 24px !important;
+    line-height: 1 !important;
+    font-weight: 400 !important;
+    color:rgb(255, 255, 255) !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} ul.lumi-faq-list li.lumi-faq-item button.lumi-faq-question.active span.lumi-faq-toggle {
+    transform: rotate(45deg) !important;
+    color: #ffffff !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} ul.lumi-faq-list li.lumi-faq-item div.lumi-faq-answer {
+    display: block !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    transition: max-height 0.3s ease, padding 0.3s ease !important;
+    line-height: 1.6 !important;
+    font-size: 16px !important;
+    color: #ffffff !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} ul.lumi-faq-list li.lumi-faq-item div.lumi-faq-answer.active {
+    display: block !important;
+    max-height: 500px !important;
+    padding-top: 10px !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} ul.lumi-faq-list li.lumi-faq-item div.lumi-faq-answer p {
+    display: block !important;
+    font-size: 16px !important;
+    text-align: left !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.6 !important;
+    color: #ffffff !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} ul.lumi-faq-list li.lumi-faq-item div.lumi-faq-answer.active p {
+    display: block !important;
+    font-size: 16px !important;
+    text-align: left !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.6 !important;
+    color: #ffffff !important;
+  }
+
+  #lumi-faq-section-{{ section.id }} .lumi-faq-right {
+    display: flex !important;
+    flex: 1 !important;
+    justify-content: center !important;
+  }
+
+  @media (max-width: 768px) {
+    #lumi-faq-section-{{ section.id }}.lumi-faq-wrapper {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 40px !important;
+      padding: 60px 20px !important;
+    }
+
+    #lumi-faq-section-{{ section.id }} ul.lumi-faq-list li.lumi-faq-item button.lumi-faq-question span {
+      display: inline !important;
+      font-size: 16px !important;
+      font-weight: 700 !important;
+      color: #ffffff !important;
+      line-height: 1.4 !important;
+    }
+
+    #lumi-faq-section-{{ section.id }} .lumi-faq-image-wrapper {
+      aspect-ratio: 3 / 4 !important;
+    }
+
+    #lumi-faq-section-{{ section.id }} .lumi-faq-image-wrapper img.lumi-faq-image {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      display: block !important;
+    }
+  }
+</style>
+
+<div class="lumi-faq-wrapper" id="lumi-faq-section-{{ section.id }}">
+    <div class="treendi-wrapper" id="lumi-faq-section-{{ section.id }}">
+  <div class="lumi-faq-left">
+    <div class="lumi-faq-label"><p>{{ section.settings.section_title }}</p></div>
+    <h2 class="lumi-faq-title">{{ section.settings.main_title }}</h2>
+
+    <ul class="lumi-faq-list">
+      {% for block in section.blocks %}
+        <li class="lumi-faq-item" id="lumi-faq-item-{{ section.id }}-{{ forloop.index }}" data-lumi-faq-id="{{ forloop.index }}">
+          <button class="lumi-faq-question" type="button" onclick="toggleLumiFaqItem{{ section.id | replace: '-', '_' }}(this)">
+            <span>{{ block.settings.question }}</span>
+            <span class="lumi-faq-toggle">+</span>
+          </button>
+          <div class="lumi-faq-answer">
+            {{ block.settings.answer }}
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="lumi-faq-right">
+    {% if section.settings.faq_image %}
+      <div class="lumi-faq-image-container">
+        <div class="lumi-faq-image-wrapper">
+          {{ section.settings.faq_image
+            | image_url: width: 3000
+            | image_tag:
+              widths: '550, 750, 1100, 1500, 1780, 2000, 2400, 3000',
+              sizes: '(min-width: 1440px) 720px, (min-width: 768px) 50vw, 100vw',
+              class: 'lumi-faq-image',
+              loading: 'lazy',
+              fetchpriority: 'low'
+          }}
+        </div>
+      </div>
+    {% else %}
+      <div class="lumi-faq-image-container" style="background: #000000; aspect-ratio: 3/4; display: flex; align-items: center; justify-content: center; width: 100%; border-radius: 12px;">
+        <p style="color: #ffffff; text-align: center; font-size: 14px;">Image will appear here</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+</div>
+
+<script>
+  (function() {
+    window.toggleLumiFaqItem{{ section.id | replace: '-', '_' }} = function(button) {
+      if (!button) return;
+      
+      var answer = button.nextElementSibling;
+      var container = document.getElementById('lumi-faq-section-{{ section.id }}');
+      
+      if (!container) return;
+      
+      // Close all other FAQs in this specific section only
+      var allQuestions = container.querySelectorAll('.lumi-faq-question');
+      for (var i = 0; i < allQuestions.length; i++) {
+        if (allQuestions[i] !== button) {
+          allQuestions[i].classList.remove('active');
+          if (allQuestions[i].nextElementSibling) {
+            allQuestions[i].nextElementSibling.classList.remove('active');
+          }
+        }
+      }
+
+      // Toggle current FAQ
+      button.classList.toggle('active');
+      if (answer) {
+        answer.classList.toggle('active');
+      }
+    };
+  })();
+</script>

@@ -1,0 +1,1179 @@
+{% comment %}
+  Section: Modern Animated Camper Collection Hero
+  A unique, adventure-themed hero section with smooth animations
+{% endcomment %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.7/swiper-bundle.min.css" />
+
+<style>
+  :root {
+    --camper-primary: #E85D04;
+    --camper-secondary: #DC2F02;
+    --camper-accent: #F48C06;
+    --camper-dark: #0a0a0a;
+    --camper-gray: #1a1a1a;
+    --camper-light-gray: #2a2a2a;
+    --camper-text: #ffffff;
+    --camper-forest: #2D6A4F;
+  }
+  .camper-hero-modern {
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    background: #232323;
+  }
+
+  /* Animated Background Pattern */
+  .camper-hero-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 600px;
+    background: 
+      linear-gradient(135deg, rgba(232, 93, 4, 0.05) 0%, rgba(220, 47, 2, 0.05) 100%),
+      repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(232, 93, 4, 0.03) 35px, rgba(232, 93, 4, 0.03) 70px);
+    animation: patternSlide 30s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  @keyframes patternSlide {
+    0% { background-position: 0 0, 0 0; }
+    100% { background-position: 0 0, 100px 100px; }
+  }
+
+  .camper-hero-container-modern {
+    position: relative;
+    width: 100%;
+    background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+    z-index: 2;
+  }
+
+  .camper-hero-content-modern {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 550px;
+    position: relative;
+  }
+
+  .camper-hero-content-modern.layout-image-left .camper-hero-image-modern {
+    order: 1;
+  }
+
+  .camper-hero-content-modern.layout-image-left .camper-hero-text-modern {
+    order: 2;
+  }
+
+  .camper-hero-content-modern.layout-image-right .camper-hero-image-modern {
+    order: 2;
+  }
+
+  .camper-hero-content-modern.layout-image-right .camper-hero-text-modern {
+    order: 1;
+  }
+
+  /* Image Section with Zoom Effect */
+  .camper-hero-image-modern {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(232, 93, 4, 0.1) 0%, rgba(220, 47, 2, 0.1) 100%);
+  }
+
+  .camper-hero-image-modern::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(232, 93, 4, 0.15) 0%, transparent 60%);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .camper-hero-image-modern img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transform: scale(1.05);
+    transition: transform 8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .camper-hero-image-modern:hover img {
+    transform: scale(1.1);
+  }
+
+  /* Text Section with Animated Elements */
+  .camper-hero-text-modern {
+    padding: clamp(40px, 6vw, 90px) clamp(30px, 7vw, 100px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(135deg, #2a2a2a 0%, rgba(26, 26, 26, 0.95) 100%);
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Decorative Element */
+  .camper-hero-text-modern::before {
+    content: '';
+    position: absolute;
+    top: 40px;
+    left: 30px;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--camper-primary), var(--camper-accent));
+    border-radius: 2px;
+    animation: slideInLeft 1s ease-out;
+  }
+
+  @keyframes slideInLeft {
+    from {
+      width: 0;
+      opacity: 0;
+    }
+    to {
+      width: 60px;
+      opacity: 1;
+    }
+  }
+
+  .camper-hero-text-modern h2 {
+    font-size: clamp(1.5rem, 4.5vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin: 0 0 clamp(20px, 4vw, 35px) 0;
+    color: #ffffff;
+    word-wrap: break-word;
+    position: relative;
+    animation: fadeInUp 0.8s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .camper-hero-text-modern h2 span {
+    background: linear-gradient(135deg, var(--camper-primary), var(--camper-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+  }
+
+  .camper-hero-text-modern p {
+    font-size: clamp(0.95rem, 2.2vw, 1.15rem);
+    line-height: 1.7;
+    color: #d1d1d1;
+    margin: 0;
+    word-wrap: break-word;
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+  }
+
+  /* Product Slider Section */
+  .camper-collection-modern-wrapper {
+    position: relative;
+    margin-top: -100px;
+    padding: 0 50px 60px;
+    z-index: 10;
+  }
+
+  .camper-collection-modern-slider {
+    overflow: visible;
+    padding: 15px 8px;
+  }
+
+  /* Product Card with Advanced Animations */
+  .camper-card-modern {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    aspect-ratio: 3/4;
+    cursor: pointer;
+    background: #fff;
+    height: 100%;
+    box-shadow: 
+      0 10px 30px rgba(0, 0, 0, 0.1),
+      0 1px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform-origin: center;
+  }
+
+  .camper-card-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(232, 93, 4, 0) 0%, rgba(232, 93, 4, 0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .camper-card-modern:hover {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: 
+      0 25px 50px rgba(232, 93, 4, 0.25),
+      0 10px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .camper-card-modern:hover::before {
+    opacity: 1;
+  }
+
+  /* Image with Zoom Effect */
+  .camper-card-image-modern {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: block;
+  }
+
+  .camper-card-image-modern img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .camper-card-modern:hover .camper-card-image-modern img {
+    transform: scale(1.15) rotate(1deg);
+  }
+
+  /* Gradient Overlay on Image */
+  .camper-card-image-modern::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 1;
+  }
+
+  .camper-card-modern:hover .camper-card-image-modern::after {
+    opacity: 1;
+  }
+
+  /* Modern Badge Design */
+  .camper-badge-modern {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: linear-gradient(135deg, var(--camper-secondary), var(--camper-primary));
+    color: white;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(232, 93, 4, 0.4);
+    animation: badgePulse 2s ease-in-out infinite;
+  }
+
+  @keyframes badgePulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  .camper-badge-modern.sale {
+    background: linear-gradient(135deg, #DC2F02, #E85D04);
+  }
+
+  .camper-badge-modern.new {
+    background: linear-gradient(135deg, #2D6A4F, #40916C);
+  }
+
+  .camper-badge-modern.hot {
+    background: linear-gradient(135deg, #F48C06, #FFBA08);
+  }
+
+  /* Product Info Card */
+  .camper-card-info-modern {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%);
+    backdrop-filter: blur(10px);
+    padding: 18px;
+    z-index: 5;
+    transform: translateY(0);
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .camper-card-modern:hover .camper-card-info-modern {
+    transform: translateY(-5px);
+  }
+
+  .camper-card-title-modern {
+    color: var(--camper-dark);
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .camper-price-modern {
+    color: var(--camper-primary);
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin: 0;
+  }
+
+  .camper-compare-price-modern {
+    color: #999;
+    font-size: 0.9rem;
+    text-decoration: line-through;
+    margin-left: 10px;
+    font-weight: 500;
+  }
+
+  /* Action Buttons with Modern Design */
+  .camper-actions-modern {
+    position: absolute;
+    bottom: 120px;
+    left: 0;
+    right: 0;
+    display: flex;
+    gap: 12px;
+    padding: 0 18px;
+    z-index: 10;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .camper-card-modern:hover .camper-actions-modern {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .camper-icon-btn-modern {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 1));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(232, 93, 4, 0);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  }
+
+  .camper-icon-btn-modern:hover {
+    background: linear-gradient(135deg, var(--camper-primary), var(--camper-accent));
+    border-color: var(--camper-primary);
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 6px 20px rgba(232, 93, 4, 0.4);
+  }
+
+  .camper-icon-btn-modern svg {
+    width: 22px;
+    height: 22px;
+    stroke: var(--camper-dark);
+    stroke-width: 2;
+    fill: none;
+    transition: stroke 0.3s ease;
+  }
+
+  .camper-icon-btn-modern:hover svg {
+    stroke: white;
+  }
+
+  .camper-shop-btn-modern {
+    flex: 1;
+    height: 48px;
+    background: linear-gradient(135deg, var(--camper-primary) 0%, var(--camper-secondary) 100%);
+    color: white;
+    border: none;
+    border-radius: 24px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(232, 93, 4, 0.35);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .camper-shop-btn-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .camper-shop-btn-modern:hover::before {
+    left: 100%;
+  }
+
+  .camper-shop-btn-modern:hover {
+    background: linear-gradient(135deg, var(--camper-secondary) 0%, var(--camper-primary) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(232, 93, 4, 0.5);
+  }
+
+  /* Sold Out Design */
+  .camper-soldout-modern {
+    position: absolute;
+    bottom: 120px;
+    left: 0;
+    right: 0;
+    padding: 0 18px;
+    z-index: 10;
+  }
+
+  .camper-soldout-btn-modern {
+    width: 100%;
+    height: 48px;
+    background: linear-gradient(135deg, #6B6B6B 0%, #4A4A4A 100%);
+    color: white;
+    border: none;
+    border-radius: 24px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: not-allowed;
+    opacity: 0.85;
+  }
+
+  /* View More Card with Adventure Theme */
+  .camper-viewmore-modern {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    aspect-ratio: 3/4;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--camper-primary) 0%, var(--camper-secondary) 100%);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: white;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(232, 93, 4, 0.3);
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+  }
+
+  .camper-viewmore-modern::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    animation: rotateGradient 8s linear infinite;
+  }
+
+  @keyframes rotateGradient {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .camper-viewmore-modern:hover {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: 0 25px 50px rgba(232, 93, 4, 0.5);
+    background: linear-gradient(135deg, var(--camper-secondary) 0%, var(--camper-primary) 100%);
+  }
+
+  .camper-viewmore-modern svg {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 20px;
+    stroke: white;
+    stroke-width: 2.5;
+    animation: iconFloat 3s ease-in-out infinite;
+    z-index: 1;
+  }
+
+  @keyframes iconFloat {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .camper-viewmore-modern span {
+    font-size: 1.3rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    z-index: 1;
+  }
+
+  .camper-viewmore-count-modern {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-top: 12px;
+    opacity: 0.95;
+    z-index: 1;
+  }
+
+  /* Loading Animation */
+  .camper-loading-modern {
+    display: none;
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .camper-viewmore-modern.loading .camper-loading-modern {
+    display: block;
+  }
+
+  .camper-viewmore-modern.loading svg,
+  .camper-viewmore-modern.loading span,
+  .camper-viewmore-modern.loading .camper-viewmore-count-modern {
+    display: none;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Hidden Slides */
+  .camper-slide-modern.hidden-slide {
+    display: none;
+  }
+
+  /* Fade In Animation */
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .camper-slide-modern.just-loaded {
+    animation: slideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+
+  /* Tablet Styles */
+  @media (max-width: 1024px) {
+    .camper-hero-content-modern {
+      grid-template-columns: 1fr;
+    }
+
+    .camper-hero-content-modern.layout-image-left .camper-hero-text-modern,
+    .camper-hero-content-modern.layout-image-right .camper-hero-text-modern {
+      order: 2;
+    }
+
+    .camper-hero-content-modern.layout-image-left .camper-hero-image-modern,
+    .camper-hero-content-modern.layout-image-right .camper-hero-image-modern {
+      order: 1;
+    }
+
+    .camper-hero-image-modern {
+      min-height: 350px;
+    }
+
+    .camper-collection-modern-wrapper {
+      margin-top: -80px;
+      padding: 0 30px 50px;
+    }
+  }
+
+  /* Mobile Styles */
+  @media (max-width: 768px) {
+    .camper-hero-content-modern {
+      min-height: auto;
+    }
+
+    .camper-hero-image-modern {
+      min-height: 280px;
+    }
+
+    .camper-hero-text-modern::before {
+      width: 40px;
+      top: 30px;
+      left: 20px;
+    }
+
+    .camper-collection-modern-wrapper {
+      padding: 0 20px 40px;
+      margin-top: -70px;
+    }
+
+    .camper-actions-modern {
+      opacity: 1;
+      transform: translateY(0);
+      bottom: 110px;
+      gap: 10px;
+      padding: 0 15px;
+    }
+
+    .camper-soldout-modern {
+      bottom: 110px;
+      padding: 0 15px;
+    }
+
+    .camper-icon-btn-modern {
+      width: 42px;
+      height: 42px;
+    }
+
+    .camper-icon-btn-modern svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .camper-shop-btn-modern,
+    .camper-soldout-btn-modern {
+      height: 42px;
+      font-size: 0.85rem;
+      border-radius: 21px;
+    }
+
+    .camper-card-info-modern {
+      padding: 15px;
+    }
+
+    .camper-card-title-modern {
+      font-size: 0.9rem;
+    }
+
+    .camper-price-modern {
+      font-size: 1rem;
+    }
+
+    .camper-badge-modern {
+      top: 12px;
+      right: 12px;
+      padding: 6px 12px;
+      font-size: 0.7rem;
+    }
+
+    .camper-viewmore-modern svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 15px;
+    }
+
+    .camper-viewmore-modern span {
+      font-size: 1.1rem;
+    }
+
+    .camper-viewmore-count-modern {
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Small Mobile */
+  @media (max-width: 480px) {
+    .camper-collection-modern-wrapper {
+      padding: 0 15px 30px;
+      margin-top: -60px;
+    }
+
+    .camper-actions-modern {
+      bottom: 100px;
+      gap: 8px;
+      padding: 0 12px;
+    }
+
+    .camper-soldout-modern {
+      bottom: 100px;
+      padding: 0 12px;
+    }
+
+    .camper-icon-btn-modern {
+      width: 38px;
+      height: 38px;
+    }
+
+    .camper-shop-btn-modern,
+    .camper-soldout-btn-modern {
+      height: 38px;
+      font-size: 0.75rem;
+    }
+  }
+
+  /* Large Desktop */
+  @media (min-width: 1440px) {
+    .camper-hero-content-modern {
+      min-height: 650px;
+    }
+
+    .camper-collection-modern-wrapper {
+      margin-top: -120px;
+      padding: 0 70px 80px;
+    }
+  }
+</style>
+
+<div class="camper-hero-modern">
+  <div class="camper-hero-container-modern">
+    <div class="camper-hero-content-modern layout-{{ section.settings.hero_layout }}">
+      <div class="camper-hero-image-modern">
+        {% if section.settings.hero_image %}
+          <img src="{{ section.settings.hero_image | img_url: '1400x' }}" 
+               alt="{{ section.settings.hero_title }}"
+               loading="lazy">
+        {% else %}
+          <img src="https://via.placeholder.com/900x700/E85D04/FFFFFF?text=Adventure+Awaits" 
+               alt="Placeholder">
+        {% endif %}
+      </div>
+      <div class="camper-hero-text-modern">
+        <h2>{{ section.settings.hero_title | replace: 'TREENDI', '<span>TREENDI</span>' }}</h2>
+        <p>{{ section.settings.hero_description }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="camper-collection-modern-wrapper">
+    <div class="swiper camper-collection-modern-slider">
+      <div class="swiper-wrapper">
+        {% if section.settings.collection %}
+          {% assign initial_load = section.settings.initial_products | default: 6 %}
+          {% assign products_count = 0 %}
+          {% assign total_products = section.settings.collection.products.size %}
+          
+          {% for product in section.settings.collection.products %}
+            {% assign is_hidden = false %}
+            {% if products_count >= initial_load %}
+              {% assign is_hidden = true %}
+            {% endif %}
+            
+            <div class="swiper-slide camper-slide-modern {% if is_hidden %}hidden-slide{% endif %}" data-product-index="{{ products_count }}">
+              <div class="camper-card-modern" data-product-handle="{{ product.handle }}">
+                {% if product.compare_at_price > product.price %}
+                  {% assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
+                  <span class="camper-badge-modern sale">-{{ discount }}%</span>
+                {% elsif product.available == false %}
+                  <span class="camper-badge-modern">Sold Out</span>
+                {% elsif product.tags contains 'new' %}
+                  <span class="camper-badge-modern new">New</span>
+                {% elsif product.tags contains 'hot' %}
+                  <span class="camper-badge-modern hot">Hot</span>
+                {% endif %}
+
+                <a href="{{ product.url }}" class="camper-card-image-modern">
+                  {% if product.featured_image %}
+                    <img src="{{ product.featured_image | img_url: '700x' }}" 
+                         alt="{{ product.title }}"
+                         loading="lazy">
+                  {% else %}
+                    <img src="https://via.placeholder.com/500x700/E85D04/FFFFFF?text={{ product.title | escape }}" 
+                         alt="{{ product.title }}">
+                  {% endif %}
+                </a>
+
+                {% if product.available %}
+                  <div class="camper-actions-modern">
+                    <div class="camper-icon-btn-modern" onclick="camperAddToCartModern(event, '{{ product.variants.first.id }}', '{{ product.title | escape }}')">
+                      <svg viewBox="0 0 24 24">
+                        <circle cx="9" cy="21" r="1"/>
+                        <circle cx="20" cy="21" r="1"/>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                      </svg>
+                    </div>
+                    <button class="camper-shop-btn-modern" onclick="window.location.href='{{ product.url }}'">
+                      Explore
+                    </button>
+                  </div>
+                {% else %}
+                  <div class="camper-soldout-modern">
+                    <button class="camper-soldout-btn-modern" disabled>
+                      Sold Out
+                    </button>
+                  </div>
+                {% endif %}
+
+                <div class="camper-card-info-modern">
+                  <h3 class="camper-card-title-modern">{{ product.title }}</h3>
+                  <div class="camper-price-modern">
+                    {{ product.price | money }}
+                    {% if product.compare_at_price > product.price %}
+                      <span class="camper-compare-price-modern">{{ product.compare_at_price | money }}</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% assign products_count = products_count | plus: 1 %}
+          {% endfor %}
+
+          {% if total_products > initial_load %}
+            <div class="swiper-slide camper-slide-modern camper-viewmore-slide-modern">
+              <a href="{{ section.settings.collection.url }}" class="camper-viewmore-modern">
+                <div class="camper-loading-modern"></div>
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M12 5v14M5 12h14" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>{{ section.settings.view_more_text | default: 'Discover More' }}</span>
+                <p class="camper-viewmore-count-modern"><span id="camperHiddenCountModern">{{ total_products | minus: initial_load }}</span> more adventures</p>
+              </a>
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.7/swiper-bundle.min.js"></script>
+<script>
+let camperSwiperModern;
+let camperCurrentVisible = {{ section.settings.initial_products | default: 6 }};
+const camperLoadIncrement = {{ section.settings.load_more_increment | default: 6 }};
+const camperTotalProds = {{ section.settings.collection.products.size | default: 0 }};
+
+function camperAddToCartModern(event, variantId, productTitle) {
+  event.preventDefault();
+  event.stopPropagation();
+  
+  const element = event.currentTarget;
+  const originalHTML = element.innerHTML;
+  
+  element.style.opacity = '0.6';
+  element.style.pointerEvents = 'none';
+  element.innerHTML = '<div style="width:20px;height:20px;border:2px solid rgba(232,93,4,0.3);border-top-color:#E85D04;border-radius:50%;animation:spin 0.6s linear infinite;"></div>';
+  
+  fetch('/cart/add.js', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: variantId,
+      quantity: 1
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    window.location.href = '/cart';
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    element.style.opacity = '1';
+    element.style.pointerEvents = 'auto';
+    element.innerHTML = originalHTML;
+    alert('Unable to add to cart. Please try again.');
+  });
+}
+
+function camperLoadMoreModern(buttonElement) {
+  event.preventDefault();
+  event.stopPropagation();
+  
+  const hiddenSlides = document.querySelectorAll('.camper-slide-modern.hidden-slide');
+  const viewMoreSlide = document.querySelector('.camper-viewmore-slide-modern');
+  const viewMoreCard = buttonElement;
+  const hiddenCountEl = document.getElementById('camperHiddenCountModern');
+  
+  if (hiddenSlides.length === 0) {
+    if (viewMoreSlide) {
+      viewMoreSlide.style.display = 'none';
+    }
+    return;
+  }
+  
+  if (viewMoreCard.classList.contains('loading')) {
+    return;
+  }
+  
+  viewMoreCard.classList.add('loading');
+  
+  let loaded = 0;
+  const slidesToLoad = [];
+  
+  hiddenSlides.forEach((slide, index) => {
+    if (loaded < camperLoadIncrement) {
+      slidesToLoad.push(slide);
+      loaded++;
+      camperCurrentVisible++;
+    }
+  });
+  
+  slidesToLoad.forEach((slide, index) => {
+    setTimeout(() => {
+      slide.classList.remove('hidden-slide');
+      slide.classList.add('just-loaded');
+      
+      setTimeout(() => {
+        slide.classList.remove('just-loaded');
+      }, 600);
+    }, index * 80);
+  });
+  
+  setTimeout(() => {
+    if (camperSwiperModern) {
+      camperSwiperModern.update();
+    }
+    
+    const remainingHidden = document.querySelectorAll('.camper-slide-modern.hidden-slide').length;
+    
+    viewMoreCard.classList.remove('loading');
+    
+    if (remainingHidden === 0) {
+      if (viewMoreSlide) {
+        viewMoreSlide.style.opacity = '0';
+        viewMoreSlide.style.transition = 'opacity 0.5s ease';
+        setTimeout(() => {
+          viewMoreSlide.style.display = 'none';
+        }, 500);
+      }
+    } else if (hiddenCountEl) {
+      hiddenCountEl.textContent = remainingHidden;
+    }
+    
+    if (camperSwiperModern) {
+      setTimeout(() => {
+        camperSwiperModern.update();
+      }, 150);
+    }
+  }, slidesToLoad.length * 80 + 150);
+  
+  return false;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  camperSwiperModern = new Swiper('.camper-collection-modern-slider', {
+    slidesPerView: {{ section.settings.slides_mobile | default: 2 }},
+    spaceBetween: {{ section.settings.gap_mobile | default: 15 }},
+    loop: false,
+    autoplay: false,
+    speed: {{ section.settings.transition_speed | default: 600 }},
+    grabCursor: true,
+    breakpoints: {
+      640: {
+        slidesPerView: {{ section.settings.slides_tablet | default: 3 }},
+        spaceBetween: {{ section.settings.gap_tablet | default: 20 }},
+      },
+      1024: {
+        slidesPerView: {{ section.settings.slides_desktop | default: 5 }},
+        spaceBetween: {{ section.settings.gap_desktop | default: 20 }},
+      },
+      1280: {
+        slidesPerView: {{ section.settings.slides_large | default: 6 }},
+        spaceBetween: {{ section.settings.gap_desktop | default: 20 }},
+      }
+    }
+  });
+
+  // Parallax effect removed - hero image now static
+});
+</script>
+
+{% schema %}
+{
+  "name": "Modern Camper Hero",
+  "settings": [
+    {
+      "type": "header",
+      "content": "🏕️ Hero Section"
+    },
+    {
+      "type": "select",
+      "id": "hero_layout",
+      "label": "Hero Layout",
+      "options": [
+        {
+          "value": "image-left",
+          "label": "Image Left - Text Right"
+        },
+        {
+          "value": "image-right",
+          "label": "Image Right - Text Left"
+        }
+      ],
+      "default": "image-left",
+      "info": "Choose layout. Mobile always shows image first."
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero Image",
+      "info": "Recommended: 1400x900px for best quality"
+    },
+    {
+      "type": "text",
+      "id": "hero_title",
+      "label": "Hero Title",
+      "default": "CAMPER AUSBAUEN MIT DEN NEUEN PRODUKTEN VON BUSBOXX"
+    },
+    {
+      "type": "textarea",
+      "id": "hero_description",
+      "label": "Hero Description",
+      "default": "Entdecke Bausatzelemente für VOLKSWAGEN T5/T6/T6.1, Mercedes und vieles mehr. Mit diesen Systemen wird dein Vanlife besonders smart."
+    },
+    {
+      "type": "header",
+      "content": "🚐 Collection Settings"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Select Collection",
+      "info": "Choose your product collection"
+    },
+    {
+      "type": "range",
+      "id": "initial_products",
+      "label": "Initial Products Visible",
+      "min": 3,
+      "max": 20,
+      "step": 1,
+      "default": 6,
+      "info": "Products shown on page load"
+    },
+    {
+      "type": "range",
+      "id": "load_more_increment",
+      "label": "Load More Count",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "default": 6,
+      "info": "Products loaded per click"
+    },
+    {
+      "type": "text",
+      "id": "view_more_text",
+      "label": "View More Button Text",
+      "default": "Discover More"
+    },
+    {
+      "type": "header",
+      "content": "⚙️ Slider Configuration"
+    },
+    {
+      "type": "range",
+      "id": "slides_mobile",
+      "label": "Slides (Mobile)",
+      "min": 1,
+      "max": 3,
+      "step": 0.5,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "slides_tablet",
+      "label": "Slides (Tablet)",
+      "min": 2,
+      "max": 4,
+      "step": 0.5,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "slides_desktop",
+      "label": "Slides (Desktop)",
+      "min": 3,
+      "max": 6,
+      "step": 0.5,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "slides_large",
+      "label": "Slides (Large Desktop)",
+      "min": 4,
+      "max": 8,
+      "step": 0.5,
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Gap (Mobile)",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "default": 15,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gap_tablet",
+      "label": "Gap (Tablet)",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "label": "Gap (Desktop)",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "transition_speed",
+      "label": "Animation Speed",
+      "min": 300,
+      "max": 1500,
+      "step": 100,
+      "default": 600,
+      "unit": "ms"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Modern Camper Hero"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,600 @@
+{% comment %}
+  Sticky Scroll Image Section
+  - Sticky image in center that changes while scrolling
+  - Text blocks on left or right side
+  - Mobile: Image then text for each block
+{% endcomment %}
+
+<style>
+  .sticky-scroll-section {
+    padding: 80px 0;
+    background-color: {{ section.settings.section_bg_color }};
+  }
+
+  .sticky-scroll-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1fr 550px 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  /* Left Content Column */
+  .content-left {
+    display: flex;
+    flex-direction: column;
+    gap: 200px;
+  }
+
+  /* Center Sticky Image */
+  .sticky-image-wrapper {
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+  }
+
+  .sticky-image {
+    width: 100%;
+    height: 600px;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+
+  .sticky-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transform: scale(1.05);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    visibility: hidden;
+  }
+
+  .sticky-image img.active {
+    opacity: 1;
+    transform: scale(1);
+    visibility: visible;
+  }
+  
+  .sticky-image img:first-child {
+    opacity: 1;
+    transform: scale(1);
+    visibility: visible;
+  }
+
+  /* Right Content Column */
+  .content-right {
+    display: flex;
+    flex-direction: column;
+    gap: 200px;
+  }
+
+  /* Content Blocks */
+  .content-block {
+    min-height: 450px;
+    padding: 50px 40px;
+    background: {{ section.settings.block_bg_color }};
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    opacity: 0;
+    transition: all 0.6s ease;
+  }
+
+  .content-left .content-block {
+    transform: translateX(-40px);
+  }
+
+  .content-right .content-block {
+    transform: translateX(40px);
+  }
+  
+  .content-block:first-child {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .content-block.active {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .content-block h3 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: {{ section.settings.heading_color }};
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease 0.2s;
+  }
+  
+  .content-block:first-child h3 {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .content-block.active h3 {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .content-block p {
+    font-size: 17px;
+    line-height: 1.7;
+    color: {{ section.settings.text_color }};
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease 0.3s;
+  }
+  
+  .content-block:first-child p {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .content-block.active p {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .content-block .block-button {
+    display: inline-block;
+    margin-top: 24px;
+    padding: 14px 32px;
+    background: {{ section.settings.button_bg_color }};
+    color: {{ section.settings.button_text_color }};
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease 0.4s;
+  }
+  
+  .content-block:first-child .block-button {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .content-block.active .block-button {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .content-block .block-button:hover {
+    background: {{ section.settings.button_hover_color }};
+  }
+
+  /* Text alignment */
+  .content-block.align-left { text-align: left; }
+  .content-block.align-center { text-align: center; }
+  .content-block.align-right { text-align: right; }
+
+  /* Spacers for alignment */
+  .content-spacer {
+    min-height: 450px;
+  }
+
+  /* Mobile Block Container */
+  .mobile-blocks-container {
+    display: none;
+    width: 100%;
+  }
+
+  .mobile-block {
+    width: 100%;
+  }
+
+  @media (max-width: 1200px) {
+    .sticky-scroll-container {
+      grid-template-columns: 1fr 450px 1fr;
+      gap: 40px;
+    }
+
+    .sticky-image {
+      height: 500px;
+    }
+  }
+
+  @media (max-width: 968px) {
+    .sticky-scroll-section {
+      padding: 40px 0;
+    }
+
+    /* Hide desktop layout */
+    .sticky-scroll-container {
+      display: none !important;
+    }
+
+    /* Show mobile layout */
+    .mobile-blocks-container {
+      display: block !important;
+      padding: 0 20px;
+    }
+
+    .mobile-block {
+      display: block;
+      margin-bottom: 50px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s ease;
+    }
+
+    .mobile-block.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .mobile-block-image {
+      width: 100%;
+      height: 280px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+
+    .mobile-block-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .mobile-block-content {
+      padding: 30px 24px;
+      background: {{ section.settings.block_bg_color }};
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .mobile-block-content h3 {
+      font-size: 24px;
+      margin-bottom: 12px;
+      font-weight: 600;
+      color: {{ section.settings.heading_color }};
+      line-height: 1.3;
+    }
+
+    .mobile-block-content p {
+      font-size: 15px;
+      line-height: 1.6;
+      color: {{ section.settings.text_color }};
+      margin-bottom: 0;
+    }
+
+    .mobile-block-content .block-button {
+      display: inline-block;
+      margin-top: 18px;
+      padding: 12px 24px;
+      background: {{ section.settings.button_bg_color }};
+      color: {{ section.settings.button_text_color }};
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-block-content .block-button:hover {
+      background: {{ section.settings.button_hover_color }};
+      transform: translateY(-2px);
+    }
+
+    .mobile-block-content.align-left { text-align: left; }
+    .mobile-block-content.align-center { text-align: center; }
+    .mobile-block-content.align-right { text-align: right; }
+  }
+</style>
+
+<div class="sticky-scroll-section" id="sticky-scroll-{{ section.id }}">
+  
+  <!-- Desktop Layout -->
+  <div class="sticky-scroll-container">
+    
+    <!-- Left Column -->
+    <div class="content-left">
+      {% for block in section.blocks %}
+        {% if block.settings.block_position == 'left' %}
+          <div class="content-block align-{{ block.settings.text_alignment }} {% if forloop.first %}active{% endif %}" 
+               data-block-id="{{ block.id }}" 
+               {{ block.shopify_attributes }}>
+            <h3>{{ block.settings.title }}</h3>
+            <p>{{ block.settings.description }}</p>
+            {% if block.settings.button_text != blank %}
+              <a href="{{ block.settings.button_link }}" class="block-button">
+                {{ block.settings.button_text }}
+              </a>
+            {% endif %}
+          </div>
+        {% else %}
+          <div class="content-spacer"></div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <!-- Center Sticky Image -->
+    <div class="sticky-image-wrapper">
+      <div class="sticky-image">
+        {% for block in section.blocks %}
+          {% if block.settings.image %}
+            <img 
+              src="{{ block.settings.image | img_url: '800x' }}" 
+              alt="{{ block.settings.title }}"
+              data-block-id="{{ block.id }}"
+              class="{% if forloop.first %}active{% endif %}"
+              loading="lazy"
+            >
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="content-right">
+      {% for block in section.blocks %}
+        {% if block.settings.block_position == 'right' %}
+          <div class="content-block align-{{ block.settings.text_alignment }}" 
+               data-block-id="{{ block.id }}" 
+               {{ block.shopify_attributes }}>
+            <h3>{{ block.settings.title }}</h3>
+            <p>{{ block.settings.description }}</p>
+            {% if block.settings.button_text != blank %}
+              <a href="{{ block.settings.button_link }}" class="block-button">
+                {{ block.settings.button_text }}
+              </a>
+            {% endif %}
+          </div>
+        {% else %}
+          <div class="content-spacer"></div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+  </div>
+
+  <!-- Mobile Layout -->
+  <div class="mobile-blocks-container">
+    {% for block in section.blocks %}
+      <div class="mobile-block" data-block-id="{{ block.id }}" {{ block.shopify_attributes }}>
+        {% if block.settings.image %}
+          <div class="mobile-block-image">
+            <img 
+              src="{{ block.settings.image | img_url: '800x' }}" 
+              alt="{{ block.settings.title }}"
+              loading="lazy"
+            >
+          </div>
+        {% endif %}
+        <div class="mobile-block-content align-{{ block.settings.text_alignment }}">
+          <h3>{{ block.settings.title }}</h3>
+          <p>{{ block.settings.description }}</p>
+          {% if block.settings.button_text != blank %}
+            <a href="{{ block.settings.button_link }}" class="block-button">
+              {{ block.settings.button_text }}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+<script>
+  (function() {
+    const section = document.getElementById('sticky-scroll-{{ section.id }}');
+    const contentBlocks = section.querySelectorAll('.content-block');
+    const images = section.querySelectorAll('.sticky-image img');
+    const mobileBlocks = section.querySelectorAll('.mobile-block');
+    
+    // Initialize on load
+    function initializeSection() {
+      const isMobile = window.innerWidth <= 968;
+      
+      if (!isMobile) {
+        // Desktop: ensure first block and image are active
+        if (contentBlocks.length > 0) {
+          contentBlocks[0].classList.add('active');
+        }
+        if (images.length > 0) {
+          images[0].classList.add('active');
+        }
+      }
+      
+      // Run initial check
+      updateActiveElements();
+    }
+
+    function updateActiveElements() {
+      const isMobile = window.innerWidth <= 968;
+      
+      if (!isMobile) {
+        // Desktop behavior
+        const triggerPoint = window.scrollY + (window.innerHeight / 2);
+
+        contentBlocks.forEach((block) => {
+          const rect = block.getBoundingClientRect();
+          const blockTop = rect.top + window.scrollY;
+          const blockCenter = blockTop + (block.offsetHeight / 2);
+
+          if (Math.abs(blockCenter - triggerPoint) < 300) {
+            contentBlocks.forEach(b => b.classList.remove('active'));
+            block.classList.add('active');
+
+            const blockId = block.getAttribute('data-block-id');
+            images.forEach(img => {
+              if (img.getAttribute('data-block-id') === blockId) {
+                img.classList.add('active');
+              } else {
+                img.classList.remove('active');
+              }
+            });
+          }
+        });
+      } else {
+        // Mobile behavior
+        mobileBlocks.forEach((block) => {
+          const rect = block.getBoundingClientRect();
+          const windowHeight = window.innerHeight;
+
+          if (rect.top < windowHeight * 0.8 && rect.bottom > 0) {
+            block.classList.add('in-view');
+          }
+        });
+      }
+    }
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          updateActiveElements();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeSection);
+    } else {
+      initializeSection();
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Sticky Scroll Image",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Sticky image in center. Text blocks on left or right side."
+    },
+    {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "block_bg_color",
+      "label": "Content Block Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button Background Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button Hover Color",
+      "default": "#333333"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "content",
+      "name": "Content Block",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "select",
+          "id": "block_position",
+          "label": "Text Position",
+          "options": [
+            { "value": "left", "label": "Left Side" },
+            { "value": "right", "label": "Right Side" }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Feature Title"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Description text here."
+        },
+        {
+          "type": "select",
+          "id": "text_alignment",
+          "label": "Text Alignment",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sticky Scroll Image",
+      "blocks": [
+        { "type": "content", "settings": { "block_position": "left" } },
+        { "type": "content", "settings": { "block_position": "right" } },
+        { "type": "content", "settings": { "block_position": "left" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

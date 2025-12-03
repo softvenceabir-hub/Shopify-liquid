@@ -1,0 +1,484 @@
+{% schema %}
+{
+  "name": "Image and Text Split",
+  "tag": "section",
+  "class": "section-image-text-split",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout_direction",
+      "label": "Layout: Image Position",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "Image on Left / Text on Right"
+        },
+        {
+          "value": "right",
+          "label": "Image on Right / Text on Left"
+        }
+      ],
+      "info": "Choose the arrangement for the desktop view."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#f9f9f9"
+    },
+    {
+      "type": "header",
+      "content": "Image Content"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "Upload the image for this section."
+    },
+    {
+      "type": "range",
+      "id": "image_width",
+      "min": 50,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "label": "Image Width (Desktop)",
+      "default": 100,
+      "info": "Adjust the width of the image relative to its container"
+    },
+    {
+      "type": "select",
+      "id": "image_position_horizontal",
+      "label": "Image Horizontal Position",
+      "default": "center",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "image_position_vertical",
+      "label": "Image Vertical Position",
+      "default": "center",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image Fit",
+      "default": "cover",
+      "options": [
+        {
+          "value": "cover",
+          "label": "Cover (fills area, may crop)"
+        },
+        {
+          "value": "contain",
+          "label": "Contain (fits within area)"
+        },
+        {
+          "value": "fill",
+          "label": "Fill (stretches to fit)"
+        }
+      ],
+      "info": "How the image should fit within its container"
+    },
+    {
+      "type": "header",
+      "content": "Text Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Proudly Canadian – Because Your Sleep Deserves the Best"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Body Text",
+      "default": "<p>At Polysleep, we take pride in offering our customers mattresses entirely made in Canada. Producing locally enables us to work closely with our manufacturer and develop the highest quality products possible for you.</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "text_footer",
+      "label": "Footer Text (e.g., small link/note)",
+      "default": "<p>Made in Canada, eh!</p>" 
+    },
+    {
+      "type": "header",
+      "content": "Text Colors"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "body_text_color",
+      "label": "Body Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "footer_text_color",
+      "label": "Footer Text Color",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image with Text Split",
+      "category": "Image"
+    }
+  ]
+}
+{% endschema %}
+
+{% comment %} Assign variables for easier Liquid logic {% endcomment %}
+{% assign img_left = false %}
+{% if section.settings.layout_direction == 'left' %}
+  {% assign img_left = true %}
+{% endif %}
+
+<style>
+  /* Outer wrapper with full-width background */
+  .its-wrapper-{{ section.id }} {
+    width: 100%;
+    background-color: {{ section.settings.background_color }};
+    padding: 0;
+  }
+
+  /* Base styles for the section container - max 1440px */
+  .its-container-{{ section.id }} {
+    display: grid;
+    grid-template-columns: 1fr; /* Single column on mobile */
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+    padding: 80px 0px;
+  }
+
+  /* Define the two main columns */
+  .its-column-{{ section.id }} {
+    min-height: auto;
+  }
+
+  /* Mobile: Content padding for readability */
+  .its-column-content-{{ section.id }} {
+    padding: 30px 20px;
+  }
+  
+  .its-column-image-{{ section.id }} {
+    padding: 0;
+  }
+  
+  /* Image wrapper (background image container) */
+  .its-image-wrapper-{{ section.id }} {
+    width: 100%;
+    height: 300px; /* Mobile height */
+    overflow: hidden;
+    background-position: {{ section.settings.image_position_horizontal }} {{ section.settings.image_position_vertical }};
+    background-size: {{ section.settings.image_fit }}; 
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .its-image-inner-{{ section.id }} {
+    width: 100%;
+    height: 100%;
+    background-position: {{ section.settings.image_position_horizontal }} {{ section.settings.image_position_vertical }};
+    background-size: {{ section.settings.image_fit }};
+    background-repeat: no-repeat;
+  }
+  
+  /* Content wrapper */
+  .its-content-wrapper-{{ section.id }} {
+    max-width: 550px;
+    margin: 0 auto;
+    text-align: left; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100%;
+  }
+
+  /* Heading styles - responsive */
+  .its-content-wrapper-{{ section.id }} h2 {
+    font-size: 28px; 
+    line-height: 1.2;
+    font-weight: 700;
+    margin-bottom: 20px; 
+    color: {{ section.settings.heading_color }};
+  }
+  
+  .its-content-wrapper-{{ section.id }} .its-richtext-{{ section.id }} p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: {{ section.settings.body_text_color }};
+    margin-bottom: 0;
+  }
+  
+  /* Footer text styling */
+  .its-content-wrapper-{{ section.id }} .its-text-footer-{{ section.id }} {
+    margin-top: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: {{ section.settings.footer_text_color }}; 
+  }
+
+  /* Tablet breakpoint (600px - 767px) */
+  @media screen and (min-width: 600px) and (max-width: 767px) {
+    .its-column-content-{{ section.id }} {
+      padding: 40px 30px;
+    }
+
+    .its-content-wrapper-{{ section.id }} h2 {
+      font-size: 32px;
+      margin-bottom: 22px;
+    }
+
+    .its-content-wrapper-{{ section.id }} .its-richtext-{{ section.id }} p {
+      font-size: 16px;
+    }
+
+    .its-image-wrapper-{{ section.id }} {
+      height: 350px;
+    }
+  }
+
+  /* Small Desktop breakpoint (768px - 1023px) */
+  @media screen and (min-width: 768px) and (max-width: 1023px) {
+    .its-container-{{ section.id }} {
+      grid-template-columns: 1fr 1fr;
+      column-gap: 30px;
+      min-height: 50vh;
+    }
+
+    .its-column-{{ section.id }} {
+      min-height: 50vh;
+      grid-column: 1 / 2;
+    }
+
+    .its-column-content-{{ section.id }} {
+      grid-column: 2 / 3;
+      padding: 0 20px;
+    }
+
+    .its-content-wrapper-{{ section.id }} {
+      max-width: 100%;
+      padding: 60px 0;
+    }
+
+    .its-content-wrapper-{{ section.id }} h2 {
+      font-size: 34px;
+      margin-bottom: 24px;
+    }
+
+    .its-content-wrapper-{{ section.id }} .its-richtext-{{ section.id }} p {
+      font-size: 16px;
+    }
+
+    .its-image-wrapper-{{ section.id }} {
+      height: 100%;
+    }
+
+    .its-image-inner-{{ section.id }} {
+      width: {{ section.settings.image_width }}%;
+    }
+
+    .its-column-image-{{ section.id }} .its-image-inner-{{ section.id }} {
+      background-attachment: fixed;
+    }
+
+    {% unless img_left %}
+      .its-column-image-{{ section.id }} { grid-column: 2 / 3; }
+      .its-column-content-{{ section.id }} { grid-column: 1 / 2; }
+    {% endunless %}
+  }
+
+  /* Medium Desktop breakpoint (1024px - 1439px) */
+  @media screen and (min-width: 1024px) and (max-width: 1439px) {
+    .its-container-{{ section.id }} {
+      grid-template-columns: 1.5fr 1fr;
+      column-gap: 40px;
+      min-height: 55vh;
+    }
+
+    .its-column-{{ section.id }} {
+      min-height: 55vh;
+      grid-column: 1 / 2;
+    }
+
+    .its-column-content-{{ section.id }} {
+      grid-column: 2 / 3;
+      padding: 0 30px;
+    }
+
+    .its-content-wrapper-{{ section.id }} {
+      max-width: 500px;
+      margin: 0;
+      padding: 70px 0;
+      justify-content: center;
+    }
+
+    .its-content-wrapper-{{ section.id }} h2 {
+      font-size: 36px;
+      margin-bottom: 25px;
+    }
+
+    .its-content-wrapper-{{ section.id }} .its-richtext-{{ section.id }} p {
+      font-size: 16px;
+    }
+
+    .its-image-wrapper-{{ section.id }} {
+      height: 100%;
+    }
+
+    .its-image-inner-{{ section.id }} {
+      width: {{ section.settings.image_width }}%;
+    }
+
+    .its-column-image-{{ section.id }} .its-image-inner-{{ section.id }} {
+      background-attachment: fixed;
+    }
+
+    {% unless img_left %}
+      .its-column-image-{{ section.id }} { grid-column: 2 / 3; }
+      .its-column-content-{{ section.id }} { grid-column: 1 / 2; }
+    {% endunless %}
+  }
+
+  /* Large Desktop (1440px+) - Full container at 1440px max */
+  @media screen and (min-width: 1440px) {
+    .its-container-{{ section.id }} {
+      grid-template-columns: 1.5fr 1fr;
+      column-gap: 40px;
+      min-height: 55vh;
+    }
+
+    .its-column-{{ section.id }} {
+      min-height: 55vh;
+      grid-column: 1 / 2;
+    }
+
+    .its-column-content-{{ section.id }} {
+      grid-column: 2 / 3;
+      padding: 0 40px;
+    }
+
+    .its-content-wrapper-{{ section.id }} {
+      max-width: 500px;
+      margin: 0;
+      padding: 80px 0;
+      justify-content: center;
+    }
+
+    .its-content-wrapper-{{ section.id }} h2 {
+      font-size: 38px;
+      margin-bottom: 25px;
+    }
+
+    .its-content-wrapper-{{ section.id }} .its-richtext-{{ section.id }} p {
+      font-size: 16px;
+    }
+
+    .its-image-wrapper-{{ section.id }} {
+      height: 100%;
+    }
+
+    .its-image-inner-{{ section.id }} {
+      width: {{ section.settings.image_width }}%;
+    }
+
+    .its-column-image-{{ section.id }} .its-image-inner-{{ section.id }} {
+      background-attachment: fixed;
+    }
+
+    {% unless img_left %}
+      .its-column-image-{{ section.id }} { grid-column: 2 / 3; }
+      .its-column-content-{{ section.id }} { grid-column: 1 / 2; }
+    {% endunless %}
+  }
+</style>
+
+<div class="its-wrapper-{{ section.id }}">
+  <div class="its-container-{{ section.id }}">
+    
+    <div class="its-column-{{ section.id }} its-column-image-{{ section.id }}">
+      {% assign image_url = section.settings.image | image_url: width: 1500 %}
+      <div 
+        class="its-image-wrapper-{{ section.id }}" 
+        role="img" 
+        aria-label="{{ section.settings.heading | escape }}"
+      >
+        <div 
+          class="its-image-inner-{{ section.id }}"
+          style="background-image: url('{{ image_url }}');"
+        >
+          {% if section.settings.image == blank %}
+            <div class="its-placeholder-{{ section.id }}">
+              {% comment %} Fallback for when no image is selected {% endcomment %}
+              {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="its-column-{{ section.id }} its-column-content-{{ section.id }}">
+      <div class="its-content-wrapper-{{ section.id }}">
+        
+        {% if section.settings.heading != blank %}
+          <h2>{{ section.settings.heading | escape }}</h2>
+        {% endif %}
+        
+        {% if section.settings.subheading != blank %}
+          <div class="its-richtext-{{ section.id }}">{{ section.settings.subheading }}</div>
+        {% endif %}
+        
+        {% if section.settings.text_footer != blank %}
+          <div class="its-text-footer-{{ section.id }}">{{ section.settings.text_footer }}</div>
+        {% endif %}
+
+      </div>
+    </div>
+
+  </div>
+</div>
