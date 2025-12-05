@@ -1,0 +1,730 @@
+{% doc %}
+  @prompt
+    'use client';
+    import Image from 'next/image';
+    import { useEffect, useRef } from 'react';
+    import { animate, scroll, spring } from 'motion';
+    import { ReactLenis } from 'lenis/react';
+    export default function HorizontalScroll() {
+      const ulRef = useRef(null);
+      useEffect(() => {
+        const items = document.querySelectorAll('li');
+        if (ulRef.current) {
+          const controls = animate(
+            ulRef.current,
+            {
+              transform: ['none', `translateX(-${items.length - 1}00vw)`],
+            },
+            { easing: spring() }
+          );
+          const section = document.querySelector('section');
+          if (section) {
+            scroll(controls, { target: section });
+          }
+        }
+        const segmentLength = 1 / items.length;
+        items.forEach((item, i) => {
+          const header = item.querySelector('h2');
+          if (header) {
+            const section = document.querySelector('section');
+            if (section) {
+              scroll(animate([header], { x: [800, -800] }), {
+                target: section,
+                offset: [
+                  [i * segmentLength, 1],
+                  [(i + 1) * segmentLength, 0],
+                ],
+              });
+            }
+          }
+        });
+      }, []);
+      return (
+        <ReactLenis root>
+          <main>
+            <article>
+              <header className="text-white relative  w-full bg-slate-950  grid place-content-center  h-[80vh]">
+                <div className="absolute bottom-0 left-0 right-0 top-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-size-[14px_24px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
+    
+                <h1 className="text-6xl font-bold text-center tracking-tight">
+                  I know You Love to Scroll <br />
+                  So Scroll
+                </h1>
+              </header>
+              <section className="h-[500vh] relative">
+                <ul ref={ulRef} className="flex sticky top-0">
+                  <li className="h-screen w-screen bg-red-400 flex flex-col justify-cente
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-horizontal-scroll-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .ai-horizontal-scroll-header-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    background: {{ block.settings.header_bg_color }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: {{ block.settings.header_height }}vh;
+    padding: 40px 20px;
+  }
+
+  .ai-horizontal-scroll-header-bg-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    background-image: 
+      linear-gradient(to right, rgba(79, 79, 79, 0.18) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(79, 79, 79, 0.18) 1px, transparent 1px);
+    background-size: 14px 24px;
+    mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, #000 70%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, #000 70%, transparent 100%);
+  }
+
+  .ai-horizontal-scroll-header-content-{{ ai_gen_id }} {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+
+  .ai-horizontal-scroll-header-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.header_font_size }}px;
+    font-weight: 700;
+    color: {{ block.settings.header_text_color }};
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .ai-horizontal-scroll-section-{{ ai_gen_id }} {
+    position: relative;
+    height: {{ block.settings.scroll_height }}vh;
+  }
+
+  .ai-horizontal-scroll-container-{{ ai_gen_id }} {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .ai-horizontal-scroll-list-{{ ai_gen_id }} {
+    display: flex;
+    height: 100%;
+    will-change: transform;
+  }
+
+  .ai-horizontal-scroll-item-{{ ai_gen_id }} {
+    flex-shrink: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    position: relative;
+  }
+
+  .ai-horizontal-scroll-item-content-{{ ai_gen_id }} {
+    max-width: 800px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .ai-horizontal-scroll-item-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.item_title_size }}px;
+    font-weight: 700;
+    color: {{ block.settings.item_text_color }};
+    margin: 0 0 20px;
+    will-change: transform;
+  }
+
+  .ai-horizontal-scroll-item-description-{{ ai_gen_id }} {
+    font-size: {{ block.settings.item_description_size }}px;
+    color: {{ block.settings.item_text_color }};
+    margin: 0 0 30px;
+    line-height: 1.6;
+  }
+
+  .ai-horizontal-scroll-item-image-{{ ai_gen_id }} {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    margin-bottom: 30px;
+  }
+
+  .ai-horizontal-scroll-item-image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    max-width: 600px;
+    aspect-ratio: 16 / 9;
+    background-color: #f4f4f4;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-horizontal-scroll-item-image-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-horizontal-scroll-button-{{ ai_gen_id }} {
+    display: inline-block;
+    padding: 15px 40px;
+    background-color: {{ block.settings.button_bg_color }};
+    color: {{ block.settings.button_text_color }};
+    text-decoration: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .ai-horizontal-scroll-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_bg_color }};
+    transform: translateY(-2px);
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-horizontal-scroll-header-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.header_font_size | times: 0.6 }}px;
+    }
+
+    .ai-horizontal-scroll-item-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.item_title_size | times: 0.7 }}px;
+    }
+
+    .ai-horizontal-scroll-item-description-{{ ai_gen_id }} {
+      font-size: {{ block.settings.item_description_size | times: 0.9 }}px;
+    }
+
+    .ai-horizontal-scroll-item-{{ ai_gen_id }} {
+      padding: 20px;
+    }
+  }
+{% endstyle %}
+
+<horizontal-scroll-{{ ai_gen_id }} class="ai-horizontal-scroll-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <header class="ai-horizontal-scroll-header-{{ ai_gen_id }}">
+    <div class="ai-horizontal-scroll-header-bg-{{ ai_gen_id }}"></div>
+    <div class="ai-horizontal-scroll-header-content-{{ ai_gen_id }}">
+      {% if block.settings.header_title != blank %}
+        <h1 class="ai-horizontal-scroll-header-title-{{ ai_gen_id }}">
+          {{ block.settings.header_title }}
+        </h1>
+      {% endif %}
+    </div>
+  </header>
+
+  <section class="ai-horizontal-scroll-section-{{ ai_gen_id }}" data-scroll-section>
+    <div class="ai-horizontal-scroll-container-{{ ai_gen_id }}">
+      <ul class="ai-horizontal-scroll-list-{{ ai_gen_id }}" data-scroll-list>
+        {% for i in (1..5) %}
+          {% liquid
+            assign item_enabled_key = 'item_' | append: i | append: '_enabled'
+            assign item_title_key = 'item_' | append: i | append: '_title'
+            assign item_description_key = 'item_' | append: i | append: '_description'
+            assign item_image_key = 'item_' | append: i | append: '_image'
+            assign item_button_text_key = 'item_' | append: i | append: '_button_text'
+            assign item_button_link_key = 'item_' | append: i | append: '_button_link'
+            assign item_bg_color_key = 'item_' | append: i | append: '_bg_color'
+
+            assign item_enabled = block.settings[item_enabled_key]
+            assign item_title = block.settings[item_title_key]
+            assign item_description = block.settings[item_description_key]
+            assign item_image = block.settings[item_image_key]
+            assign item_button_text = block.settings[item_button_text_key]
+            assign item_button_link = block.settings[item_button_link_key]
+            assign item_bg_color = block.settings[item_bg_color_key]
+          %}
+
+          {% if item_enabled %}
+            <li 
+              class="ai-horizontal-scroll-item-{{ ai_gen_id }}" 
+              style="background-color: {{ item_bg_color }};"
+              data-scroll-item
+              data-item-index="{{ forloop.index0 }}"
+            >
+              <div class="ai-horizontal-scroll-item-content-{{ ai_gen_id }}">
+                {% if item_image %}
+                  <img
+                    src="{{ item_image | image_url: width: 1200 }}"
+                    alt="{{ item_image.alt | escape }}"
+                    loading="lazy"
+                    width="{{ item_image.width }}"
+                    height="{{ item_image.height }}"
+                    class="ai-horizontal-scroll-item-image-{{ ai_gen_id }}"
+                  >
+                {% else %}
+                  <div class="ai-horizontal-scroll-item-image-placeholder-{{ ai_gen_id }}">
+                    {{ 'image' | placeholder_svg_tag }}
+                  </div>
+                {% endif %}
+
+                {% if item_title != blank %}
+                  <h2 class="ai-horizontal-scroll-item-title-{{ ai_gen_id }}" data-scroll-title>
+                    {{ item_title }}
+                  </h2>
+                {% endif %}
+
+                {% if item_description != blank %}
+                  <div class="ai-horizontal-scroll-item-description-{{ ai_gen_id }}">
+                    {{ item_description }}
+                  </div>
+                {% endif %}
+
+                {% if item_button_text != blank and item_button_link != blank %}
+                  <a href="{{ item_button_link }}" class="ai-horizontal-scroll-button-{{ ai_gen_id }}">
+                    {{ item_button_text }}
+                  </a>
+                {% endif %}
+              </div>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+</horizontal-scroll-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class HorizontalScroll{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.scrollSection = this.querySelector('[data-scroll-section]');
+        this.scrollList = this.querySelector('[data-scroll-list]');
+        this.scrollItems = this.querySelectorAll('[data-scroll-item]');
+        this.scrollTitles = this.querySelectorAll('[data-scroll-title]');
+        this.itemCount = this.scrollItems.length;
+      }
+
+      connectedCallback() {
+        if (this.itemCount === 0) return;
+
+        this.setupScrollAnimation();
+        window.addEventListener('resize', this.handleResize.bind(this));
+      }
+
+      disconnectedCallback() {
+        window.removeEventListener('resize', this.handleResize.bind(this));
+      }
+
+      handleResize() {
+        this.setupScrollAnimation();
+      }
+
+      setupScrollAnimation() {
+        const totalScrollDistance = this.itemCount * window.innerWidth;
+        this.scrollSection.style.height = `${totalScrollDistance}px`;
+
+        window.addEventListener('scroll', this.handleScroll.bind(this));
+      }
+
+      handleScroll() {
+        const sectionTop = this.scrollSection.offsetTop;
+        const sectionHeight = this.scrollSection.offsetHeight;
+        const scrollY = window.scrollY;
+        const viewportHeight = window.innerHeight;
+
+        if (scrollY >= sectionTop && scrollY <= sectionTop + sectionHeight - viewportHeight) {
+          const scrollProgress = (scrollY - sectionTop) / (sectionHeight - viewportHeight);
+          const maxTranslate = (this.itemCount - 1) * 100;
+          const translateX = scrollProgress * maxTranslate;
+
+          this.scrollList.style.transform = `translateX(-${translateX}vw)`;
+
+          this.scrollTitles.forEach((title, index) => {
+            const itemProgress = scrollProgress * this.itemCount;
+            const itemStart = index;
+            const itemEnd = index + 1;
+
+            if (itemProgress >= itemStart && itemProgress <= itemEnd) {
+              const localProgress = itemProgress - itemStart;
+              const titleTranslate = 800 - (localProgress * 1600);
+              title.style.transform = `translateX(${titleTranslate}px)`;
+            }
+          });
+        }
+      }
+    }
+
+    customElements.define('horizontal-scroll-{{ ai_gen_id }}', HorizontalScroll{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Horizontal scroll gallery",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header section"
+    },
+    {
+      "type": "richtext",
+      "id": "header_title",
+      "label": "Title",
+      "default": "<p>I Know You Love to Scroll<br/>So Scroll</p>"
+    },
+    {
+      "type": "color",
+      "id": "header_bg_color",
+      "label": "Background color",
+      "default": "#0f172a"
+    },
+    {
+      "type": "color",
+      "id": "header_text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "header_height",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "label": "Height",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "header_font_size",
+      "min": 24,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Font size",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Scroll section"
+    },
+    {
+      "type": "range",
+      "id": "scroll_height",
+      "min": 300,
+      "max": 600,
+      "step": 50,
+      "unit": "vh",
+      "label": "Scroll distance",
+      "default": 500
+    },
+    {
+      "type": "header",
+      "content": "Item style"
+    },
+    {
+      "type": "color",
+      "id": "item_text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "item_title_size",
+      "min": 24,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "label": "Title size",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "item_description_size",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Description size",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Image border radius",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Button style"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg_color",
+      "label": "Hover background color",
+      "default": "#f4f4f4"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Item 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_1_enabled",
+      "label": "Enable item 1",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "item_1_bg_color",
+      "label": "Background color",
+      "default": "#ef4444"
+    },
+    {
+      "type": "text",
+      "id": "item_1_title",
+      "label": "Title",
+      "default": "Slide One"
+    },
+    {
+      "type": "richtext",
+      "id": "item_1_description",
+      "label": "Description",
+      "default": "<p>Discover amazing products and experiences</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_1_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "item_1_button_text",
+      "label": "Button text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "item_1_button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Item 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_2_enabled",
+      "label": "Enable item 2",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "item_2_bg_color",
+      "label": "Background color",
+      "default": "#3b82f6"
+    },
+    {
+      "type": "text",
+      "id": "item_2_title",
+      "label": "Title",
+      "default": "Slide Two"
+    },
+    {
+      "type": "richtext",
+      "id": "item_2_description",
+      "label": "Description",
+      "default": "<p>Explore our latest collection</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_2_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "item_2_button_text",
+      "label": "Button text",
+      "default": "Learn More"
+    },
+    {
+      "type": "url",
+      "id": "item_2_button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Item 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_3_enabled",
+      "label": "Enable item 3",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "item_3_bg_color",
+      "label": "Background color",
+      "default": "#10b981"
+    },
+    {
+      "type": "text",
+      "id": "item_3_title",
+      "label": "Title",
+      "default": "Slide Three"
+    },
+    {
+      "type": "richtext",
+      "id": "item_3_description",
+      "label": "Description",
+      "default": "<p>Find your perfect match</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_3_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "item_3_button_text",
+      "label": "Button text",
+      "default": "Explore"
+    },
+    {
+      "type": "url",
+      "id": "item_3_button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Item 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_4_enabled",
+      "label": "Enable item 4",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "item_4_bg_color",
+      "label": "Background color",
+      "default": "#f59e0b"
+    },
+    {
+      "type": "text",
+      "id": "item_4_title",
+      "label": "Title",
+      "default": "Slide Four"
+    },
+    {
+      "type": "richtext",
+      "id": "item_4_description",
+      "label": "Description",
+      "default": "<p>Experience the difference</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_4_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "item_4_button_text",
+      "label": "Button text",
+      "default": "Get Started"
+    },
+    {
+      "type": "url",
+      "id": "item_4_button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Item 5"
+    },
+    {
+      "type": "checkbox",
+      "id": "item_5_enabled",
+      "label": "Enable item 5",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "item_5_bg_color",
+      "label": "Background color",
+      "default": "#8b5cf6"
+    },
+    {
+      "type": "text",
+      "id": "item_5_title",
+      "label": "Title",
+      "default": "Slide Five"
+    },
+    {
+      "type": "richtext",
+      "id": "item_5_description",
+      "label": "Description",
+      "default": "<p>Join our community today</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_5_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "item_5_button_text",
+      "label": "Button text",
+      "default": "Join Now"
+    },
+    {
+      "type": "url",
+      "id": "item_5_button_link",
+      "label": "Button link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Horizontal scroll gallery"
+    }
+  ]
+}
+{% endschema %}

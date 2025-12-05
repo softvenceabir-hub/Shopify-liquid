@@ -1,0 +1,747 @@
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-horizontal-scroll-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .ai-scroll-header-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    background: {{ block.settings.header_bg_color }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: {{ block.settings.header_height }}vh;
+    padding: 40px 20px;
+  }
+
+  .ai-scroll-header__background-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    background-image: 
+      linear-gradient(to right, rgba(79, 79, 79, 0.18) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(79, 79, 79, 0.18) 1px, transparent 1px);
+    background-size: 14px 24px;
+    mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, #000 70%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, #000 70%, transparent 100%);
+  }
+
+  .ai-scroll-header__content-{{ ai_gen_id }} {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+
+  .ai-scroll-header__title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.header_font_size }}px;
+    font-weight: 700;
+    color: {{ block.settings.header_text_color }};
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .ai-scroll-section-{{ ai_gen_id }} {
+    position: relative;
+    height: {{ block.settings.scroll_height }}vh;
+  }
+
+  .ai-scroll-container-{{ ai_gen_id }} {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .ai-scroll-list-{{ ai_gen_id }} {
+    display: flex;
+    height: 100%;
+    will-change: transform;
+  }
+
+  .ai-scroll-item-{{ ai_gen_id }} {
+    flex-shrink: 0;
+    width: {{ block.settings.section_width }}vw;
+    height: {{ block.settings.section_height }}vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    position: relative;
+  }
+
+  .ai-scroll-item__content-{{ ai_gen_id }} {
+    max-width: 800px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .ai-scroll-item__title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.item_title_size }}px;
+    font-weight: 700;
+    color: {{ block.settings.item_text_color }};
+    margin: 0 0 20px;
+    line-height: 1.2;
+  }
+
+  .ai-scroll-item__description-{{ ai_gen_id }} {
+    font-size: {{ block.settings.item_description_size }}px;
+    color: {{ block.settings.item_text_color }};
+    margin: 0 0 30px;
+    line-height: 1.6;
+  }
+
+  .ai-scroll-item__button-{{ ai_gen_id }} {
+    display: inline-block;
+    padding: {{ block.settings.button_padding_vertical }}px {{ block.settings.button_padding_horizontal }}px;
+    font-size: {{ block.settings.button_font_size }}px;
+    font-weight: 600;
+    color: {{ block.settings.button_text_color }};
+    background: {{ block.settings.button_bg_color }};
+    border: 2px solid {{ block.settings.button_border_color }};
+    border-radius: {{ block.settings.button_border_radius }}px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .ai-scroll-item__button-{{ ai_gen_id }}:hover {
+    color: {{ block.settings.button_hover_text_color }};
+    background: {{ block.settings.button_hover_bg_color }};
+    border-color: {{ block.settings.button_hover_border_color }};
+    transform: translateY(-2px);
+  }
+
+  .ai-scroll-item__background-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .ai-scroll-item__background-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-scroll-item__overlay-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: {{ block.settings.overlay_color }};
+    opacity: {{ block.settings.overlay_opacity | divided_by: 100.0 }};
+    z-index: 1;
+  }
+
+  .ai-scroll-progress-{{ ai_gen_id }} {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+  }
+
+  .ai-scroll-progress__dot-{{ ai_gen_id }} {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .ai-scroll-progress__dot-{{ ai_gen_id }}.active {
+    background: {{ block.settings.header_text_color }};
+    transform: scale(1.5);
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-scroll-header__title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.header_font_size | times: 0.6 }}px;
+    }
+
+    .ai-scroll-item__title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.item_title_size | times: 0.6 }}px;
+    }
+
+    .ai-scroll-item__description-{{ ai_gen_id }} {
+      font-size: {{ block.settings.item_description_size | times: 0.9 }}px;
+    }
+
+    .ai-scroll-item-{{ ai_gen_id }} {
+      padding: 20px;
+    }
+
+    .ai-scroll-item__button-{{ ai_gen_id }} {
+      font-size: {{ block.settings.button_font_size | times: 0.9 }}px;
+      padding: {{ block.settings.button_padding_vertical | times: 0.8 }}px {{ block.settings.button_padding_horizontal | times: 0.8 }}px;
+    }
+  }
+{% endstyle %}
+
+<horizontal-scroll-{{ ai_gen_id }} class="ai-horizontal-scroll-wrapper-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-scroll-header-{{ ai_gen_id }}">
+    <div class="ai-scroll-header__background-{{ ai_gen_id }}"></div>
+    <div class="ai-scroll-header__content-{{ ai_gen_id }}">
+      {% if block.settings.header_title != blank %}
+        <h2 class="ai-scroll-header__title-{{ ai_gen_id }}">{{ block.settings.header_title }}</h2>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="ai-scroll-section-{{ ai_gen_id }}">
+    <div class="ai-scroll-container-{{ ai_gen_id }}">
+      <div class="ai-scroll-list-{{ ai_gen_id }}">
+        {% for i in (1..5) %}
+          {% liquid
+            assign title_key = 'item_' | append: i | append: '_title'
+            assign description_key = 'item_' | append: i | append: '_description'
+            assign image_key = 'item_' | append: i | append: '_image'
+            assign bg_color_key = 'item_' | append: i | append: '_bg_color'
+            assign button_text_key = 'item_' | append: i | append: '_button_text'
+            assign button_link_key = 'item_' | append: i | append: '_button_link'
+            
+            assign item_title = block.settings[title_key]
+            assign item_description = block.settings[description_key]
+            assign item_image = block.settings[image_key]
+            assign item_bg_color = block.settings[bg_color_key]
+            assign button_text = block.settings[button_text_key]
+            assign button_link = block.settings[button_link_key]
+          %}
+
+          <div class="ai-scroll-item-{{ ai_gen_id }}" style="background-color: {{ item_bg_color }};" data-index="{{ i }}">
+            {% if item_image %}
+              <div class="ai-scroll-item__background-{{ ai_gen_id }}">
+                <img
+                  src="{{ item_image | image_url: width: 2000 }}"
+                  alt="{{ item_image.alt | escape }}"
+                  loading="lazy"
+                  width="{{ item_image.width }}"
+                  height="{{ item_image.height }}"
+                >
+              </div>
+              <div class="ai-scroll-item__overlay-{{ ai_gen_id }}"></div>
+            {% endif %}
+
+            <div class="ai-scroll-item__content-{{ ai_gen_id }}">
+              {% if item_title != blank %}
+                <h3 class="ai-scroll-item__title-{{ ai_gen_id }}">{{ item_title }}</h3>
+              {% endif %}
+              {% if item_description != blank %}
+                <div class="ai-scroll-item__description-{{ ai_gen_id }}">{{ item_description }}</div>
+              {% endif %}
+              {% if button_text != blank %}
+                <a href="{{ button_link | default: '#' }}" class="ai-scroll-item__button-{{ ai_gen_id }}">
+                  {{ button_text }}
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if block.settings.show_progress %}
+      <div class="ai-scroll-progress-{{ ai_gen_id }}">
+        {% for i in (1..5) %}
+          <div class="ai-scroll-progress__dot-{{ ai_gen_id }}" data-index="{{ i }}"></div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</horizontal-scroll-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class HorizontalScroll{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.scrollSection = this.querySelector('.ai-scroll-section-{{ ai_gen_id }}');
+        this.scrollList = this.querySelector('.ai-scroll-list-{{ ai_gen_id }}');
+        this.scrollItems = this.querySelectorAll('.ai-scroll-item-{{ ai_gen_id }}');
+        this.progressDots = this.querySelectorAll('.ai-scroll-progress__dot-{{ ai_gen_id }}');
+        this.itemCount = this.scrollItems.length;
+        this.sectionWidth = {{ block.settings.section_width }};
+      }
+
+      connectedCallback() {
+        this.setupScrollAnimation();
+      }
+
+      setupScrollAnimation() {
+        const handleScroll = () => {
+          const rect = this.scrollSection.getBoundingClientRect();
+          const scrollSectionHeight = this.scrollSection.offsetHeight;
+          const viewportHeight = window.innerHeight;
+          
+          const scrollStart = rect.top;
+          const scrollEnd = rect.bottom - viewportHeight;
+          
+          if (scrollStart <= 0 && scrollEnd >= 0) {
+            const scrollProgress = Math.abs(scrollStart) / (scrollSectionHeight - viewportHeight);
+            const maxScroll = (this.itemCount - 1) * (window.innerWidth * (this.sectionWidth / 100));
+            const translateX = -(scrollProgress * maxScroll);
+            
+            this.scrollList.style.transform = `translateX(${translateX}px)`;
+            
+            const currentIndex = Math.min(
+              Math.floor(scrollProgress * this.itemCount),
+              this.itemCount - 1
+            );
+            
+            this.updateProgress(currentIndex);
+          }
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll();
+      }
+
+      updateProgress(activeIndex) {
+        this.progressDots.forEach((dot, index) => {
+          if (index === activeIndex) {
+            dot.classList.add('active');
+          } else {
+            dot.classList.remove('active');
+          }
+        });
+      }
+    }
+
+    customElements.define('horizontal-scroll-{{ ai_gen_id }}', HorizontalScroll{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Horizontal scroll",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header section"
+    },
+    {
+      "type": "richtext",
+      "id": "header_title",
+      "label": "Title",
+      "default": "<p>Scroll to explore</p>"
+    },
+    {
+      "type": "range",
+      "id": "header_height",
+      "min": 30,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "label": "Header height",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "header_font_size",
+      "min": 24,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Title size",
+      "default": 64
+    },
+    {
+      "type": "color",
+      "id": "header_bg_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "header_text_color",
+      "label": "Text color",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Section dimensions"
+    },
+    {
+      "type": "range",
+      "id": "section_width",
+      "min": 80,
+      "max": 100,
+      "step": 5,
+      "unit": "vw",
+      "label": "Section width",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "min": 80,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "label": "Section height",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Scroll settings"
+    },
+    {
+      "type": "range",
+      "id": "scroll_height",
+      "min": 200,
+      "max": 600,
+      "step": 50,
+      "unit": "vh",
+      "label": "Scroll distance",
+      "default": 400
+    },
+    {
+      "type": "checkbox",
+      "id": "show_progress",
+      "label": "Show progress indicator",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Item style"
+    },
+    {
+      "type": "range",
+      "id": "item_title_size",
+      "min": 20,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Title size",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "item_description_size",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Description size",
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "item_text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Image overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Overlay opacity",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Button style"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Button font size",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "button_padding_vertical",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Button vertical padding",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "button_padding_horizontal",
+      "min": 16,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "label": "Button horizontal padding",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Button border radius",
+      "default": 8
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button background",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button border color",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_text_color",
+      "label": "Button hover text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg_color",
+      "label": "Button hover background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_border_color",
+      "label": "Button hover border",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Item 1"
+    },
+    {
+      "type": "richtext",
+      "id": "item_1_title",
+      "label": "Title",
+      "default": "<p>First slide</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "item_1_description",
+      "label": "Description",
+      "default": "<p>Discover our amazing products and services</p>"
+    },
+    {
+      "type": "text",
+      "id": "item_1_button_text",
+      "label": "Button text",
+      "default": "Learn More"
+    },
+    {
+      "type": "url",
+      "id": "item_1_button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_1_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color",
+      "id": "item_1_bg_color",
+      "label": "Background color",
+      "default": "#334fb4"
+    },
+    {
+      "type": "header",
+      "content": "Item 2"
+    },
+    {
+      "type": "richtext",
+      "id": "item_2_title",
+      "label": "Title",
+      "default": "<p>Second slide</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "item_2_description",
+      "label": "Description",
+      "default": "<p>Experience quality like never before</p>"
+    },
+    {
+      "type": "text",
+      "id": "item_2_button_text",
+      "label": "Button text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "item_2_button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_2_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color",
+      "id": "item_2_bg_color",
+      "label": "Background color",
+      "default": "#d22428"
+    },
+    {
+      "type": "header",
+      "content": "Item 3"
+    },
+    {
+      "type": "richtext",
+      "id": "item_3_title",
+      "label": "Title",
+      "default": "<p>Third slide</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "item_3_description",
+      "label": "Description",
+      "default": "<p>Join thousands of satisfied customers</p>"
+    },
+    {
+      "type": "text",
+      "id": "item_3_button_text",
+      "label": "Button text",
+      "default": "Get Started"
+    },
+    {
+      "type": "url",
+      "id": "item_3_button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_3_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color",
+      "id": "item_3_bg_color",
+      "label": "Background color",
+      "default": "#242833"
+    },
+    {
+      "type": "header",
+      "content": "Item 4"
+    },
+    {
+      "type": "richtext",
+      "id": "item_4_title",
+      "label": "Title",
+      "default": "<p>Fourth slide</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "item_4_description",
+      "label": "Description",
+      "default": "<p>Innovation meets excellence</p>"
+    },
+    {
+      "type": "text",
+      "id": "item_4_button_text",
+      "label": "Button text",
+      "default": "Explore"
+    },
+    {
+      "type": "url",
+      "id": "item_4_button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_4_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color",
+      "id": "item_4_bg_color",
+      "label": "Background color",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Item 5"
+    },
+    {
+      "type": "richtext",
+      "id": "item_5_title",
+      "label": "Title",
+      "default": "<p>Fifth slide</p>"
+    },
+    {
+      "type": "richtext",
+      "id": "item_5_description",
+      "label": "Description",
+      "default": "<p>Start your journey today</p>"
+    },
+    {
+      "type": "text",
+      "id": "item_5_button_text",
+      "label": "Button text",
+      "default": "Contact Us"
+    },
+    {
+      "type": "url",
+      "id": "item_5_button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "image_picker",
+      "id": "item_5_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color",
+      "id": "item_5_bg_color",
+      "label": "Background color",
+      "default": "#c63030"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Horizontal scroll"
+    }
+  ]
+}
+{% endschema %}
