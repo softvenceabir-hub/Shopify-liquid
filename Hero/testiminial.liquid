@@ -1,0 +1,1043 @@
+{% comment %}
+  Testimonials with Infinite Carousel - Shopify
+  Automatically becomes carousel when more than 3 testimonials
+{% endcomment %}
+
+{{ 'component-testimonials.css' | asset_url | stylesheet_tag }}
+
+<style>
+  /* Dynamic CSS from settings */
+  .testimonials-section {
+    padding-top: {{ section.settings.section_padding_top }}px;
+    padding-bottom: {{ section.settings.section_padding_bottom }}px;
+    padding-left: {{ section.settings.section_padding_left }}px;
+    padding-right: {{ section.settings.section_padding_right }}px;
+    background-color: {{ section.settings.section_background }};
+    overflow: hidden;
+  }
+
+  .testimonials-title {
+    color: {{ section.settings.title_color }};
+    font-size: {{ section.settings.title_font_size }}px;
+    font-weight: {{ section.settings.title_font_weight }};
+    text-align: {{ section.settings.title_alignment }};
+  }
+
+  .testimonials-title::after {
+    background-color: {{ section.settings.title_underline_color }};
+    width: {{ section.settings.title_underline_width }}px;
+    height: {{ section.settings.title_underline_height }}px;
+  }
+
+  .testimonials-subtitle {
+    color: {{ section.settings.subtitle_color }};
+    font-size: {{ section.settings.subtitle_font_size }}px;
+    text-align: {{ section.settings.subtitle_alignment }};
+  }
+
+  .testimonial-card {
+    background-color: {{ section.settings.card_background }};
+    border-radius: {{ section.settings.card_border_radius }}px;
+    padding: {{ section.settings.card_padding }}px;
+    width: {{ section.settings.card_width }}px;
+    box-shadow: {{ section.settings.card_shadow }};
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+
+  .testimonial-image {
+    width: {{ section.settings.image_width }}px;
+    height: {{ section.settings.image_height }}px;
+    border-radius: {{ section.settings.image_border_radius }}%;
+    border: {{ section.settings.image_border_width }}px solid {{ section.settings.image_border_color }};
+  }
+
+  .testimonial-text {
+    color: {{ section.settings.text_color }};
+    font-size: {{ section.settings.text_font_size }}px;
+    line-height: {{ section.settings.text_line_height }};
+    text-align: {{ section.settings.text_alignment }};
+  }
+
+  .testimonial-name {
+    color: {{ section.settings.name_color }};
+    font-size: {{ section.settings.name_font_size }}px;
+    font-weight: {{ section.settings.name_font_weight }};
+  }
+
+  .testimonial-position {
+    color: {{ section.settings.position_color }};
+    font-size: {{ section.settings.position_font_size }}px;
+  }
+
+  .testimonial-quote {
+    color: {{ section.settings.quote_color }};
+    font-size: {{ section.settings.quote_font_size }}px;
+  }
+
+  /* Grid Layout (for 3 or fewer testimonials) */
+  .testimonials-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: {{ section.settings.card_gap }}px;
+    justify-content: {{ section.settings.card_alignment }};
+    transition: all 0.3s ease;
+  }
+
+  /* Carousel Layout (for more than 3 testimonials) */
+  .testimonials-carousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .testimonials-carousel-track {
+    display: flex;
+    gap: {{ section.settings.card_gap }}px;
+    transition: transform 0.5s ease-in-out;
+    will-change: transform;
+  }
+
+  .carousel-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 30px;
+  }
+
+  .carousel-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: {{ section.settings.carousel_btn_bg }};
+    color: {{ section.settings.carousel_btn_color }};
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .carousel-btn:hover {
+    background-color: {{ section.settings.carousel_btn_bg_hover }};
+    transform: scale(1.1);
+  }
+
+  .carousel-dots {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .carousel-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: {{ section.settings.carousel_dot_inactive }};
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .carousel-dot.active {
+    background-color: {{ section.settings.carousel_dot_active }};
+    transform: scale(1.2);
+  }
+
+  .carousel-arrow {
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .testimonials-title {
+      font-size: {{ section.settings.title_font_size_mobile }}px;
+    }
+    
+    .testimonial-card {
+      width: 280px;
+      min-width: 280px;
+    }
+    
+    .carousel-btn {
+      width: 40px;
+      height: 40px;
+      font-size: 16px;
+    }
+    
+    .carousel-dot {
+      width: 10px;
+      height: 10px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .testimonial-card {
+      width: 250px;
+      min-width: 250px;
+    }
+  }
+</style>
+
+<section class="testimonials-section" id="testimonials-{{ section.id }}">
+  <div class="testimonials-container" style="max-width: {{ section.settings.section_max_width }}px; margin: 0 auto;">
+    
+    <!-- Header Section -->
+    <div class="testimonials-header" style="margin-bottom: {{ section.settings.header_margin_bottom }}px;">
+      {% if section.settings.title != blank %}
+        <h2 class="testimonials-title">
+          {{ section.settings.title }}
+        </h2>
+      {% endif %}
+      
+      {% if section.settings.subtitle != blank %}
+        <p class="testimonials-subtitle">
+          {{ section.settings.subtitle }}
+        </p>
+      {% endif %}
+    </div>
+
+    <!-- Testimonials Container -->
+    {% if section.blocks.size > 3 %}
+      <!-- Carousel for more than 3 testimonials -->
+      <div class="testimonials-carousel">
+        <div class="testimonials-carousel-track" id="carousel-track-{{ section.id }}">
+          {% for block in section.blocks %}
+            <div class="testimonial-card" {{ block.shopify_attributes }}
+                 style="transition: transform 0.3s ease, box-shadow 0.3s ease;"
+                 onmouseover="this.style.transform='translateY(-{{ section.settings.card_hover_lift }}px)';"
+                 onmouseout="this.style.transform='translateY(0)';">
+              
+              <!-- Image -->
+              {% if block.settings.image != blank %}
+                <img src="{{ block.settings.image | img_url: '400x400', crop: 'center' }}" 
+                     alt="{{ block.settings.name | escape }}" 
+                     class="testimonial-image"
+                     loading="lazy">
+              {% else %}
+                <div class="testimonial-image-placeholder" style="
+                  width: {{ section.settings.image_width }}px;
+                  height: {{ section.settings.image_height }}px;
+                  border-radius: {{ section.settings.image_border_radius }}%;
+                  background-color: #f0f0f0;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  color: #999;
+                  font-size: 14px;
+                  margin-bottom: 20px;
+                ">
+                  No Image
+                </div>
+              {% endif %}
+
+              <!-- Quote Icon -->
+              <p class="testimonial-quote" style="margin: 0 0 15px 0; line-height: 1;">"</p>
+
+              <!-- Testimonial Text -->
+              <p class="testimonial-text" style="margin: 0 0 20px 0;">
+                {{ block.settings.testimonial_text }}
+              </p>
+
+              <!-- Author Info -->
+              <div class="testimonial-author" style="margin-top: auto; text-align: center;">
+                <h3 class="testimonial-name" style="margin: 0 0 5px 0;">
+                  {{ block.settings.name }}
+                </h3>
+                {% if block.settings.position != blank %}
+                  <p class="testimonial-position" style="margin: 0; opacity: 0.8;">
+                    {{ block.settings.position }}
+                  </p>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Carousel Navigation -->
+        <div class="carousel-nav">
+          <button class="carousel-btn prev-btn" id="prev-btn-{{ section.id }}">
+            <span class="carousel-arrow">‹</span>
+          </button>
+          
+          <div class="carousel-dots" id="dots-container-{{ section.id }}">
+            {% for i in (1..section.blocks.size) %}
+              <button class="carousel-dot {% if forloop.first %}active{% endif %}" 
+                      data-index="{{ forloop.index0 }}"></button>
+            {% endfor %}
+          </div>
+          
+          <button class="carousel-btn next-btn" id="next-btn-{{ section.id }}">
+            <span class="carousel-arrow">›</span>
+          </button>
+        </div>
+      </div>
+
+    {% else %}
+      <!-- Grid for 3 or fewer testimonials -->
+      <div class="testimonials-grid">
+        {% for block in section.blocks %}
+          <div class="testimonial-card" {{ block.shopify_attributes }}
+               style="transition: transform 0.3s ease, box-shadow 0.3s ease;"
+               onmouseover="this.style.transform='translateY(-{{ section.settings.card_hover_lift }}px)';"
+               onmouseout="this.style.transform='translateY(0)';">
+            
+            <!-- Image -->
+            {% if block.settings.image != blank %}
+              <img src="{{ block.settings.image | img_url: '400x400', crop: 'center' }}" 
+                   alt="{{ block.settings.name | escape }}" 
+                   class="testimonial-image"
+                   loading="lazy">
+            {% else %}
+              <div class="testimonial-image-placeholder" style="
+                width: {{ section.settings.image_width }}px;
+                height: {{ section.settings.image_height }}px;
+                border-radius: {{ section.settings.image_border_radius }}%;
+                background-color: #f0f0f0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #999;
+                font-size: 14px;
+                margin-bottom: 20px;
+              ">
+                No Image
+              </div>
+            {% endif %}
+
+            <!-- Quote Icon -->
+            <p class="testimonial-quote" style="margin: 0 0 15px 0; line-height: 1;">"</p>
+
+            <!-- Testimonial Text -->
+            <p class="testimonial-text" style="margin: 0 0 20px 0;">
+              {{ block.settings.testimonial_text }}
+            </p>
+
+            <!-- Author Info -->
+            <div class="testimonial-author" style="margin-top: auto; text-align: center;">
+              <h3 class="testimonial-name" style="margin: 0 0 5px 0;">
+                {{ block.settings.name }}
+              </h3>
+              {% if block.settings.position != blank %}
+                <p class="testimonial-position" style="margin: 0; opacity: 0.8;">
+                  {{ block.settings.position }}
+                </p>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const sectionId = '{{ section.id }}';
+  const testimonialBlocks = {{ section.blocks.size }};
+  
+  // Only initialize carousel if more than 3 testimonials
+  if (testimonialBlocks > 3) {
+    initCarousel(sectionId);
+  }
+  
+  function initCarousel(sectionId) {
+    const carouselTrack = document.getElementById(`carousel-track-${sectionId}`);
+    const prevBtn = document.getElementById(`prev-btn-${sectionId}`);
+    const nextBtn = document.getElementById(`next-btn-${sectionId}`);
+    const dotsContainer = document.getElementById(`dots-container-${sectionId}`);
+    
+    if (!carouselTrack) return;
+    
+    // Get all original cards
+    const originalCards = Array.from(carouselTrack.children);
+    const totalSlides = originalCards.length;
+    
+    if (totalSlides === 0) return;
+    
+    // Clone all cards and append them for infinite loop
+    originalCards.forEach(card => {
+      const clone = card.cloneNode(true);
+      carouselTrack.appendChild(clone);
+    });
+    
+    // Clone again and prepend for backward infinite loop
+    originalCards.forEach(card => {
+      const clone = card.cloneNode(true);
+      carouselTrack.insertBefore(clone, carouselTrack.firstChild);
+    });
+    
+    const allCards = carouselTrack.querySelectorAll('.testimonial-card');
+    let currentIndex = totalSlides; // Start at the first set of real cards
+    let isTransitioning = false;
+    
+    function getCardWidth() {
+      return allCards[0].offsetWidth + (parseInt(getComputedStyle(carouselTrack).gap) || 30);
+    }
+    
+    // Set initial position
+    function setInitialPosition() {
+      carouselTrack.style.transition = 'none';
+      carouselTrack.style.transform = `translateX(-${currentIndex * getCardWidth()}px)`;
+      setTimeout(() => {
+        carouselTrack.style.transition = 'transform 0.5s ease-in-out';
+      }, 50);
+    }
+    
+    setInitialPosition();
+    updateDots();
+    
+    // Handle transition end for infinite loop
+    function handleTransitionEnd() {
+      if (currentIndex >= totalSlides * 2) {
+        carouselTrack.style.transition = 'none';
+        currentIndex = totalSlides;
+        carouselTrack.style.transform = `translateX(-${currentIndex * getCardWidth()}px)`;
+        setTimeout(() => {
+          carouselTrack.style.transition = 'transform 0.5s ease-in-out';
+        }, 50);
+      } else if (currentIndex < totalSlides) {
+        carouselTrack.style.transition = 'none';
+        currentIndex = totalSlides * 2 - 1;
+        carouselTrack.style.transform = `translateX(-${currentIndex * getCardWidth()}px)`;
+        setTimeout(() => {
+          carouselTrack.style.transition = 'transform 0.5s ease-in-out';
+        }, 50);
+      }
+      isTransitioning = false;
+    }
+    
+    carouselTrack.addEventListener('transitionend', handleTransitionEnd);
+    
+    // Next button
+    function moveNext() {
+      if (isTransitioning) return;
+      isTransitioning = true;
+      currentIndex++;
+      carouselTrack.style.transform = `translateX(-${currentIndex * getCardWidth()}px)`;
+      updateDots();
+    }
+    
+    // Previous button
+    function movePrev() {
+      if (isTransitioning) return;
+      isTransitioning = true;
+      currentIndex--;
+      carouselTrack.style.transform = `translateX(-${currentIndex * getCardWidth()}px)`;
+      updateDots();
+    }
+    
+    nextBtn.addEventListener('click', moveNext);
+    prevBtn.addEventListener('click', movePrev);
+    
+    // Dot navigation
+    if (dotsContainer) {
+      dotsContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('carousel-dot') && !isTransitioning) {
+          isTransitioning = true;
+          const targetIndex = parseInt(e.target.dataset.index);
+          currentIndex = totalSlides + targetIndex;
+          carouselTrack.style.transform = `translateX(-${currentIndex * getCardWidth()}px)`;
+          updateDots();
+        }
+      });
+    }
+    
+    // Update dots
+    function updateDots() {
+      if (!dotsContainer) return;
+      const dots = dotsContainer.querySelectorAll('.carousel-dot');
+      const realIndex = (currentIndex - totalSlides + totalSlides) % totalSlides;
+      
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === realIndex);
+      });
+    }
+    
+    // Auto slide
+    {% if section.settings.auto_slide %}
+    let autoSlideInterval = setInterval(moveNext, {{ section.settings.auto_slide_interval | default: 5000 }});
+    
+    carouselTrack.addEventListener('mouseenter', () => {
+      clearInterval(autoSlideInterval);
+    });
+    
+    carouselTrack.addEventListener('mouseleave', () => {
+      autoSlideInterval = setInterval(moveNext, {{ section.settings.auto_slide_interval | default: 5000 }});
+    });
+    {% endif %}
+    
+    // Handle resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        carouselTrack.style.transition = 'none';
+        carouselTrack.style.transform = `translateX(-${currentIndex * getCardWidth()}px)`;
+        setTimeout(() => {
+          carouselTrack.style.transition = 'transform 0.5s ease-in-out';
+        }, 50);
+      }, 250);
+    });
+  }
+});
+</script>
+
+
+{% schema %}
+{
+  "name": "Testimonial Carousel",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "color",
+      "id": "section_background",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "section_max_width",
+      "label": "Max Width",
+      "min": 800,
+      "max": 2000,
+      "step": 50,
+      "default": 1200,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_left",
+      "label": "Padding Left",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_right",
+      "label": "Padding Right",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Title Settings"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title Text",
+      "default": "Customer Testimonials"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#ff9800"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "label": "Title Font Size",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size_mobile",
+      "label": "Mobile Title Size",
+      "min": 16,
+      "max": 60,
+      "step": 2,
+      "default": 36,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "title_font_weight",
+      "label": "Font Weight",
+      "options": [
+        {"value": "400", "label": "Normal"},
+        {"value": "500", "label": "Medium"},
+        {"value": "600", "label": "Semi-Bold"},
+        {"value": "700", "label": "Bold"},
+        {"value": "800", "label": "Extra Bold"}
+      ],
+      "default": "800"
+    },
+    {
+      "type": "select",
+      "id": "title_alignment",
+      "label": "Alignment",
+      "options": [
+        {"value": "left", "label": "Left"},
+        {"value": "center", "label": "Center"},
+        {"value": "right", "label": "Right"}
+      ],
+      "default": "center"
+    },
+    {
+      "type": "color",
+      "id": "title_underline_color",
+      "label": "Underline Color",
+      "default": "#ff9800"
+    },
+    {
+      "type": "range",
+      "id": "title_underline_width",
+      "label": "Underline Width",
+      "min": 0,
+      "max": 300,
+      "step": 10,
+      "default": 100,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "title_underline_height",
+      "label": "Underline Height",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "default": 4,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Subtitle Settings"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle Text",
+      "default": "What our customers say"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle Color",
+      "default": "#666666"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_font_size",
+      "label": "Font Size",
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "subtitle_alignment",
+      "label": "Alignment",
+      "options": [
+        {"value": "left", "label": "Left"},
+        {"value": "center", "label": "Center"},
+        {"value": "right", "label": "Right"}
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "header_margin_bottom",
+      "label": "Header Space",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "default": 50,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Card Settings"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card Width",
+      "min": 200,
+      "max": 600,
+      "step": 10,
+      "default": 360,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card Background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Corner Radius",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "label": "Card Padding",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "default": 30,
+      "unit": "px"
+    },
+    {
+      "type": "text",
+      "id": "card_shadow",
+      "label": "Card Shadow",
+      "default": "0 4px 15px rgba(0,0,0,0.1)"
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Card Gap",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 30,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "card_alignment",
+      "label": "Grid Alignment",
+      "options": [
+        {"value": "flex-start", "label": "Left"},
+        {"value": "center", "label": "Center"},
+        {"value": "flex-end", "label": "Right"},
+        {"value": "space-between", "label": "Space Between"}
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "card_hover_lift",
+      "label": "Hover Lift",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Image Settings"
+    },
+    {
+      "type": "range",
+      "id": "image_width",
+      "label": "Image Width",
+      "min": 50,
+      "max": 300,
+      "step": 10,
+      "default": 100,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "image_height",
+      "label": "Image Height",
+      "min": 50,
+      "max": 300,
+      "step": 10,
+      "default": 100,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "label": "Border Radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 50,
+      "unit": "%"
+    },
+    {
+      "type": "color",
+      "id": "image_border_color",
+      "label": "Border Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "image_border_width",
+      "label": "Border Width",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "default": 4,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Text Settings"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "text_font_size",
+      "label": "Font Size",
+      "min": 12,
+      "max": 30,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "text_line_height",
+      "label": "Line Height",
+      "min": 1,
+      "max": 2.5,
+      "step": 0.1,
+      "default": 1.6
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Alignment",
+      "options": [
+        {"value": "left", "label": "Left"},
+        {"value": "center", "label": "Center"},
+        {"value": "right", "label": "Right"},
+        {"value": "justify", "label": "Justify"}
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Name Settings"
+    },
+    {
+      "type": "color",
+      "id": "name_color",
+      "label": "Name Color",
+      "default": "#ff9800"
+    },
+    {
+      "type": "range",
+      "id": "name_font_size",
+      "label": "Font Size",
+      "min": 14,
+      "max": 40,
+      "step": 1,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "name_font_weight",
+      "label": "Font Weight",
+      "options": [
+        {"value": "400", "label": "Normal"},
+        {"value": "500", "label": "Medium"},
+        {"value": "600", "label": "Semi-Bold"},
+        {"value": "700", "label": "Bold"}
+      ],
+      "default": "700"
+    },
+    {
+      "type": "header",
+      "content": "Position Settings"
+    },
+    {
+      "type": "color",
+      "id": "position_color",
+      "label": "Position Color",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "position_font_size",
+      "label": "Font Size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Quote Settings"
+    },
+    {
+      "type": "color",
+      "id": "quote_color",
+      "label": "Quote Color",
+      "default": "#ffd54f"
+    },
+    {
+      "type": "range",
+      "id": "quote_font_size",
+      "label": "Font Size",
+      "min": 10,
+      "max": 60,
+      "step": 2,
+      "default": 30,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Carousel Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_slide",
+      "label": "Auto Slide",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "auto_slide_interval",
+      "label": "Auto Slide Interval",
+      "min": 1000,
+      "max": 9000,
+      "step": 500,
+      "default": 5000,
+      "unit": "ms"
+    },
+    {
+      "type": "color",
+      "id": "carousel_btn_bg",
+      "label": "Button Background",
+      "default": "#ff9800"
+    },
+    {
+      "type": "color",
+      "id": "carousel_btn_color",
+      "label": "Button Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "carousel_btn_bg_hover",
+      "label": "Button Hover Background",
+      "default": "#e68900"
+    },
+    {
+      "type": "color",
+      "id": "carousel_dot_active",
+      "label": "Active Dot Color",
+      "default": "#ff9800"
+    },
+    {
+      "type": "color",
+      "id": "carousel_dot_inactive",
+      "label": "Inactive Dot Color",
+      "default": "#dddddd"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Select Image"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name",
+          "default": "John Doe"
+        },
+        {
+          "type": "text",
+          "id": "position",
+          "label": "Position/Company",
+          "default": "CEO, Company Name"
+        },
+        {
+          "type": "textarea",
+          "id": "testimonial_text",
+          "label": "Testimonial Text",
+          "default": "Excellent service! Very professional and timely delivery. Highly recommended!"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonial Carousel",
+      "category": "Content",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "name": "John Doe",
+            "position": "CEO, Company Name",
+            "testimonial_text": "Excellent service! Very professional and timely delivery. Highly recommended!"
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "name": "Jane Smith",
+            "position": "Manager, Organization Name",
+            "testimonial_text": "Amazing experience! The team was responsive and delivered beyond expectations."
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "name": "Robert Johnson",
+            "position": "Founder, Business Name",
+            "testimonial_text": "Outstanding quality and attention to detail. Will definitely work with them again!"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

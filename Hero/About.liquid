@@ -1,0 +1,828 @@
+{% comment %}
+  Better Sleep Banner Section
+  Fully customizable section with width, height, padding, colors, and hover effects
+{% endcomment %}
+
+<style>
+  .better-sleep-section-{{ section.id }} {
+    width: {{ section.settings.section_width }};
+    max-width: 100%;
+    margin: 0 auto;
+    padding: {{ section.settings.section_padding_top }}px {{ section.settings.section_padding_horizontal }}px {{ section.settings.section_padding_bottom }}px;
+    background-color: {{ section.settings.section_bg_color }};
+    position: relative;
+    overflow: hidden;
+  }
+
+  .better-sleep-banner-{{ section.id }} {
+    position: relative;
+    height: {{ section.settings.banner_height }}px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: {{ section.settings.banner_border_radius }}px;
+    overflow: hidden;
+  }
+
+  .better-sleep-banner-{{ section.id }} .banner-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: {{ section.settings.image_position }};
+  }
+
+  .better-sleep-banner-{{ section.id }} .banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, {{ section.settings.overlay_opacity | divided_by: 100.0 }});
+  }
+
+  .better-sleep-content-{{ section.id }} {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: {{ section.settings.content_max_width }}px;
+    padding: 0 20px;
+  }
+
+  .better-sleep-content-{{ section.id }} .heading {
+    color: {{ section.settings.heading_color }};
+    font-size: {{ section.settings.heading_size }}px;
+    font-weight: {{ section.settings.heading_weight }};
+    margin-bottom: {{ section.settings.heading_margin_bottom }}px;
+    line-height: 1.2;
+  }
+
+  .better-sleep-content-{{ section.id }} .description {
+    color: {{ section.settings.description_color }};
+    font-size: {{ section.settings.description_size }}px;
+    line-height: 1.6;
+    margin-bottom: {{ section.settings.description_margin_bottom }}px;
+  }
+
+  .better-sleep-cards-{{ section.id }} {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: {{ section.settings.card_gap }}px;
+    margin-top: {{ section.settings.cards_margin_top }}px;
+  }
+
+  .sleep-card-{{ section.id }} {
+    background-color: {{ section.settings.card_bg_color }};
+    padding: {{ section.settings.card_padding }}px;
+    border-radius: {{ section.settings.card_border_radius }}px;
+    box-shadow: {{ section.settings.card_shadow }};
+    transition: all {{ section.settings.hover_transition_speed }}ms ease;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sleep-card-{{ section.id }}::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: {{ section.settings.card_accent_height }}px;
+    transition: all {{ section.settings.hover_transition_speed }}ms ease;
+  }
+
+  .sleep-card-{{ section.id }}:nth-child(1)::before {
+    background-color: {{ section.settings.card_1_accent_color }};
+  }
+
+  .sleep-card-{{ section.id }}:nth-child(2)::before {
+    background-color: {{ section.settings.card_2_accent_color }};
+  }
+
+  .sleep-card-{{ section.id }}:nth-child(3)::before {
+    background-color: {{ section.settings.card_3_accent_color }};
+  }
+
+  .sleep-card-{{ section.id }}:nth-child(4)::before {
+    background-color: {{ section.settings.card_4_accent_color }};
+  }
+
+  .sleep-card-{{ section.id }}:hover {
+    transform: translateY({{ section.settings.hover_lift }}px) scale({{ section.settings.hover_scale | divided_by: 100.0 }});
+    box-shadow: {{ section.settings.card_hover_shadow }};
+    background-color: {{ section.settings.card_hover_bg_color }};
+  }
+
+  .sleep-card-{{ section.id }}:hover::before {
+    height: {{ section.settings.card_accent_hover_height }}px;
+  }
+
+  .sleep-card-{{ section.id }} .card-icon {
+    font-size: {{ section.settings.card_icon_size }}px;
+    margin-bottom: {{ section.settings.card_icon_margin }}px;
+  }
+
+  .sleep-card-{{ section.id }} .card-title {
+    color: {{ section.settings.card_title_color }};
+    font-size: {{ section.settings.card_title_size }}px;
+    font-weight: {{ section.settings.card_title_weight }};
+    margin-bottom: {{ section.settings.card_title_margin }}px;
+  }
+
+  .sleep-card-{{ section.id }}:hover .card-title {
+    color: {{ section.settings.card_title_hover_color }};
+  }
+
+  .sleep-card-{{ section.id }} .card-description {
+    color: {{ section.settings.card_description_color }};
+    font-size: {{ section.settings.card_description_size }}px;
+    line-height: 1.5;
+    margin-bottom: {{ section.settings.card_description_margin }}px;
+  }
+
+  .sleep-card-{{ section.id }}:hover .card-description {
+    color: {{ section.settings.card_description_hover_color }};
+  }
+
+  .sleep-card-{{ section.id }} .card-link {
+    color: {{ section.settings.card_link_color }};
+    font-size: {{ section.settings.card_link_size }}px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all {{ section.settings.hover_transition_speed }}ms ease;
+  }
+
+  .sleep-card-{{ section.id }}:hover .card-link {
+    color: {{ section.settings.card_link_hover_color }};
+    gap: 12px;
+  }
+
+  .sleep-card-{{ section.id }} .card-link svg {
+    width: 16px;
+    height: 16px;
+    transition: transform {{ section.settings.hover_transition_speed }}ms ease;
+  }
+
+  .sleep-card-{{ section.id }}:hover .card-link svg {
+    transform: translateX(4px);
+  }
+
+  @media (max-width: 768px) {
+    .better-sleep-banner-{{ section.id }} {
+      height: {{ section.settings.banner_height_mobile }}px;
+    }
+
+    .better-sleep-content-{{ section.id }} .heading {
+      font-size: {{ section.settings.heading_size_mobile }}px;
+    }
+
+    .better-sleep-content-{{ section.id }} .description {
+      font-size: {{ section.settings.description_size_mobile }}px;
+    }
+
+    .better-sleep-cards-{{ section.id }} {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div class="better-sleep-section-{{ section.id }}">
+  <div class="better-sleep-banner-{{ section.id }}">
+    {% if section.settings.banner_image %}
+      <img 
+        src="{{ section.settings.banner_image | img_url: '2000x' }}" 
+        alt="{{ section.settings.banner_image.alt | escape }}"
+        class="banner-image"
+        loading="lazy"
+      >
+    {% endif %}
+    
+    <div class="banner-overlay"></div>
+    
+    <div class="better-sleep-content-{{ section.id }}">
+      {% if section.settings.heading != blank %}
+        <h2 class="heading">{{ section.settings.heading }}</h2>
+      {% endif %}
+      
+      {% if section.settings.description != blank %}
+        <p class="description">{{ section.settings.description }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="better-sleep-cards-{{ section.id }}">
+    {% for block in section.blocks %}
+      <div class="sleep-card-{{ section.id }}" {{ block.shopify_attributes }}>
+        <div class="card-icon">{{ block.settings.icon }}</div>
+        
+        <h3 class="card-title">{{ block.settings.title }}</h3>
+        
+        <p class="card-description">{{ block.settings.description }}</p>
+        
+        {% if block.settings.link_text != blank and block.settings.link_url != blank %}
+          <a href="{{ block.settings.link_url }}" class="card-link">
+            {{ block.settings.link_text }}
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Better Sleep Banner",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Layout"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section Width",
+      "options": [
+        { "value": "100%", "label": "Full Width" },
+        { "value": "1600px", "label": "1600px" },
+        { "value": "1400px", "label": "1400px" },
+        { "value": "1200px", "label": "1200px" },
+        { "value": "1000px", "label": "1000px" }
+      ],
+      "default": "1400px"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "Section Padding Top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "Section Padding Bottom",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "section_padding_horizontal",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Section Padding Horizontal",
+      "default": 20
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section Background Color",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "header",
+      "content": "Banner Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "banner_image",
+      "label": "Banner Image"
+    },
+    {
+      "type": "range",
+      "id": "banner_height",
+      "min": 200,
+      "max": 800,
+      "step": 50,
+      "unit": "px",
+      "label": "Banner Height (Desktop)",
+      "default": 500
+    },
+    {
+      "type": "range",
+      "id": "banner_height_mobile",
+      "min": 200,
+      "max": 600,
+      "step": 50,
+      "unit": "px",
+      "label": "Banner Height (Mobile)",
+      "default": 400
+    },
+    {
+      "type": "range",
+      "id": "banner_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Banner Border Radius",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image Position",
+      "options": [
+        { "value": "center center", "label": "Center" },
+        { "value": "top center", "label": "Top" },
+        { "value": "bottom center", "label": "Bottom" },
+        { "value": "left center", "label": "Left" },
+        { "value": "right center", "label": "Right" }
+      ],
+      "default": "center center"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Overlay Opacity",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "min": 400,
+      "max": 1200,
+      "step": 50,
+      "unit": "px",
+      "label": "Content Max Width",
+      "default": 900
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Wake Up to Better Sleep"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading Size (Desktop)",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading Size (Mobile)",
+      "default": 32
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading Weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "heading_margin_bottom",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Heading Bottom Margin",
+      "default": 20
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "The Better Sleep Council provides research, insights and educational resources to help consumers better understand the relationship between sleep, health, and quality of life."
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Description Size (Desktop)",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "description_size_mobile",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Description Size (Mobile)",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "description_margin_bottom",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Description Bottom Margin",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Cards Layout"
+    },
+    {
+      "type": "range",
+      "id": "cards_margin_top",
+      "min": 20,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "label": "Cards Top Margin",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Gap Between Cards",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Card Styling"
+    },
+    {
+      "type": "color",
+      "id": "card_bg_color",
+      "label": "Card Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_hover_bg_color",
+      "label": "Card Hover Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "min": 15,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Card Padding",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Card Border Radius",
+      "default": 8
+    },
+    {
+      "type": "text",
+      "id": "card_shadow",
+      "label": "Card Shadow",
+      "default": "0 2px 8px rgba(0,0,0,0.1)"
+    },
+    {
+      "type": "text",
+      "id": "card_hover_shadow",
+      "label": "Card Hover Shadow",
+      "default": "0 8px 24px rgba(0,0,0,0.15)"
+    },
+    {
+      "type": "header",
+      "content": "Card Accent Bar"
+    },
+    {
+      "type": "range",
+      "id": "card_accent_height",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "label": "Accent Bar Height",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "card_accent_hover_height",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "label": "Accent Bar Hover Height",
+      "default": 6
+    },
+    {
+      "type": "color",
+      "id": "card_1_accent_color",
+      "label": "Card 1 Accent Color",
+      "default": "#4A5568"
+    },
+    {
+      "type": "color",
+      "id": "card_2_accent_color",
+      "label": "Card 2 Accent Color",
+      "default": "#F6AD55"
+    },
+    {
+      "type": "color",
+      "id": "card_3_accent_color",
+      "label": "Card 3 Accent Color",
+      "default": "#FC8181"
+    },
+    {
+      "type": "color",
+      "id": "card_4_accent_color",
+      "label": "Card 4 Accent Color",
+      "default": "#4FD1C5"
+    },
+    {
+      "type": "header",
+      "content": "Card Content"
+    },
+    {
+      "type": "range",
+      "id": "card_icon_size",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Icon Size",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "card_icon_margin",
+      "min": 5,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "label": "Icon Bottom Margin",
+      "default": 15
+    },
+    {
+      "type": "color",
+      "id": "card_title_color",
+      "label": "Card Title Color",
+      "default": "#2D3748"
+    },
+    {
+      "type": "color",
+      "id": "card_title_hover_color",
+      "label": "Card Title Hover Color",
+      "default": "#2D3748"
+    },
+    {
+      "type": "range",
+      "id": "card_title_size",
+      "min": 14,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Card Title Size",
+      "default": 20
+    },
+    {
+      "type": "select",
+      "id": "card_title_weight",
+      "label": "Card Title Weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "card_title_margin",
+      "min": 5,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "label": "Card Title Bottom Margin",
+      "default": 10
+    },
+    {
+      "type": "color",
+      "id": "card_description_color",
+      "label": "Card Description Color",
+      "default": "#718096"
+    },
+    {
+      "type": "color",
+      "id": "card_description_hover_color",
+      "label": "Card Description Hover Color",
+      "default": "#718096"
+    },
+    {
+      "type": "range",
+      "id": "card_description_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Card Description Size",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "card_description_margin",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "label": "Card Description Bottom Margin",
+      "default": 20
+    },
+    {
+      "type": "color",
+      "id": "card_link_color",
+      "label": "Card Link Color",
+      "default": "#4299E1"
+    },
+    {
+      "type": "color",
+      "id": "card_link_hover_color",
+      "label": "Card Link Hover Color",
+      "default": "#2B6CB0"
+    },
+    {
+      "type": "range",
+      "id": "card_link_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Card Link Size",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Hover Effects"
+    },
+    {
+      "type": "range",
+      "id": "hover_lift",
+      "min": -20,
+      "max": 0,
+      "step": 2,
+      "unit": "px",
+      "label": "Hover Lift Amount",
+      "default": -8
+    },
+    {
+      "type": "range",
+      "id": "hover_scale",
+      "min": 100,
+      "max": 120,
+      "step": 1,
+      "label": "Hover Scale (%)",
+      "default": 102,
+      "info": "100 = no scale, 105 = 5% larger"
+    },
+    {
+      "type": "range",
+      "id": "hover_transition_speed",
+      "min": 100,
+      "max": 800,
+      "step": 50,
+      "unit": "ms",
+      "label": "Transition Speed",
+      "default": 300
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon (emoji or text)",
+          "default": "📚"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Learn About Mattress"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Everything you need to know about mattresses, from where to shop to how to choose the one for you."
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "Link Text",
+          "default": "Learn More"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Link URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Better Sleep Banner",
+      "blocks": [
+        {
+          "type": "card",
+          "settings": {
+            "icon": "📚",
+            "title": "Learn About Mattress",
+            "description": "Everything you need to know about mattresses, from where to shop to how to choose the one for you.",
+            "link_text": "Learn More"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "icon": "🛏️",
+            "title": "Get Better Sleep Every Night",
+            "description": "Proven tips to help you optimize your sleep habits and enhance your overall lifestyle.",
+            "link_text": "Learn More"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "icon": "🔬",
+            "title": "Explore Industry Research",
+            "description": "The latest research from industry experts, helping you see the relationship between science and sleep.",
+            "link_text": "Learn More"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "icon": "📖",
+            "title": "Discover Sleep Extras",
+            "description": "Read up on bedroom history, mattress facts, guides, surveys and more.",
+            "link_text": "Learn More"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
