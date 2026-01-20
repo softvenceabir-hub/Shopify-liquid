@@ -1,0 +1,91 @@
+{% comment %}
+  Horizon Theme Sibling Products Logic
+  Metafield Keys Used:
+  1. custom.related_products (List of Products)
+  2. custom.swatch_image (File reference for image)
+{% endcomment %}
+{% assign siblings = product.metafields.custom.releted_products.value %}
+{% if siblings != blank %}
+  <div class="sibling-swatch-wrapper">
+ 
+    <div class="sibling-items">
+      
+      {% for sibling in siblings %}
+        
+        {% assign swatch_image = sibling.metafields.custom.swatch_image %}
+        
+        <a href="{{ sibling.url }}" 
+           class="sibling-link {% if sibling.handle == product.handle %}active{% endif %}"
+           title="{{ sibling.title }}">
+           {% if swatch_image %}
+             <img src="{{ swatch_image | image_url: width: 50 }}" 
+                  alt="{{ sibling.title }}" 
+                  class="swatch-image">
+           {% else %}
+             <img src="{{ sibling.featured_image | image_url: width: 50 }}" 
+                  alt="{{ sibling.title }}" 
+                  class="swatch-image">
+           {% endif %}
+        </a>
+      {% endfor %}
+      
+    </div>
+  </div>
+  <style>
+    .sibling-swatch-wrapper {
+      margin-top: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px; 
+    }
+    .sibling-label {
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #000;
+      margin-right: 5px;
+      min-width: fit-content;
+    }
+   
+    .sibling-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px; 
+    }
+    
+    .sibling-link {
+      text-decoration: none;
+      position: relative;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      display: block;
+      border: 2px solid transparent;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .sibling-link:hover {
+      border-color: #666;
+    }
+    
+    .sibling-link.active {
+      border-color: #000;
+      box-shadow: 0 0 0 1px #000;
+    }
+    
+    .swatch-image {
+      display: block;
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      transition: transform 0.2s ease;
+    }
+    
+    .sibling-link:hover .swatch-image {
+      transform: scale(1.05);
+    }
+  </style>
+{% endif %}
