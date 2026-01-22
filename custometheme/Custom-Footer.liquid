@@ -1,0 +1,1553 @@
+{% comment %}
+  Custom Footer Section - Mobile Responsive Fixed
+  - No horizontal scroll on mobile
+  - All elements properly contained
+  - Auto-clear success message
+  - Social icons positioned properly
+  - Manual padding control
+  - Popup with logo and custom text
+{% endcomment %}
+
+<footer class="footer-nude-project">
+  <div class="footer-container" style="padding: {{ section.settings.footer_padding_top }}px {{ section.settings.footer_padding_horizontal }}px {{ section.settings.footer_padding_bottom }}px;">
+    
+    {%- comment -%} Featured Product Section {%- endcomment -%}
+    <div class="featured-product-section">
+      {% if section.settings.featured_product != blank %}
+        {% assign product = all_products[section.settings.featured_product] %}
+        <div class="featured-product-container">
+          {% if product.featured_image %}
+            <div class="product-image-wrapper">
+              <img 
+                src="{{ product.featured_image | img_url: '400x' }}" 
+                alt="{{ product.title }}"
+                class="product-image"
+                loading="lazy"
+              >
+              <div class="product-overlay">
+                <button class="add-to-cart-btn" data-product-id="{{ product.id }}">
+                  {{ section.settings.add_to_cart_text }}
+                </button>
+              </div>
+            </div>
+          {% endif %}
+          
+          <div class="product-info">
+            <h3 class="product-title">{{ product.title }}</h3>
+            <p class="product-price">{{ product.price | money }}</p>
+            
+            {% if product.variants.size > 1 %}
+              <div class="size-selector">
+                <span class="size-label">{{ section.settings.size_label }}</span>
+                <div class="size-options">
+                  {% for variant in product.variants %}
+                    {% if variant.available %}
+                      <label class="size-option">
+                        <input type="radio" name="size" value="{{ variant.id }}"
+                          data-variant-id="{{ variant.id }}"
+                          {% if forloop.first %}checked{% endif %}>
+                        <span class="size-value">{{ variant.title }}</span>
+                      </label>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+            
+            <div class="product-actions">
+              <button class="quick-add-btn" data-product-id="{{ product.id }}">
+                {{ section.settings.add_to_cart_text }}
+              </button>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+    
+    {%- comment -%} Top Grid Sections {%- endcomment -%}
+    <div class="footer-grid">
+      
+      {%- comment -%} Newsletter Section {%- endcomment -%}
+      <div class="footer-newsletter">
+        <div class="newsletter-content">
+          <h3 class="footer-heading">{{ section.settings.newsletter_title }}</h3>
+          <p class="newsletter-description">{{ section.settings.newsletter_description }}</p>
+          
+          {% form 'customer', class: 'newsletter-form' %}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <input type="hidden" name="contact[gender_preference]" id="gender-preference-hidden" value="Both">
+            
+            <div class="newsletter-input-wrapper">
+              <input type="email" name="contact[email]" id="newsletter-email-input"
+                placeholder="{{ section.settings.email_placeholder }}"
+                class="newsletter-email" required />
+              <button type="submit" class="newsletter-submit">
+                {{ section.settings.subscribe_text }}
+              </button>
+            </div>
+            
+            {% if form.posted_successfully? %}
+              <div class="newsletter-success" id="newsletter-success-msg">
+                <p>{{ section.settings.success_message }}</p>
+              </div>
+            {% endif %}
+            
+            {% if form.errors %}
+              <div class="newsletter-error">
+                <p>{{ form.errors.messages.email }}</p>
+              </div>
+            {% endif %}
+          {% endform %}
+
+          <div class="newsletter-preferences">
+            <span class="preferences-label">{{ section.settings.preference_label }}</span>
+            <div class="preferences-options">
+              {% for i in (1..3) %}
+                {% assign option_key = 'preference_' | append: i %}
+                {% if section.settings[option_key] != blank %}
+                  <label class="preference-option">
+                    <input type="radio" name="gender_preference" 
+                      value="{{ section.settings[option_key] }}"
+                      class="gender-preference-radio"
+                      {% if i == 3 %}checked{% endif %}>
+                    <span class="radio-custom"></span>
+                    <span class="preference-text">{{ section.settings[option_key] }}</span>
+                  </label>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+
+          <label class="newsletter-checkbox">
+            <input type="checkbox" class="checkbox-input" id="privacy-checkbox" required>
+            <span class="checkbox-text">
+              {{ section.settings.privacy_text }}
+              <a href="{{ section.settings.privacy_link }}" class="privacy-link">{{ section.settings.privacy_link_text }}</a>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      {%- comment -%} Menu Sections {%- endcomment -%}
+      {% for block in section.blocks %}
+        {% if block.type == 'menu' %}
+          <div class="footer-menu-section" {{ block.shopify_attributes }}>
+            <h3 class="footer-heading">{{ block.settings.menu_title }}</h3>
+            <ul class="footer-menu">
+              {% for link in linklists[block.settings.menu].links %}
+                <li class="footer-menu-item">
+                  <a href="{{ link.url }}" class="footer-link">{{ link.title }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {%- comment -%} Mid Row: Country & Language (Centered) + Socials (Right) {%- endcomment -%}
+    <div class="footer-mid-row" style="padding-top: {{ section.settings.mid_row_padding_top }}px; padding-bottom: {{ section.settings.mid_row_padding_bottom }}px;">
+      <div class="footer-locale-center">
+        <button class="locale-selector-button" id="localeModalBtn">
+          <span class="locale-current">
+            {{ localization.country.iso_code }} | {{ localization.language.iso_code | upcase }}
+          </span>
+          <svg width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="footer-social">
+        {% for block in section.blocks %}
+          {% if block.type == 'social' and block.settings.social_link != blank %}
+            <a href="{{ block.settings.social_link }}" class="social-link" target="_blank" rel="noopener">
+              {% case block.settings.social_platform %}
+                {% when 'instagram' %}
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                {% when 'tiktok' %}
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
+                {% when 'facebook' %}
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                {% when 'youtube' %}
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.42a2.78 2.78 0 0 0-1.94 2C1 8.14 1 12 1 12s0 3.86.42 5.58a2.78 2.78 0 0 0 1.94 2c1.72.42 8.6.42 8.6.42s6.88 0 8.6-.42a2.78 2.78 0 0 0 1.94-2C23 15.86 23 12 23 12s0-3.86-.42-5.58z"></path><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"></polygon></svg>
+                {% when 'spotify' %}
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 11.5c2.1-1.5 5.8-1.5 8 0"></path><path d="M9 14c1.5-1 4.5-1 6 0"></path><path d="M10 16.5c1-.5 3-.5 4 0"></path></svg>
+                {% when 'twitter' %}
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+              {% endcase %}
+            </a>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Branding Logo (Centered) {%- endcomment -%}
+  <div class="footer-branding" style="padding-top: {{ section.settings.branding_padding_top }}px; padding-bottom: {{ section.settings.branding_padding_bottom }}px;">
+    {% if section.settings.use_image_logo and section.settings.brand_logo != blank %}
+      <img src="{{ section.settings.brand_logo | img_url: 'master' }}" 
+        alt="{{ section.settings.brand_logo.alt | default: shop.name }}"
+        class="brand-logo-image" loading="lazy">
+    {% else %}
+      <h2 class="brand-logo">
+        {{ section.settings.brand_text_1 }}<span class="brand-symbol">®</span>{{ section.settings.brand_text_2 }}
+      </h2>
+    {% endif %}
+  </div>
+</footer>
+
+{%- comment -%} Locale Selection Modal Popup {%- endcomment -%}
+<div class="locale-modal" id="localeModal">
+  <div class="locale-modal-overlay" id="localeModalOverlay"></div>
+  <div class="locale-modal-content">
+    
+    {%- comment -%} Modal Header {%- endcomment -%}
+    <div class="locale-modal-header">
+      <button class="locale-modal-close" id="localeModalClose">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="locale-modal-body">
+      {%- comment -%} Brand Logo/Text {%- endcomment -%}
+      <div class="modal-brand">
+        {% if section.settings.modal_logo != blank %}
+          <img src="{{ section.settings.modal_logo | img_url: '300x' }}" 
+            alt="{{ shop.name }}"
+            class="modal-brand-logo">
+        {% else %}
+          <h1 class="modal-brand-text">{{ section.settings.brand_text_1 }}<span class="brand-reg">®</span>{{ section.settings.brand_text_2 }}</h1>
+        {% endif %}
+      </div>
+
+      {%- comment -%} Modal Title {%- endcomment -%}
+      <h2 class="locale-modal-title">{{ section.settings.locale_title | default: "ARE YOU SHOPPING IN ESPAÑA?" }}</h2>
+      
+      {%- comment -%} Benefits List {%- endcomment -%}
+      {% if section.settings.benefit_1 != blank or section.settings.benefit_2 != blank or section.settings.benefit_3 != blank %}
+        <ul class="modal-benefits">
+          {% if section.settings.benefit_1 != blank %}
+            <li>{{ section.settings.benefit_1 }}</li>
+          {% endif %}
+          {% if section.settings.benefit_2 != blank %}
+            <li>{{ section.settings.benefit_2 }}</li>
+          {% endif %}
+          {% if section.settings.benefit_3 != blank %}
+            <li>{{ section.settings.benefit_3 }}</li>
+          {% endif %}
+        </ul>
+      {% endif %}
+      
+      {%- comment -%} Forms Container {%- endcomment -%}
+      <div class="modal-forms-wrapper">
+        {%- comment -%} Country Selector {%- endcomment -%}
+        <div class="modal-selector-group">
+          <label class="modal-selector-label">{{ section.settings.country_label | default: "SHIPPING TO" }}</label>
+          {% form 'localization', id: 'ModalCountryForm', class: 'locale-form-inline' %}
+            <div class="modal-select-wrapper">
+              <select name="country_code" class="modal-select" id="countrySelect">
+                {%- for country in localization.available_countries -%}
+                  <option value="{{ country.iso_code }}" {% if country.iso_code == localization.country.iso_code %}selected{% endif %}>
+                    {{ country.name }} ({{ country.currency.iso_code }})
+                  </option>
+                {%- endfor -%}
+              </select>
+              <svg class="modal-select-arrow" width="12" height="12" viewBox="0 0 20 20" fill="none">
+                <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" fill="currentColor"/>
+              </svg>
+            </div>
+          {% endform %}
+        </div>
+
+        {%- comment -%} Language Selector {%- endcomment -%}
+        <div class="modal-selector-group">
+          <label class="modal-selector-label">{{ section.settings.language_label | default: "LANGUAGE" }}</label>
+          {% form 'localization', id: 'ModalLanguageForm', class: 'locale-form-inline' %}
+            <div class="modal-select-wrapper">
+              <select name="locale_code" class="modal-select" id="languageSelect">
+                {%- for language in localization.available_languages -%}
+                  <option value="{{ language.iso_code }}" {% if language.iso_code == localization.language.iso_code %}selected{% endif %}>
+                    {{ language.endonym_name | capitalize }}
+                  </option>
+                {%- endfor -%}
+              </select>
+              <svg class="modal-select-arrow" width="12" height="12" viewBox="0 0 20 20" fill="none">
+                <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" fill="currentColor"/>
+              </svg>
+            </div>
+          {% endform %}
+        </div>
+      </div>
+
+      {%- comment -%} Confirm Button {%- endcomment -%}
+      <button class="modal-confirm-btn" id="modalConfirmBtn">
+        {{ section.settings.confirm_button_text | default: "CONFIRM" }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* BASE CONTAINER - Fixed for mobile responsiveness */
+  .footer-nude-project {
+    width: 100%;
+    max-width: 100%;
+    background-color: #ffffff;
+    color: #000;
+    padding-top: 10px;
+    overflow-x: hidden;
+  }
+  
+  .footer-container { 
+    max-width: 100%; 
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+  
+  @media (max-width: 767px) {
+    .footer-container {
+      padding-left: 20px !important;
+    }
+  }
+  
+  /* Ensure all child elements respect container width */
+  .footer-nude-project * {
+    box-sizing: border-box;
+  }
+  
+  /* Featured Product */
+  .featured-product-section { 
+    margin-bottom: 10px; 
+    padding-bottom: 10px; 
+    border-bottom: 1px solid #f3f4f6;
+    width: 100%;
+    max-width: 100%;
+  }
+  .featured-product-container { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 2rem; 
+    max-width: 1200px; 
+    margin: 0 auto;
+    width: 100%;
+  }
+  @media (min-width: 768px) { 
+    .featured-product-container { 
+      flex-direction: row; 
+      align-items: center; 
+    } 
+  }
+  .product-image-wrapper { 
+    position: relative; 
+    flex: 1; 
+    overflow: hidden; 
+    border-radius: 8px;
+    width: 100%;
+    max-width: 100%;
+  }
+  .product-image { 
+    width: 100%; 
+    height: auto; 
+    display: block; 
+    transition: transform 0.3s ease;
+    max-width: 100%;
+  }
+  .product-image:hover { transform: scale(1.05); }
+  .product-overlay { 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0; 
+    background: rgba(60, 42, 33, 0.7); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    opacity: 0; 
+    transition: opacity 0.3s ease; 
+  }
+  .product-image-wrapper:hover .product-overlay { opacity: 1; }
+  .add-to-cart-btn { 
+    background: white; 
+    color: #000; 
+    border: none; 
+    padding: 1rem 2rem; 
+    font-size: 14px; 
+    font-weight: 700; 
+    text-transform: uppercase; 
+    letter-spacing: 0.1em; 
+    cursor: pointer; 
+    transition: all 0.3s ease; 
+  }
+  .add-to-cart-btn:hover { 
+    background: #000; 
+    color: white; 
+  }
+  .product-info { 
+    flex: 1; 
+    padding: 0 1rem;
+    width: 100%;
+    max-width: 100%;
+  }
+  @media (min-width: 768px) { 
+    .product-info { padding-left: 3rem; } 
+  }
+  .product-title { 
+    font-size: 24px; 
+    font-weight: 700; 
+    margin-bottom: 0.5rem; 
+    color: #000;
+    word-wrap: break-word;
+  }
+  .product-price { 
+    font-size: 18px; 
+    font-weight: 500; 
+    color: #666; 
+    margin-bottom: 1.5rem; 
+  }
+  .size-selector { 
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 100%;
+  }
+  .size-label { 
+    display: block; 
+    font-size: 14px; 
+    font-weight: 600; 
+    margin-bottom: 0.75rem; 
+    color: #000; 
+  }
+  .size-options { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 100%;
+  }
+  .size-option { 
+    position: relative; 
+    cursor: pointer; 
+  }
+  .size-option input[type="radio"] { 
+    position: absolute; 
+    opacity: 0; 
+    pointer-events: none; 
+  }
+  .size-value { 
+    display: inline-block; 
+    padding: 0.5rem 1rem; 
+    border: 1px solid #d1d5db; 
+    border-radius: 4px; 
+    font-size: 13px; 
+    font-weight: 500; 
+    transition: all 0.2s ease; 
+    min-width: 50px; 
+    text-align: center; 
+  }
+  .size-option input[type="radio"]:checked + .size-value { 
+    background: #000; 
+    color: white; 
+    border-color: #000; 
+  }
+  .size-option:hover .size-value { border-color: #000; }
+  .quick-add-btn { 
+    background: #000; 
+    color: white; 
+    border: none; 
+    padding: 1rem 2.5rem; 
+    font-size: 14px; 
+    font-weight: 700; 
+    text-transform: uppercase; 
+    letter-spacing: 0.1em; 
+    cursor: pointer; 
+    transition: all 0.3s ease; 
+    width: 100%; 
+    max-width: 300px; 
+  }
+  .quick-add-btn:hover { 
+    background: #2a1c17; 
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 12px rgba(60, 42, 33, 0.2); 
+  }
+  
+  /* Grid Layout */
+  .footer-grid { 
+    display: grid; 
+    grid-template-columns: 1fr; 
+    gap: 3rem; 
+    padding-bottom: 4rem;
+    width: 100%;
+    max-width: 100%;
+  }
+  @media (min-width: 768px) { 
+    .footer-grid { 
+      grid-template-columns: repeat(12, 1fr); 
+    }
+    .footer-newsletter { grid-column: span 5; }
+    .footer-menu-section { grid-column: span 2; }
+    .footer-menu-section:last-of-type { grid-column: span 3; }
+  }
+  
+  /* Newsletter */
+  .newsletter-content { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+  }
+  .footer-heading { 
+    font-size: 16px; 
+    font-weight: 900; 
+    text-transform: uppercase; 
+    letter-spacing: 0.1em; 
+    margin-bottom: 1rem;
+    word-wrap: break-word;
+  }
+  .newsletter-description { 
+    font-size: 13px; 
+    margin-bottom: 1rem;
+    word-wrap: break-word;
+  }
+  .newsletter-form { 
+    margin-bottom: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+  }
+  .newsletter-input-wrapper { 
+    position: relative; 
+    border-bottom: 1px solid #000; 
+    padding-bottom: 0.5rem; 
+    display: flex; 
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+  }
+  .newsletter-email { 
+    background: transparent; 
+    border: none; 
+    outline: none; 
+    font-size: 13px; 
+    width: 100%; 
+    padding: 0.25rem 0; 
+    color: #000;
+    min-width: 0;
+  }
+  .newsletter-email::placeholder { color: #d1d5db; }
+  .newsletter-submit { 
+    font-size: 11px; 
+    font-weight: 700; 
+    text-transform: uppercase; 
+    letter-spacing: 0.1em; 
+    background: none; 
+    border: none; 
+    cursor: pointer; 
+    transition: opacity 0.3s; 
+    color: #000; 
+    padding: 0.25rem 0.5rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .newsletter-submit:hover { opacity: 0.7; }
+  
+  .newsletter-success { 
+    padding: 0.75rem; 
+    background-color: #d1fae5; 
+    border: 1px solid #10b981; 
+    border-radius: 4px; 
+    margin-top: 1rem;
+    animation: fadeIn 0.3s ease;
+    width: 100%;
+    max-width: 100%;
+    word-wrap: break-word;
+  }
+  
+  .newsletter-error { 
+    padding: 0.75rem; 
+    background-color: #fee2e2; 
+    border: 1px solid #ef4444; 
+    border-radius: 4px; 
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 100%;
+    word-wrap: break-word;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Preferences */
+  .newsletter-preferences { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 1rem;
+    width: 100%;
+    max-width: 100%;
+  }
+  @media (min-width: 640px) { 
+    .newsletter-preferences { 
+      flex-direction: row; 
+      align-items: center; 
+    } 
+  }
+  .preferences-label { 
+    font-size: 13px;
+    word-wrap: break-word;
+  }
+  .preferences-options { 
+    display: flex; 
+    align-items: center; 
+    gap: 1.5rem; 
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 100%;
+  }
+  .preference-option { 
+    display: flex; 
+    align-items: center; 
+    gap: 0.5rem; 
+    cursor: pointer; 
+  }
+  .preference-option input[type="radio"] { 
+    position: absolute; 
+    opacity: 0; 
+    pointer-events: none; 
+  }
+  .radio-custom { 
+    width: 12px; 
+    height: 12px; 
+    border-radius: 50%; 
+    border: 1px solid #000; 
+    background: transparent; 
+    position: relative; 
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .preference-option input[type="radio"]:checked + .radio-custom { 
+    background: #000; 
+  }
+  .preference-text { 
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .preference-option:hover .preference-text { 
+    text-decoration: underline; 
+  }
+  
+  /* Checkbox */
+  .newsletter-checkbox { 
+    display: flex; 
+    align-items: start; 
+    gap: 0.75rem; 
+    cursor: pointer; 
+    max-width: 100%;
+    width: 100%;
+  }
+  .checkbox-input { 
+    width: 14px; 
+    height: 14px; 
+    border: 1px solid #000; 
+    margin-top: 0.25rem; 
+    accent-color: #000; 
+    cursor: pointer; 
+    flex-shrink: 0; 
+  }
+  .checkbox-text { 
+    font-size: 11px; 
+    line-height: 1.6;
+    word-wrap: break-word;
+    max-width: 100%;
+  }
+  .privacy-link { 
+    text-decoration: underline; 
+    font-weight: 600; 
+    color: #000;
+    word-wrap: break-word;
+  }
+  .privacy-link:hover { opacity: 0.8; }
+  
+  /* Menus */
+  .footer-menu { 
+    list-style: none; 
+    padding: 0; 
+    margin: 0; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 100%;
+  }
+  .footer-menu-item { 
+    font-size: 13px;
+    word-wrap: break-word;
+  }
+  .footer-link { 
+    color: #000; 
+    text-decoration: none; 
+    transition: text-decoration 0.2s;
+    word-wrap: break-word;
+  }
+  .footer-link:hover { text-decoration: underline; }
+  
+  /* Mid Row - Locale Center + Social Right */
+  .footer-mid-row { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+    justify-content: center;
+    border-top: 1px solid #f3f4f6; 
+    gap: 1.5rem; 
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  @media (min-width: 768px) {
+    .footer-mid-row {
+      flex-direction: row;
+    }
+  }
+  
+  /* Locale Button - CENTERED */
+  .footer-locale-center { 
+    display: flex; 
+    justify-content: center;
+    flex: 1;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  @media (min-width: 768px) {
+    .footer-locale-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: auto;
+    }
+  }
+  
+  .locale-selector-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.5rem;
+    background: transparent;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #000;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+  
+  .locale-selector-button:hover {
+    border-color: #000;
+    background: #f9fafb;
+  }
+  
+  .locale-current {
+    font-weight: 700;
+  }
+  
+  /* Social Icons - RIGHT ALIGNED with 10px from edge on desktop */
+  .footer-social { 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 1.5rem; 
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  @media (min-width: 768px) {
+    .footer-social {
+      justify-content: flex-end;
+      margin-left: auto;
+      padding-right: 10px;
+      width: auto;
+    }
+  }
+  
+  .social-link { 
+    color: #000; 
+    transition: transform 0.3s; 
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .social-link:hover { transform: scale(1.1); }
+  
+  /* Branding - CENTERED */
+  .footer-branding { 
+    width: 100%; 
+    max-width: 100%;
+    text-align: center; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  
+  .brand-logo { 
+    font-size: 16vw; 
+    line-height: 0.8; 
+    font-weight: 900; 
+    letter-spacing: -0.06em; 
+    color: #000; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    position: relative; 
+    transform: translateY(10%); 
+    margin: 0;
+    max-width: 100%;
+    word-wrap: break-word;
+  }
+  .brand-symbol { 
+    font-size: 6vw; 
+    font-weight: 700; 
+    position: relative; 
+    top: -5vw; 
+  }
+  .brand-logo-image { 
+    max-width: 90%; 
+    width: auto; 
+    height: auto; 
+    max-height: 200px; 
+    object-fit: contain; 
+    opacity: 0.95; 
+    display: block;
+    margin: 0 auto;
+  }
+  @media (min-width: 768px) { 
+    .brand-logo-image { max-height: 300px; } 
+  }
+  
+  /* LOCALE MODAL STYLES */
+  .locale-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+  }
+  
+  .locale-modal.active {
+    display: flex;
+  }
+  
+  .locale-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+  
+  .locale-modal-content {
+    position: relative;
+    background: white;
+    border-radius: 0;
+    max-width: 520px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+    margin: auto;
+  }
+  
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .locale-modal-header {
+    position: relative;
+    padding: 1.25rem 1.5rem 0;
+    text-align: right;
+  }
+  
+  .locale-modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    color: #000;
+    transition: opacity 0.3s;
+    flex-shrink: 0;
+  }
+  
+  .locale-modal-close:hover {
+    opacity: 0.6;
+  }
+  
+  .locale-modal-body {
+    padding: 1.5rem 2.5rem 3rem;
+    text-align: center;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  @media (max-width: 480px) {
+    .locale-modal-body {
+      padding: 1.5rem 1.5rem 2.5rem;
+    }
+  }
+  
+  .modal-brand {
+    margin-bottom: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .modal-brand-logo {
+    max-width: 250px;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+    width: 100%;
+  }
+  
+  .modal-brand-text {
+    font-size: 42px;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: -0.02em;
+    color: #1a1a1a;
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    word-wrap: break-word;
+  }
+  
+  @media (max-width: 480px) {
+    .modal-brand-text {
+      font-size: 32px;
+    }
+  }
+  
+  .brand-reg {
+    font-size: 16px;
+    font-weight: 400;
+    position: relative;
+    top: -18px;
+    font-style: normal;
+  }
+  
+  @media (max-width: 480px) {
+    .brand-reg {
+      font-size: 12px;
+      top: -14px;
+    }
+  }
+  
+  .locale-modal-title {
+    font-size: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 1.5rem;
+    color: #1a1a1a;
+    word-wrap: break-word;
+  }
+  
+  @media (max-width: 480px) {
+    .locale-modal-title {
+      font-size: 13px;
+    }
+  }
+  
+  .modal-benefits {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+    text-align: left;
+    max-width: 380px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
+  
+  .modal-benefits li {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #4a4a4a;
+    padding-left: 1.25rem;
+    position: relative;
+    margin-bottom: 0.5rem;
+    word-wrap: break-word;
+  }
+  
+  .modal-benefits li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #000;
+    font-weight: 700;
+  }
+  
+  .modal-forms-wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  @media (min-width: 480px) {
+    .modal-forms-wrapper {
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+  }
+  
+  .modal-selector-group {
+    text-align: left;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .modal-selector-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+    word-wrap: break-word;
+  }
+  
+  .locale-form-inline {
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .modal-select-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .modal-select {
+    width: 100%;
+    padding: 0.85rem 2.5rem 0.85rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0;
+    font-size: 14px;
+    color: #1a1a1a;
+    background: white;
+    appearance: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    max-width: 100%;
+  }
+  
+  .modal-select:hover {
+    border-color: #000;
+  }
+  
+  .modal-select:focus {
+    outline: none;
+    border-color: #000;
+    box-shadow: 0 0 0 1px #000;
+  }
+  
+  .modal-select-arrow {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #000;
+  }
+  
+  .modal-confirm-btn {
+    width: 100%;
+    max-width: 100%;
+    padding: 1rem 2rem;
+    background: #000;
+    color: white;
+    border: none;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .modal-confirm-btn:hover {
+    background: #2a1c17;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(60, 42, 33, 0.3);
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // AUTO-CLEAR SUCCESS MESSAGE after 3 seconds
+  const successMsg = document.getElementById('newsletter-success-msg');
+  if (successMsg) {
+    setTimeout(function() {
+      successMsg.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      successMsg.style.opacity = '0';
+      successMsg.style.transform = 'translateY(-10px)';
+      setTimeout(function() {
+        successMsg.remove();
+      }, 500);
+    }, 3000); // 3 seconds
+  }
+  
+  // Gender preference handling
+  const genderRadios = document.querySelectorAll('.gender-preference-radio');
+  const hiddenField = document.getElementById('gender-preference-hidden');
+  
+  genderRadios.forEach(radio => {
+    radio.addEventListener('change', function() {
+      if (this.checked && hiddenField) hiddenField.value = this.value;
+    });
+  });
+  
+  const checkedRadio = document.querySelector('.gender-preference-radio:checked');
+  if (checkedRadio && hiddenField) hiddenField.value = checkedRadio.value;
+  
+  // Size selection
+  let selectedVariantId = null;
+  const sizeRadios = document.querySelectorAll('input[name="size"]');
+  sizeRadios.forEach(radio => {
+    radio.addEventListener('change', function() {
+      if (this.checked) selectedVariantId = this.dataset.variantId;
+    });
+  });
+  
+  const firstSizeRadio = document.querySelector('input[name="size"]:checked');
+  if (firstSizeRadio) selectedVariantId = firstSizeRadio.dataset.variantId;
+  
+  // Add to cart
+  document.querySelectorAll('.add-to-cart-btn, .quick-add-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      const variantId = selectedVariantId || this.dataset.productId;
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: [{ id: variantId, quantity: 1 }] })
+      }).then(r => r.json()).then(() => {
+        const msg = document.createElement('div');
+        msg.style.cssText = 'position:fixed;top:20px;right:20px;background:#10b981;color:white;padding:1rem 1.5rem;border-radius:4px;z-index:1000;';
+        msg.textContent = 'Product added!';
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 3000);
+      }).catch(console.error);
+    });
+  });
+  
+  // LOCALE MODAL FUNCTIONALITY
+  const modal = document.getElementById('localeModal');
+  const modalBtn = document.getElementById('localeModalBtn');
+  const modalClose = document.getElementById('localeModalClose');
+  const modalOverlay = document.getElementById('localeModalOverlay');
+  const confirmBtn = document.getElementById('modalConfirmBtn');
+  
+  // Open modal
+  if (modalBtn) {
+    modalBtn.addEventListener('click', function() {
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+  }
+  
+  // Close modal
+  function closeModal() {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  
+  if (modalClose) {
+    modalClose.addEventListener('click', closeModal);
+  }
+  
+  if (modalOverlay) {
+    modalOverlay.addEventListener('click', closeModal);
+  }
+  
+  // ESC key to close
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      closeModal();
+    }
+  });
+  
+  // Handle confirm button - submit both forms
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', function() {
+      const countrySelect = document.getElementById('countrySelect');
+      const languageSelect = document.getElementById('languageSelect');
+      const countryForm = document.getElementById('ModalCountryForm');
+      const languageForm = document.getElementById('ModalLanguageForm');
+      
+      // Check if country changed
+      const currentCountry = countryForm.querySelector('input[name="country_code"]');
+      const selectedCountry = countrySelect.value;
+      
+      // Check if language changed
+      const currentLanguage = languageForm.querySelector('input[name="locale_code"]');
+      const selectedLanguage = languageSelect.value;
+      
+      // Create hidden inputs and submit country form (which will trigger page reload)
+      if (countryForm) {
+        // Remove any existing hidden inputs
+        const existingInputs = countryForm.querySelectorAll('input[type="hidden"][name="country_code"]');
+        existingInputs.forEach(input => input.remove());
+        
+        // Add new hidden input with selected value
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'country_code';
+        hiddenInput.value = selectedCountry;
+        countryForm.appendChild(hiddenInput);
+        
+        // Also add language if different
+        const langInput = document.createElement('input');
+        langInput.type = 'hidden';
+        langInput.name = 'locale_code';
+        langInput.value = selectedLanguage;
+        countryForm.appendChild(langInput);
+        
+        countryForm.submit();
+      }
+    });
+  }
+});
+</script>
+
+{% schema %}
+{
+  "name": "Custom Footer",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Padding Controls"
+    },
+    {
+      "type": "range",
+      "id": "footer_padding_top",
+      "label": "Footer Top Padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 65
+    },
+    {
+      "type": "range",
+      "id": "footer_padding_horizontal",
+      "label": "Footer Horizontal Padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "footer_padding_bottom",
+      "label": "Footer Bottom Padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "mid_row_padding_top",
+      "label": "Mid Row Top Padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "mid_row_padding_bottom",
+      "label": "Mid Row Bottom Padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "branding_padding_top",
+      "label": "Branding Top Padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "branding_padding_bottom",
+      "label": "Branding Bottom Padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Featured Product"
+    },
+    {
+      "type": "product",
+      "id": "featured_product",
+      "label": "Select Featured Product"
+    },
+    {
+      "type": "text",
+      "id": "add_to_cart_text",
+      "label": "Add to Cart Text",
+      "default": "Add to Cart"
+    },
+    {
+      "type": "text",
+      "id": "size_label",
+      "label": "Size Label",
+      "default": "Size:"
+    },
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_title",
+      "label": "Title",
+      "default": "JOIN THE MOVEMENT"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_description",
+      "label": "Description",
+      "default": "SIGN UP TO OUR EMAIL LIST:"
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "label": "Email Placeholder",
+      "default": "user@email.com"
+    },
+    {
+      "type": "text",
+      "id": "subscribe_text",
+      "label": "Subscribe Text",
+      "default": "SUBSCRIBE"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success Message",
+      "default": "Thanks for subscribing!"
+    },
+    {
+      "type": "text",
+      "id": "preference_label",
+      "label": "Preference Label",
+      "default": "SELECT YOUR PREFERENCES:"
+    },
+    {
+      "type": "text",
+      "id": "preference_1",
+      "label": "Option 1",
+      "default": "MAN"
+    },
+    {
+      "type": "text",
+      "id": "preference_2",
+      "label": "Option 2",
+      "default": "WOMAN"
+    },
+    {
+      "type": "text",
+      "id": "preference_3",
+      "label": "Option 3",
+      "default": "BOTH"
+    },
+    {
+      "type": "text",
+      "id": "privacy_text",
+      "label": "Privacy Text",
+      "default": "I AGREE TO RECEIVE CONTENT VIA EMAIL AND HAVE READ AND ACCEPT THE"
+    },
+    {
+      "type": "url",
+      "id": "privacy_link",
+      "label": "Privacy Link"
+    },
+    {
+      "type": "text",
+      "id": "privacy_link_text",
+      "label": "Privacy Link Text",
+      "default": "PRIVACY POLICY"
+    },
+    {
+      "type": "header",
+      "content": "Locale Modal Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "modal_logo",
+      "label": "Modal Logo",
+      "info": "Logo to display in the popup (recommended: 300px wide)"
+    },
+    {
+      "type": "text",
+      "id": "locale_title",
+      "label": "Modal Title",
+      "default": "ARE YOU SHOPPING IN ESPAÑA?"
+    },
+    {
+      "type": "text",
+      "id": "benefit_1",
+      "label": "Benefit 1",
+      "default": "Free Express Shipping on orders over €200,00"
+    },
+    {
+      "type": "text",
+      "id": "benefit_2",
+      "label": "Benefit 2",
+      "default": "Receive your order in 8-10 business days"
+    },
+    {
+      "type": "text",
+      "id": "benefit_3",
+      "label": "Benefit 3",
+      "default": "Easy, tracked 30-day returns"
+    },
+    {
+      "type": "text",
+      "id": "country_label",
+      "label": "Country Section Label",
+      "default": "SHIPPING TO"
+    },
+    {
+      "type": "text",
+      "id": "language_label",
+      "label": "Language Section Label",
+      "default": "LANGUAGE"
+    },
+    {
+      "type": "text",
+      "id": "confirm_button_text",
+      "label": "Confirm Button Text",
+      "default": "CONFIRM"
+    },
+    {
+      "type": "header",
+      "content": "Branding"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_image_logo",
+      "label": "Use Image Logo",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "brand_logo",
+      "label": "Logo Image"
+    },
+    {
+      "type": "text",
+      "id": "brand_text_1",
+      "label": "Text Part 1",
+      "default": "Luxe"
+    },
+    {
+      "type": "text",
+      "id": "brand_text_2",
+      "label": "Text Part 2",
+      "default": "Pass"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Menu Section",
+      "settings": [
+        {
+          "type": "text",
+          "id": "menu_title",
+          "label": "Title",
+          "default": "Menu"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu"
+        }
+      ]
+    },
+    {
+      "type": "social",
+      "name": "Social Icon",
+      "settings": [
+        {
+          "type": "select",
+          "id": "social_platform",
+          "label": "Platform",
+          "options": [
+            { "value": "instagram", "label": "Instagram" },
+            { "value": "tiktok", "label": "TikTok" },
+            { "value": "facebook", "label": "Facebook" },
+            { "value": "youtube", "label": "YouTube" },
+            { "value": "spotify", "label": "Spotify" },
+            { "value": "twitter", "label": "Twitter" }
+          ],
+          "default": "instagram"
+        },
+        {
+          "type": "url",
+          "id": "social_link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Footer"
+    }
+  ]
+}
+{% endschema %}

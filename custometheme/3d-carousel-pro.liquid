@@ -1,0 +1,1128 @@
+{% comment %}
+  3D Carousel Pro - Shopify Section
+  Customizable 3D carousel with settings panel and dynamic content
+{% endcomment %}
+
+{% style %}
+  #shopify-section-{{ section.id }} {
+    /* Section Settings */
+    --section-width: 100%;
+    --section-max-width: {{ section.settings.section_max_width }}px;
+    --section-padding-top: {{ section.settings.padding_top }}px;
+    --section-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --section-padding-left: 20px;
+    --section-padding-right: 20px;
+    --section-bg-color: {{ section.settings.bg_color }};
+    
+    /* Card Settings */
+    --card-width: {{ section.settings.card_width }}px;
+    --card-height: {{ section.settings.card_height }}px;
+    --card-radius: {{ section.settings.card_radius }}px;
+    --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    --card-bg: linear-gradient(135deg, #1a1a2e 0%, #16162a 100%);
+    --card-border: 1px solid rgba(255, 255, 255, 0.08);
+    
+    /* Image Settings */
+    --image-height: {{ section.settings.image_height }}px;
+    --image-object-fit: cover;
+    
+    /* Carousel Height */
+    --carousel-height: {{ section.settings.carousel_height }}px;
+    
+    /* Mobile Settings */
+    --mobile-carousel-height: {{ section.settings.mobile_carousel_height }}px;
+    --mobile-card-width: {{ section.settings.mobile_card_width }}px;
+    --mobile-card-height: {{ section.settings.mobile_card_height }}px;
+    --mobile-image-height: {{ section.settings.mobile_image_height }}px;
+    
+    /* Text Settings */
+    --title-font: {{ section.settings.title_font.family }}, {{ section.settings.title_font.fallback_families }};
+    --title-size: {{ section.settings.title_size }}px;
+    --title-weight: {{ section.settings.title_weight }};
+    --title-color: {{ section.settings.title_color }};
+    --title-line-height: 1.3;
+    
+    /* Section Heading Settings */
+    --section-heading-color: {{ section.settings.section_heading_color }};
+    --section-heading-size: {{ section.settings.section_heading_size }}px;
+    --section-heading-weight: {{ section.settings.section_heading_weight }};
+    --section-subtitle-color: {{ section.settings.section_subtitle_color }};
+    --section-subtitle-size: {{ section.settings.section_subtitle_size }}px;
+    --section-subtitle-weight: {{ section.settings.section_subtitle_weight }};
+    
+    --subtitle-font: {{ section.settings.subtitle_font.family }}, {{ section.settings.subtitle_font.fallback_families }};
+    --subtitle-size: {{ section.settings.subtitle_size }}px;
+    --subtitle-weight: 400;
+    --subtitle-color: {{ section.settings.subtitle_color }};
+    --subtitle-line-height: 1.6;
+    
+    --text-padding: {{ section.settings.text_padding }}px;
+    
+    /* Navigation Settings */
+    --arrow-color: {{ section.settings.arrow_color }};
+    --arrow-hover-color: {{ section.settings.arrow_hover_color }};
+    --arrow-bg: rgba(255, 255, 255, 0.08);
+    --arrow-hover-bg: rgba(255, 107, 107, 0.15);
+    --arrow-size: {{ section.settings.arrow_size }}px;
+    --arrow-icon-size: 24px;
+    
+    /* Animation Settings */
+    --transition-duration: 0.6s;
+    --transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  #shopify-section-{{ section.id }} * {
+    box-sizing: border-box;
+  }
+
+  #shopify-section-{{ section.id }} {
+    background: var(--section-bg-color);
+    color: var(--title-color);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Background Image Layer */
+  #shopify-section-{{ section.id }}::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: var(--bg-image);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: {{ section.settings.bg_image_opacity | divided_by: 100.0 }};
+    z-index: 0;
+    transition: opacity 0.8s ease, background-image 0.8s ease;
+    pointer-events: none;
+    filter: blur({{ section.settings.bg_blur }}px) brightness({{ section.settings.bg_brightness | divided_by: 100.0 }});
+  }
+
+  #shopify-section-{{ section.id }}::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, 
+      var(--section-bg-color) 0%, 
+      transparent 30%, 
+      transparent 70%, 
+      var(--section-bg-color) 100%
+    );
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Main Section */
+  #shopify-section-{{ section.id }} .carousel-section {
+    width: var(--section-width);
+    max-width: var(--section-max-width);
+    margin: 0 auto;
+    padding: var(--section-padding-top) var(--section-padding-right) var(--section-padding-bottom) var(--section-padding-left);
+    position: relative;
+    z-index: 1;
+  }
+
+  #shopify-section-{{ section.id }} .section-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  #shopify-section-{{ section.id }} .section-title {
+    font-family: var(--title-font);
+    font-size: var(--section-heading-size);
+    font-weight: var(--section-heading-weight);
+    color: var(--section-heading-color);
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+
+  #shopify-section-{{ section.id }} .section-subtitle {
+    font-family: var(--subtitle-font);
+    font-size: var(--section-subtitle-size);
+    font-weight: var(--section-subtitle-weight);
+    color: var(--section-subtitle-color);
+    line-height: 1.5;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Carousel Container */
+  #shopify-section-{{ section.id }} .carousel-container {
+    position: relative;
+    width: 100%;
+    height: var(--carousel-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 2000px;
+  }
+
+  #shopify-section-{{ section.id }} .carousel-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-style: preserve-3d;
+  }
+
+  /* Card Styles */
+  #shopify-section-{{ section.id }} .carousel-card {
+    position: absolute;
+    width: var(--card-width);
+    height: var(--card-height);
+    background: var(--card-bg);
+    border-radius: var(--card-radius);
+    border: var(--card-border);
+    overflow: hidden;
+    transition: all var(--transition-duration) var(--transition-easing);
+    cursor: pointer;
+    transform-style: preserve-3d;
+    box-shadow: var(--card-shadow);
+  }
+
+  #shopify-section-{{ section.id }} .carousel-card.active {
+    z-index: 10;
+    transform: translateX(0) scale(1) rotateY(0deg);
+    opacity: 1;
+  }
+
+  #shopify-section-{{ section.id }} .carousel-card.prev {
+    z-index: 5;
+    transform: translateX(-450px) scale(0.85) rotateY(25deg);
+    opacity: 0.7;
+    filter: brightness(0.7);
+  }
+
+  #shopify-section-{{ section.id }} .carousel-card.next {
+    z-index: 5;
+    transform: translateX(450px) scale(0.85) rotateY(-25deg);
+    opacity: 0.7;
+    filter: brightness(0.7);
+  }
+
+  #shopify-section-{{ section.id }} .carousel-card.hidden {
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  #shopify-section-{{ section.id }} .carousel-card.hidden.left {
+    transform: translateX(-600px) scale(0.6) rotateY(35deg);
+  }
+
+  #shopify-section-{{ section.id }} .carousel-card.hidden.right {
+    transform: translateX(600px) scale(0.6) rotateY(-35deg);
+  }
+
+  #shopify-section-{{ section.id }} .card-image {
+    width: 100%;
+    height: var(--image-height);
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: transform var(--transition-duration) var(--transition-easing);
+  }
+
+  #shopify-section-{{ section.id }} .carousel-card:hover .card-image {
+    transform: scale(1.05);
+  }
+
+  #shopify-section-{{ section.id }} .card-content {
+    padding: var(--text-padding);
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+  }
+
+  #shopify-section-{{ section.id }} .card-title {
+    font-family: var(--title-font);
+    font-size: var(--title-size);
+    font-weight: var(--title-weight);
+    color: var(--title-color);
+    line-height: var(--title-line-height);
+    margin-bottom: 12px;
+    transition: color 0.3s ease;
+  }
+
+  #shopify-section-{{ section.id }} .carousel-card:hover .card-title {
+    color: #ff6b6b;
+  }
+
+  #shopify-section-{{ section.id }} .card-subtitle {
+    font-family: var(--subtitle-font);
+    font-size: var(--subtitle-size);
+    font-weight: var(--subtitle-weight);
+    color: var(--subtitle-color);
+    line-height: var(--subtitle-line-height);
+    margin-bottom: 16px;
+  }
+
+  #shopify-section-{{ section.id }} .card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #ff6b6b;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: gap 0.3s ease;
+  }
+
+  #shopify-section-{{ section.id }} .card-link:hover {
+    gap: 12px;
+  }
+
+  #shopify-section-{{ section.id }} .card-link svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Navigation Arrows */
+  #shopify-section-{{ section.id }} .carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--arrow-size);
+    height: var(--arrow-size);
+    background: var(--arrow-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 20;
+    backdrop-filter: blur(10px);
+  }
+
+  #shopify-section-{{ section.id }} .carousel-nav:hover {
+    background: var(--arrow-hover-bg);
+    transform: translateY(-50%) scale(1.1);
+    border-color: var(--arrow-hover-color);
+  }
+
+  #shopify-section-{{ section.id }} .carousel-nav.prev-btn {
+    left: max(20px, calc((100% - var(--card-width)) / 2 - 100px));
+  }
+
+  #shopify-section-{{ section.id }} .carousel-nav.next-btn {
+    right: max(20px, calc((100% - var(--card-width)) / 2 - 100px));
+  }
+
+  #shopify-section-{{ section.id }} .carousel-nav svg {
+    width: var(--arrow-icon-size);
+    height: var(--arrow-icon-size);
+    fill: var(--arrow-color);
+    transition: fill 0.3s ease;
+  }
+
+  #shopify-section-{{ section.id }} .carousel-nav:hover svg {
+    fill: var(--arrow-hover-color);
+  }
+
+  /* Indicators */
+  #shopify-section-{{ section.id }} .carousel-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 40px;
+  }
+
+  #shopify-section-{{ section.id }} .indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  #shopify-section-{{ section.id }} .indicator.active {
+    width: 32px;
+    border-radius: 4px;
+    background: #ff6b6b;
+  }
+
+  #shopify-section-{{ section.id }} .indicator:hover {
+    background: rgba(255, 107, 107, 0.5);
+  }
+
+  /* Keyboard hint */
+  #shopify-section-{{ section.id }} .keyboard-hint {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 500;
+  }
+
+  /* Responsive */
+  @media (max-width: 1200px) {
+    #shopify-section-{{ section.id }} .carousel-card.prev,
+    #shopify-section-{{ section.id }} .carousel-card.next {
+      transform: translateX(0) scale(0.9) rotateY(0deg);
+      opacity: 0.5;
+    }
+    
+    #shopify-section-{{ section.id }} .carousel-card.hidden {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    #shopify-section-{{ section.id }} {
+      --card-width: var(--mobile-card-width);
+      --card-height: var(--mobile-card-height);
+      --image-height: var(--mobile-image-height);
+      --carousel-height: var(--mobile-carousel-height);
+      --section-padding-top: 40px;
+      --section-padding-bottom: 40px;
+    }
+    
+    #shopify-section-{{ section.id }} .carousel-nav {
+      display: none;
+    }
+  }
+{% endstyle %}
+
+{{ section.settings.title_font | font_face: font_display: 'swap' }}
+{{ section.settings.subtitle_font | font_face: font_display: 'swap' }}
+
+<div class="carousel-section">
+  {% if section.settings.show_header %}
+    <div class="section-header">
+      <h2 class="section-title">{{ section.settings.section_title }}</h2>
+      <p class="section-subtitle">{{ section.settings.section_subtitle }}</p>
+    </div>
+  {% endif %}
+
+  <div class="carousel-container">
+    <div class="carousel-track" id="carousel-track-{{ section.id }}">
+      {% for block in section.blocks %}
+        <div class="carousel-card" data-block-id="{{ block.id }}" {{ block.shopify_attributes }}>
+          {% if block.settings.image != blank %}
+            <img 
+              src="{{ block.settings.image | image_url: width: 800 }}" 
+              alt="{{ block.settings.title | escape }}" 
+              class="card-image"
+              loading="lazy"
+            >
+          {% else %}
+            <div class="card-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.5); font-size: 14px;">
+              No image
+            </div>
+          {% endif %}
+          
+          <div class="card-content">
+            <h3 class="card-title">{{ block.settings.title }}</h3>
+            <p class="card-subtitle">{{ block.settings.subtitle }}</p>
+            {% if block.settings.link_text != blank and block.settings.link_url != blank %}
+              <a href="{{ block.settings.link_url }}" class="card-link">
+                {{ block.settings.link_text }}
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+                </svg>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if section.settings.show_arrows %}
+      <button class="carousel-nav prev-btn" id="prev-btn-{{ section.id }}" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+        </svg>
+      </button>
+
+      <button class="carousel-nav next-btn" id="next-btn-{{ section.id }}" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+        </svg>
+      </button>
+    {% endif %}
+  </div>
+
+  {% if section.settings.show_indicators %}
+    <div class="carousel-indicators" id="indicators-{{ section.id }}"></div>
+  {% endif %}
+  
+  {% if section.settings.show_keyboard_hint %}
+    <div class="keyboard-hint">
+      Use ← → arrow keys or click arrows to navigate
+    </div>
+  {% endif %}
+</div>
+
+<script>
+(function() {
+  const sectionId = '{{ section.id }}';
+  const carouselTrack = document.getElementById('carousel-track-' + sectionId);
+  const indicatorsContainer = document.getElementById('indicators-' + sectionId);
+  const prevBtn = document.getElementById('prev-btn-' + sectionId);
+  const nextBtn = document.getElementById('next-btn-' + sectionId);
+  
+  let currentIndex = 0;
+  let autoPlayInterval = null;
+  const autoPlayDelay = {{ section.settings.autoplay_delay | times: 1000 }};
+  const enableAutoPlay = {{ section.settings.enable_autoplay }};
+  
+  // Get card data from blocks
+  const cardsData = [
+    {% for block in section.blocks %}
+      {
+        image: '{{ block.settings.image | image_url: width: 800 }}',
+        title: '{{ block.settings.title | escape }}',
+        subtitle: '{{ block.settings.subtitle | escape }}'
+      }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ];
+  
+  // Update background image based on current slide
+  function updateBackgroundImage() {
+    if (cardsData[currentIndex] && cardsData[currentIndex].image) {
+      const section = document.getElementById('shopify-section-' + sectionId);
+      section.style.setProperty('--bg-image', 'url("' + cardsData[currentIndex].image + '")');
+    }
+  }
+  
+  // Create indicators
+  function createIndicators() {
+    if (!indicatorsContainer) return;
+    
+    indicatorsContainer.innerHTML = '';
+    const cards = carouselTrack.querySelectorAll('.carousel-card');
+    
+    cards.forEach((card, index) => {
+      const indicator = document.createElement('div');
+      indicator.className = 'indicator';
+      indicator.addEventListener('click', () => goToSlide(index));
+      indicatorsContainer.appendChild(indicator);
+    });
+  }
+  
+  // Update carousel positions
+  function updateCarousel() {
+    const cards = carouselTrack.querySelectorAll('.carousel-card');
+    const indicators = indicatorsContainer ? indicatorsContainer.querySelectorAll('.indicator') : [];
+    const total = cards.length;
+    
+    if (total === 0) return;
+    
+    cards.forEach((card, index) => {
+      card.classList.remove('active', 'prev', 'next', 'hidden', 'left', 'right');
+      
+      if (index === currentIndex) {
+        card.classList.add('active');
+      } else if (index === (currentIndex - 1 + total) % total) {
+        card.classList.add('prev');
+      } else if (index === (currentIndex + 1) % total) {
+        card.classList.add('next');
+      } else {
+        card.classList.add('hidden');
+        if (index < currentIndex || (currentIndex === 0 && index === total - 1)) {
+          card.classList.add('left');
+        } else {
+          card.classList.add('right');
+        }
+      }
+    });
+    
+    indicators.forEach((indicator, index) => {
+      indicator.classList.toggle('active', index === currentIndex);
+    });
+    
+    updateBackgroundImage();
+  }
+  
+  // Auto-play functionality
+  function startAutoPlay() {
+    stopAutoPlay();
+    if (enableAutoPlay && autoPlayDelay > 0) {
+      autoPlayInterval = setInterval(nextSlide, autoPlayDelay);
+    }
+  }
+  
+  function stopAutoPlay() {
+    if (autoPlayInterval) {
+      clearInterval(autoPlayInterval);
+      autoPlayInterval = null;
+    }
+  }
+  
+  // Navigation functions
+  function nextSlide() {
+    const total = carouselTrack.querySelectorAll('.carousel-card').length;
+    currentIndex = (currentIndex + 1) % total;
+    updateCarousel();
+  }
+  
+  function prevSlide() {
+    const total = carouselTrack.querySelectorAll('.carousel-card').length;
+    currentIndex = (currentIndex - 1 + total) % total;
+    updateCarousel();
+  }
+  
+  function goToSlide(index) {
+    currentIndex = index;
+    updateCarousel();
+    if (enableAutoPlay && autoPlayDelay > 0) {
+      startAutoPlay();
+    }
+  }
+  
+  // Event listeners
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      prevSlide();
+      if (enableAutoPlay) startAutoPlay();
+    });
+  }
+  
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      nextSlide();
+      if (enableAutoPlay) startAutoPlay();
+    });
+  }
+  
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') prevSlide();
+    if (e.key === 'ArrowRight') nextSlide();
+  });
+  
+  // Touch/swipe support
+  let touchStartX = 0;
+  let touchEndX = 0;
+  
+  carouselTrack.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+  
+  carouselTrack.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  });
+  
+  function handleSwipe() {
+    if (touchEndX < touchStartX - 50) nextSlide();
+    if (touchEndX > touchStartX + 50) prevSlide();
+  }
+  
+  // Initialize
+  createIndicators();
+  updateCarousel();
+  
+  if (enableAutoPlay) {
+    startAutoPlay();
+  }
+  
+  // Pause autoplay when page is hidden
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      stopAutoPlay();
+    } else if (enableAutoPlay) {
+      startAutoPlay();
+    }
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "3D Carousel Pro",
+  "tag": "section",
+  "class": "carousel-3d-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_header",
+      "label": "Show section header",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section title",
+      "default": "3D Carousel Pro"
+    },
+    {
+      "type": "text",
+      "id": "section_subtitle",
+      "label": "Section subtitle",
+      "default": "Interactive showcase with infinite looping and smooth 3D transitions"
+    },
+    {
+      "type": "header",
+      "content": "Section Heading Typography"
+    },
+    {
+      "type": "range",
+      "id": "section_heading_size",
+      "min": 24,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading font size",
+      "default": 48,
+      "info": "Size of the main section title"
+    },
+    {
+      "type": "select",
+      "id": "section_heading_weight",
+      "label": "Heading font weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra Bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "color",
+      "id": "section_heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "section_subtitle_size",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "label": "Subtitle font size",
+      "default": 18,
+      "info": "Size of the section subtitle"
+    },
+    {
+      "type": "select",
+      "id": "section_subtitle_weight",
+      "label": "Subtitle font weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "color",
+      "id": "section_subtitle_color",
+      "label": "Subtitle color",
+      "default": "#a8a8b8"
+    },
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "range",
+      "id": "section_max_width",
+      "min": 1000,
+      "max": 1600,
+      "step": 100,
+      "unit": "px",
+      "label": "Max width",
+      "default": 1400
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 80
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#0a0a0f"
+    },
+    {
+      "type": "header",
+      "content": "Background Image Settings"
+    },
+    {
+      "type": "range",
+      "id": "bg_image_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Background image opacity",
+      "default": 30,
+      "info": "Increase this to make the background image more visible"
+    },
+    {
+      "type": "range",
+      "id": "bg_blur",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Background blur",
+      "default": 8,
+      "info": "Blur effect on background image"
+    },
+    {
+      "type": "range",
+      "id": "bg_brightness",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Background brightness",
+      "default": 70,
+      "info": "Brightness of background image"
+    },
+    {
+      "type": "header",
+      "content": "Card Settings"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "min": 280,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "label": "Card width",
+      "default": 380
+    },
+    {
+      "type": "range",
+      "id": "card_height",
+      "min": 400,
+      "max": 700,
+      "step": 10,
+      "unit": "px",
+      "label": "Card height",
+      "default": 520
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "image_height",
+      "min": 150,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "label": "Image height",
+      "default": 260
+    },
+    {
+      "type": "range",
+      "id": "carousel_height",
+      "min": 400,
+      "max": 1000,
+      "step": 50,
+      "unit": "px",
+      "label": "Carousel container height",
+      "default": 600,
+      "info": "Adjust the overall height of the carousel section"
+    },
+    {
+      "type": "header",
+      "content": "Mobile Settings"
+    },
+    {
+      "type": "range",
+      "id": "mobile_carousel_height",
+      "min": 300,
+      "max": 800,
+      "step": 25,
+      "unit": "px",
+      "label": "Mobile carousel height",
+      "default": 500,
+      "info": "Carousel height on mobile devices"
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_width",
+      "min": 250,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "label": "Mobile card width",
+      "default": 320
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_height",
+      "min": 350,
+      "max": 600,
+      "step": 10,
+      "unit": "px",
+      "label": "Mobile card height",
+      "default": 460
+    },
+    {
+      "type": "range",
+      "id": "mobile_image_height",
+      "min": 120,
+      "max": 350,
+      "step": 10,
+      "unit": "px",
+      "label": "Mobile image height",
+      "default": 220
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "title_font",
+      "label": "Title font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 16,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Title font size",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "title_weight",
+      "label": "Title font weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "font_picker",
+      "id": "subtitle_font",
+      "label": "Subtitle font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Subtitle font size",
+      "default": 15
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle color",
+      "default": "#a8a8b8"
+    },
+    {
+      "type": "range",
+      "id": "text_padding",
+      "min": 12,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Text padding",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show navigation arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_indicators",
+      "label": "Show indicators",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_keyboard_hint",
+      "label": "Show keyboard hint",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_autoplay",
+      "label": "Enable autoplay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_delay",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "sec",
+      "label": "Autoplay delay",
+      "default": 5
+    },
+    {
+      "type": "color",
+      "id": "arrow_color",
+      "label": "Arrow color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "arrow_hover_color",
+      "label": "Arrow hover color",
+      "default": "#ff6b6b"
+    },
+    {
+      "type": "range",
+      "id": "arrow_size",
+      "min": 30,
+      "max": 70,
+      "step": 5,
+      "unit": "px",
+      "label": "Arrow size",
+      "default": 50
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Carousel Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Slide Title"
+        },
+        {
+          "type": "textarea",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "Add a compelling description for this slide"
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "Link text",
+          "default": "Learn more"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Link URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "3D Carousel Pro",
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "title": "Analytics Dashboard",
+            "subtitle": "Real-time insights and data visualization for modern businesses"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "title": "E-commerce Platform",
+            "subtitle": "Seamless shopping experience with advanced features"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "title": "Team Collaboration",
+            "subtitle": "Connect and work together from anywhere in the world"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "title": "Financial Reports",
+            "subtitle": "Comprehensive analysis and forecasting tools"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "title": "Creative Studio",
+            "subtitle": "Professional design tools for creative professionals"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "title": "Project Management",
+            "subtitle": "Organize tasks and track progress effortlessly"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
