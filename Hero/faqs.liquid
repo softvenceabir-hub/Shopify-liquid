@@ -1,0 +1,1002 @@
+{% comment %}
+  FAQ Section — VELO Clothing
+  File: sections/faq-section.liquid
+{% endcomment %}
+
+
+
+<style>
+  #faq-{{ section.id }} {
+    background-color: {{ section.settings.section_bg_color }};
+    padding-top: {{ section.settings.padding_top_desktop }}px;
+    padding-bottom: {{ section.settings.padding_bottom_desktop }}px;
+  }
+
+  #faq-{{ section.id }} .faq-container {
+    max-width: {{ section.settings.section_width }}px;
+    margin: 0 auto;
+    padding-left: {{ section.settings.padding_left_desktop }}px;
+    padding-right: {{ section.settings.padding_right_desktop }}px;
+  }
+
+  /* ── Header ── */
+  #faq-{{ section.id }} .faq-eyebrow {
+
+    font-weight: 300;
+    font-size: {{ section.settings.eyebrow_font_size_desktop }}px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: {{ section.settings.eyebrow_color }};
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  #faq-{{ section.id }} .faq-eyebrow::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: {{ section.settings.eyebrow_color }};
+    flex-shrink: 0;
+  }
+
+  #faq-{{ section.id }} .faq-title {
+
+    font-size: {{ section.settings.title_font_size_desktop }}px;
+    font-weight: {{ section.settings.title_font_weight }};
+    line-height: 1.08;
+    color: {{ section.settings.title_color }};
+    margin-bottom: 16px;
+  }
+  #faq-{{ section.id }} .faq-title em {
+    font-style: italic;
+    color: {{ section.settings.title_italic_color }};
+  }
+
+  #faq-{{ section.id }} .faq-subtitle {
+
+    font-size: {{ section.settings.subtitle_font_size_desktop }}px;
+    font-weight: {{ section.settings.subtitle_font_weight }};
+    color: {{ section.settings.subtitle_color }};
+    line-height: 1.7;
+    max-width: 520px;
+    margin-bottom: 48px;
+  }
+
+  /* ── Category Tabs ── */
+  #faq-{{ section.id }} .faq-categories {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+
+  #faq-{{ section.id }} .cat-btn {
+    background: {{ section.settings.tab_bg_color }};
+    border: 1px solid {{ section.settings.tab_border_color }};
+    color: {{ section.settings.tab_text_color }};
+
+    font-size: {{ section.settings.tab_font_size_desktop }}px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 9px 20px;
+    cursor: pointer;
+    border-radius: 40px;
+    transition: all 0.25s ease;
+  }
+  #faq-{{ section.id }} .cat-btn:hover {
+    background: {{ section.settings.tab_hover_bg_color }};
+    border-color: {{ section.settings.tab_hover_border_color }};
+    color: {{ section.settings.tab_hover_text_color }};
+  }
+  #faq-{{ section.id }} .cat-btn.active {
+    background: {{ section.settings.tab_active_bg_color }};
+    border-color: {{ section.settings.tab_active_border_color }};
+    color: {{ section.settings.tab_active_text_color }};
+  }
+
+  /* ── FAQ Items ── */
+  #faq-{{ section.id }} .faq-list {
+    display: flex;
+    flex-direction: column;
+  }
+  #faq-{{ section.id }} .faq-item {
+    border-bottom: 1px solid {{ section.settings.divider_color }};
+  }
+  #faq-{{ section.id }} .faq-item:first-child {
+    border-top: 1px solid {{ section.settings.divider_color }};
+  }
+  #faq-{{ section.id }} .faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: {{ section.settings.faq_item_padding_desktop }}px 0;
+    cursor: pointer;
+    gap: 24px;
+    user-select: none;
+  }
+  #faq-{{ section.id }} .q-text {
+
+    font-size: {{ section.settings.question_font_size_desktop }}px;
+    font-weight: {{ section.settings.question_font_weight }};
+    line-height: 1.4;
+    color: {{ section.settings.question_color }};
+    transition: color 0.2s;
+    flex: 1;
+  }
+  #faq-{{ section.id }} .faq-question:hover .q-text {
+    color: {{ section.settings.question_hover_color }};
+  }
+
+  #faq-{{ section.id }} .q-icon {
+    width: 36px;
+    height: 36px;
+    border: 1px solid {{ section.settings.divider_color }};
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  #faq-{{ section.id }} .q-icon::before,
+  #faq-{{ section.id }} .q-icon::after {
+    content: '';
+    position: absolute;
+    background: {{ section.settings.icon_color }};
+    border-radius: 2px;
+    transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  #faq-{{ section.id }} .q-icon::before { width: 12px; height: 1.5px; }
+  #faq-{{ section.id }} .q-icon::after  { width: 1.5px; height: 12px; }
+
+  #faq-{{ section.id }} .faq-item.open .q-icon {
+    background: {{ section.settings.tab_active_bg_color }};
+    border-color: {{ section.settings.tab_active_bg_color }};
+  }
+  #faq-{{ section.id }} .faq-item.open .q-icon::before,
+  #faq-{{ section.id }} .faq-item.open .q-icon::after {
+    background: {{ section.settings.tab_active_text_color }};
+  }
+  #faq-{{ section.id }} .faq-item.open .q-icon::after {
+    transform: rotate(90deg);
+    opacity: 0;
+  }
+
+  #faq-{{ section.id }} .faq-answer {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1);
+  }
+  #faq-{{ section.id }} .faq-answer-inner {
+    padding: 0 0 24px 0;
+
+    font-size: {{ section.settings.answer_font_size_desktop }}px;
+    font-weight: {{ section.settings.answer_font_weight }};
+    line-height: 1.8;
+    color: {{ section.settings.answer_color }};
+    max-width: 700px;
+  }
+  #faq-{{ section.id }} .faq-answer-inner a {
+    color: {{ section.settings.tab_active_bg_color }};
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  #faq-{{ section.id }} .faq-answer-inner a:hover {
+    border-color: {{ section.settings.tab_active_bg_color }};
+  }
+  #faq-{{ section.id }} .faq-answer-inner strong {
+    color: {{ section.settings.question_color }};
+    font-weight: 600;
+  }
+
+  /* ── Contact Strip ── */
+  #faq-{{ section.id }} .faq-contact {
+    margin-top: 64px;
+    padding: 40px 48px;
+    border: 1px solid {{ section.settings.divider_color }};
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  #faq-{{ section.id }} .contact-text h3 {
+
+    font-size: 22px;
+    font-weight: 400;
+    color: {{ section.settings.title_color }};
+    margin-bottom: 6px;
+  }
+  #faq-{{ section.id }} .contact-text p {
+    font-size: 14px;
+    font-weight: 300;
+    color: {{ section.settings.answer_color }};
+  }
+  #faq-{{ section.id }} .contact-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: 1px solid {{ section.settings.tab_active_bg_color }};
+    color: {{ section.settings.tab_active_bg_color }};
+
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 14px 28px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+  }
+  #faq-{{ section.id }} .contact-btn:hover {
+    background: {{ section.settings.tab_active_bg_color }};
+    color: {{ section.settings.tab_active_text_color }};
+  }
+  #faq-{{ section.id }} .contact-btn svg { transition: transform 0.25s; }
+  #faq-{{ section.id }} .contact-btn:hover svg { transform: translateX(4px); }
+
+  /* ════════════════════════════════
+     MOBILE STYLES
+     ════════════════════════════════ */
+  @media (max-width: 767px) {
+    #faq-{{ section.id }} {
+      padding-top: {{ section.settings.padding_top_mobile }}px;
+      padding-bottom: {{ section.settings.padding_bottom_mobile }}px;
+    }
+    #faq-{{ section.id }} .faq-container {
+      padding-left: {{ section.settings.padding_left_mobile }}px;
+      padding-right: {{ section.settings.padding_right_mobile }}px;
+    }
+    #faq-{{ section.id }} .faq-eyebrow {
+      font-size: {{ section.settings.eyebrow_font_size_mobile }}px;
+    }
+    #faq-{{ section.id }} .faq-title {
+      font-size: {{ section.settings.title_font_size_mobile }}px;
+    }
+    #faq-{{ section.id }} .faq-subtitle {
+      font-size: {{ section.settings.subtitle_font_size_mobile }}px;
+    }
+    #faq-{{ section.id }} .cat-btn {
+      font-size: {{ section.settings.tab_font_size_mobile }}px;
+      padding: 8px 16px;
+    }
+    #faq-{{ section.id }} .q-text {
+      font-size: {{ section.settings.question_font_size_mobile }}px;
+    }
+    #faq-{{ section.id }} .faq-question {
+      padding: {{ section.settings.faq_item_padding_mobile }}px 0;
+    }
+    #faq-{{ section.id }} .faq-answer-inner {
+      font-size: {{ section.settings.answer_font_size_mobile }}px;
+    }
+    #faq-{{ section.id }} .faq-contact {
+      padding: 28px 20px;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>
+
+<section id="faq-{{ section.id }}">
+  <div class="faq-container">
+
+    <!-- Header -->
+    <div class="faq-header">
+      {% if section.settings.eyebrow != blank %}
+        <div class="faq-eyebrow">{{ section.settings.eyebrow }}</div>
+      {% endif %}
+      {% if section.settings.title != blank %}
+        <h2 class="faq-title">{{ section.settings.title }}</h2>
+      {% endif %}
+      {% if section.settings.subtitle != blank %}
+        <p class="faq-subtitle">{{ section.settings.subtitle }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Category Tabs -->
+    {% assign categories = '' %}
+    {% for block in section.blocks %}
+      {% if block.type == 'faq_item' %}
+        {% assign cat = block.settings.category | downcase | strip %}
+        {% unless categories contains cat %}
+          {% assign categories = categories | append: cat | append: ',' %}
+        {% endunless %}
+      {% endif %}
+    {% endfor %}
+
+    {% assign final_cats = categories | split: ',' %}
+
+    {% if section.settings.show_tabs and final_cats.size > 1 %}
+    <div class="faq-categories" id="faq-cats-{{ section.id }}">
+      <button class="cat-btn active" data-cat="all">All</button>
+      {% for cat in final_cats %}
+        {% if cat != blank %}
+          <button class="cat-btn" data-cat="{{ cat }}">{{ cat | capitalize }}</button>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- FAQ Items -->
+    <div class="faq-list" id="faqList-{{ section.id }}">
+      {% for block in section.blocks %}
+        {% if block.type == 'faq_item' %}
+          <div class="faq-item" data-cat="{{ block.settings.category | downcase | strip }}" {{ block.shopify_attributes }}>
+            <div class="faq-question">
+              <span class="q-text">{{ block.settings.question }}</span>
+              <span class="q-icon"></span>
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">{{ block.settings.answer }}</div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <!-- Contact Strip -->
+    {% if section.settings.show_contact %}
+    <div class="faq-contact">
+      <div class="contact-text">
+        <h3>{{ section.settings.contact_heading }}</h3>
+        <p>{{ section.settings.contact_subtext }}</p>
+      </div>
+      <a href="{{ section.settings.contact_link }}" class="contact-btn">
+        {{ section.settings.contact_button_label }}
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+<script>
+(function() {
+  var sectionId = '{{ section.id }}';
+  var listEl    = document.getElementById('faqList-' + sectionId);
+  var catEl     = document.getElementById('faq-cats-' + sectionId);
+
+  if (!listEl) return;
+
+  /* ── Accordion ── */
+  listEl.addEventListener('click', function(e) {
+    var question = e.target.closest('.faq-question');
+    if (!question) return;
+
+    var item    = question.closest('.faq-item');
+    var answer  = item.querySelector('.faq-answer');
+    var inner   = item.querySelector('.faq-answer-inner');
+    var isOpen  = item.classList.contains('open');
+
+    /* close all */
+    listEl.querySelectorAll('.faq-item.open').forEach(function(el) {
+      el.classList.remove('open');
+      el.querySelector('.faq-answer').style.maxHeight = '0';
+    });
+
+    if (!isOpen) {
+      item.classList.add('open');
+      answer.style.maxHeight = (inner.scrollHeight + 28) + 'px';
+    }
+  });
+
+  /* ── Category filter ── */
+  if (catEl) {
+    catEl.addEventListener('click', function(e) {
+      var btn = e.target.closest('.cat-btn');
+      if (!btn) return;
+
+      catEl.querySelectorAll('.cat-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+
+      var chosen = btn.dataset.cat;
+
+      /* close all open items */
+      listEl.querySelectorAll('.faq-item.open').forEach(function(el) {
+        el.classList.remove('open');
+        el.querySelector('.faq-answer').style.maxHeight = '0';
+      });
+
+      listEl.querySelectorAll('.faq-item').forEach(function(item) {
+        if (chosen === 'all' || item.dataset.cat === chosen) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "FAQ Section",
+  "tag": "section",
+  "class": "faq-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout & Spacing — Desktop"
+    },
+    {
+      "type": "range",
+      "id": "section_width",
+      "label": "Max Section Width (px)",
+      "min": 600,
+      "max": 1600,
+      "step": 10,
+      "default": 900
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding Top — Desktop (px)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding Bottom — Desktop (px)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "label": "Padding Left — Desktop (px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "label": "Padding Right — Desktop (px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Layout & Spacing — Mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding Top — Mobile (px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding Bottom — Mobile (px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "label": "Padding Left — Mobile (px)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "label": "Padding Right — Mobile (px)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Section Background"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section Background Color",
+      "default": "#0e0d0b"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider / Border Color",
+      "default": "#2a2822"
+    },
+    {
+      "type": "header",
+      "content": "Eyebrow Text"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow Label",
+      "default": "Help Center"
+    },
+    {
+      "type": "color",
+      "id": "eyebrow_color",
+      "label": "Eyebrow Color",
+      "default": "#c8a96e"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_font_size_desktop",
+      "label": "Eyebrow Font Size — Desktop (px)",
+      "min": 9,
+      "max": 18,
+      "step": 1,
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_font_size_mobile",
+      "label": "Eyebrow Font Size — Mobile (px)",
+      "min": 9,
+      "max": 16,
+      "step": 1,
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Heading (Title)"
+    },
+    {
+      "type": "richtext",
+      "id": "title",
+      "label": "Section Title",
+      "default": "<p>Frequently <em>Asked</em> Questions</p>"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#f0ebe1"
+    },
+    {
+      "type": "color",
+      "id": "title_italic_color",
+      "label": "Title Italic / Accent Color",
+      "default": "#c8a96e"
+    },
+    {
+      "type": "select",
+      "id": "title_font_weight",
+      "label": "Title Font Weight",
+      "options": [
+        { "value": "300", "label": "Light (300)" },
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "700", "label": "Bold (700)" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size_desktop",
+      "label": "Title Font Size — Desktop (px)",
+      "min": 24,
+      "max": 100,
+      "step": 2,
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "title_font_size_mobile",
+      "label": "Title Font Size — Mobile (px)",
+      "min": 24,
+      "max": 60,
+      "step": 2,
+      "default": 38
+    },
+    {
+      "type": "header",
+      "content": "Subtitle"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle Text",
+      "default": "Can't find what you're looking for? Browse through our most common questions or get in touch with our team."
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle Color",
+      "default": "#7a7568"
+    },
+    {
+      "type": "select",
+      "id": "subtitle_font_weight",
+      "label": "Subtitle Font Weight",
+      "options": [
+        { "value": "300", "label": "Light (300)" },
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "500", "label": "Medium (500)" }
+      ],
+      "default": "300"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_font_size_desktop",
+      "label": "Subtitle Font Size — Desktop (px)",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "subtitle_font_size_mobile",
+      "label": "Subtitle Font Size — Mobile (px)",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Category Tab Buttons"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tabs",
+      "label": "Show Category Tabs",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "tab_font_size_desktop",
+      "label": "Tab Font Size — Desktop (px)",
+      "min": 9,
+      "max": 18,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "tab_font_size_mobile",
+      "label": "Tab Font Size — Mobile (px)",
+      "min": 9,
+      "max": 16,
+      "step": 1,
+      "default": 11
+    },
+    {
+      "type": "color",
+      "id": "tab_bg_color",
+      "label": "Tab Background",
+      "default": "#0e0d0b"
+    },
+    {
+      "type": "color",
+      "id": "tab_border_color",
+      "label": "Tab Border Color",
+      "default": "#2a2822"
+    },
+    {
+      "type": "color",
+      "id": "tab_text_color",
+      "label": "Tab Text Color",
+      "default": "#7a7568"
+    },
+    {
+      "type": "color",
+      "id": "tab_hover_bg_color",
+      "label": "Tab Hover Background",
+      "default": "#0e0d0b"
+    },
+    {
+      "type": "color",
+      "id": "tab_hover_border_color",
+      "label": "Tab Hover Border Color",
+      "default": "#c8a96e"
+    },
+    {
+      "type": "color",
+      "id": "tab_hover_text_color",
+      "label": "Tab Hover Text Color",
+      "default": "#c8a96e"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_bg_color",
+      "label": "Tab Active Background",
+      "default": "#c8a96e"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_border_color",
+      "label": "Tab Active Border Color",
+      "default": "#c8a96e"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_text_color",
+      "label": "Tab Active Text Color",
+      "default": "#0e0d0b"
+    },
+    {
+      "type": "header",
+      "content": "FAQ Question Text"
+    },
+    {
+      "type": "color",
+      "id": "question_color",
+      "label": "Question Text Color",
+      "default": "#f0ebe1"
+    },
+    {
+      "type": "color",
+      "id": "question_hover_color",
+      "label": "Question Hover Color",
+      "default": "#e2c98a"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Plus/Minus Icon Color",
+      "default": "#7a7568"
+    },
+    {
+      "type": "select",
+      "id": "question_font_weight",
+      "label": "Question Font Weight",
+      "options": [
+        { "value": "300", "label": "Light (300)" },
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "700", "label": "Bold (700)" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "question_font_size_desktop",
+      "label": "Question Font Size — Desktop (px)",
+      "min": 13,
+      "max": 30,
+      "step": 1,
+      "default": 17
+    },
+    {
+      "type": "range",
+      "id": "question_font_size_mobile",
+      "label": "Question Font Size — Mobile (px)",
+      "min": 13,
+      "max": 24,
+      "step": 1,
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "faq_item_padding_desktop",
+      "label": "Question Row Padding — Desktop (px)",
+      "min": 12,
+      "max": 48,
+      "step": 2,
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "faq_item_padding_mobile",
+      "label": "Question Row Padding — Mobile (px)",
+      "min": 10,
+      "max": 36,
+      "step": 2,
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "FAQ Answer Text"
+    },
+    {
+      "type": "color",
+      "id": "answer_color",
+      "label": "Answer Text Color",
+      "default": "#7a7568"
+    },
+    {
+      "type": "select",
+      "id": "answer_font_weight",
+      "label": "Answer Font Weight",
+      "options": [
+        { "value": "300", "label": "Light (300)" },
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "500", "label": "Medium (500)" }
+      ],
+      "default": "300"
+    },
+    {
+      "type": "range",
+      "id": "answer_font_size_desktop",
+      "label": "Answer Font Size — Desktop (px)",
+      "min": 12,
+      "max": 22,
+      "step": 1,
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "answer_font_size_mobile",
+      "label": "Answer Font Size — Mobile (px)",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Contact Strip"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_contact",
+      "label": "Show Contact Strip",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "contact_heading",
+      "label": "Contact Heading",
+      "default": "Still have questions?"
+    },
+    {
+      "type": "text",
+      "id": "contact_subtext",
+      "label": "Contact Subtext",
+      "default": "Our support team is always ready to help."
+    },
+    {
+      "type": "text",
+      "id": "contact_button_label",
+      "label": "Contact Button Label",
+      "default": "Contact Us"
+    },
+    {
+      "type": "url",
+      "id": "contact_link",
+      "label": "Contact Button Link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "category",
+          "label": "Category (used for tab filter)",
+          "info": "e.g. orders, shipping, returns, product, payment",
+          "default": "orders"
+        },
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "How do I track my order?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>After placing your order, a <strong>tracking link</strong> will be sent to your email within 24 hours. You can also check the status anytime under <a href=\"/account/orders\">My Orders</a>.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ Section",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "category": "orders",
+            "question": "How do I track my order?",
+            "answer": "<p>After placing your order, a <strong>tracking link</strong> will be emailed to you. You can also view your order status anytime under My Orders in your account.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "category": "orders",
+            "question": "Can I modify or cancel my order after placing it?",
+            "answer": "<p>You may request a change within <strong>2 hours</strong> of placing the order. Once it has been dispatched, no modifications are possible. Please contact our support team immediately.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "category": "shipping",
+            "question": "How long does delivery take?",
+            "answer": "<p>Standard delivery takes <strong>3–5 business days</strong>. Express shipping options are available at checkout for faster delivery.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "category": "shipping",
+            "question": "Do you offer free shipping?",
+            "answer": "<p>Yes! Orders over <strong>$75</strong> qualify for free standard shipping. The discount is applied automatically at checkout.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "category": "returns",
+            "question": "What is your return policy?",
+            "answer": "<p>We accept returns within <strong>30 days</strong> of delivery. Items must be unworn, unwashed, and in original packaging with tags attached. Start your return through our <a href=\"/pages/returns\">returns portal</a>.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "category": "returns",
+            "question": "How long does a refund take?",
+            "answer": "<p>Once we receive and inspect your return, refunds are processed within <strong>5–7 business days</strong> to your original payment method.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "category": "product",
+            "question": "How do I find my correct size?",
+            "answer": "<p>Each product page includes a detailed <strong>size guide</strong>. We recommend measuring your chest, waist, and hips, then comparing to the chart. If you're between sizes, we suggest sizing up.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "category": "product",
+            "question": "What materials do you use?",
+            "answer": "<p>We use <strong>OEKO-TEX certified</strong> fabrics — sustainably sourced and free from harmful chemicals. Full fabric details are listed in the Material & Care tab on each product page.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "category": "payment",
+            "question": "What payment methods do you accept?",
+            "answer": "<p>We accept all major credit cards (<strong>Visa, Mastercard, Amex</strong>), PayPal, Apple Pay, Google Pay, and Shop Pay. All transactions are SSL encrypted.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "category": "payment",
+            "question": "Can I pay in installments?",
+            "answer": "<p>Yes — we offer <strong>interest-free installments</strong> via Shop Pay on orders over $50. Simply select Shop Pay at checkout and choose your preferred payment plan.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
