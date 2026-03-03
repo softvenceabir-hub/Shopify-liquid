@@ -1,0 +1,723 @@
+{% comment %}
+  Section: Collection Mosaic Spotlight (Unique)
+  - Uniform cards
+  - Layout switch: Grid / Slider (works on desktop + mobile)
+  - Auto per row / slides (match blocks)
+  - Alignment controls
+  - Slider FIX: left/right card cut remove + overflow fix
+  - Mobile: 2 visible, arrow click moves 1 card
+{% endcomment %}
+
+{%- assign blocks_count = section.blocks.size -%}
+
+{%- assign grid_cols_d = section.settings.cols_d | plus: 0 -%}
+{%- if section.settings.auto_cols_d -%}
+  {%- assign grid_cols_d = blocks_count -%}
+  {%- if grid_cols_d < 2 -%}{%- assign grid_cols_d = 2 -%}{%- endif -%}
+  {%- if grid_cols_d > 6 -%}{%- assign grid_cols_d = 6 -%}{%- endif -%}
+{%- endif -%}
+
+{%- assign grid_cols_m = section.settings.cols_m | plus: 0 -%}
+{%- if section.settings.auto_cols_m -%}
+  {%- assign grid_cols_m = blocks_count -%}
+  {%- if grid_cols_m < 1 -%}{%- assign grid_cols_m = 1 -%}{%- endif -%}
+  {%- if grid_cols_m > 2 -%}{%- assign grid_cols_m = 2 -%}{%- endif -%}
+{%- endif -%}
+
+{%- assign slides_d = section.settings.slides_d | plus: 0 -%}
+{%- if section.settings.auto_slides_d -%}
+  {%- assign slides_d = blocks_count -%}
+  {%- if slides_d < 1 -%}{%- assign slides_d = 1 -%}{%- endif -%}
+  {%- if slides_d > 6 -%}{%- assign slides_d = 6 -%}{%- endif -%}
+{%- endif -%}
+
+{%- assign slides_m = section.settings.slides_m | plus: 0 -%}
+{%- if section.settings.auto_slides_m -%}
+  {%- assign slides_m = blocks_count -%}
+  {%- if slides_m < 1 -%}{%- assign slides_m = 1 -%}{%- endif -%}
+  {%- if slides_m > 2 -%}{%- assign slides_m = 2 -%}{%- endif -%}
+{%- endif -%}
+
+{%- assign use_slider = false -%}
+{%- if section.settings.layout_mode == 'slider' -%}{%- assign use_slider = true -%}{%- endif -%}
+
+{%- assign card_text_align = section.settings.card_text_align -%}
+{%- assign card_justify = 'flex-start' -%}
+{%- if card_text_align == 'center' -%}{%- assign card_justify = 'center' -%}{%- endif -%}
+
+<section id="cms-{{ section.id }}" class="cms-wrap" data-layout="{{ section.settings.layout_mode }}">
+  <div class="cms-inner">
+    {% if section.settings.show_head %}
+      <header class="cms-head cms-align-{{ section.settings.head_align }}">
+        {% if section.settings.kicker != blank %}
+          <p class="cms-kicker">{{ section.settings.kicker }}</p>
+        {% endif %}
+        {% if section.settings.title != blank %}
+          <h2 class="cms-title">{{ section.settings.title }}</h2>
+        {% endif %}
+        {% if section.settings.sub != blank %}
+          <p class="cms-sub">{{ section.settings.sub }}</p>
+        {% endif %}
+      </header>
+    {% endif %}
+
+    <div class="cms-area {% if use_slider %}cms-area--slider{% else %}cms-area--grid{% endif %}">
+      {% if use_slider and section.settings.slider_arrows %}
+        <button type="button" class="cms-nav cms-prev" aria-label="Previous">‹</button>
+        <button type="button" class="cms-nav cms-next" aria-label="Next">›</button>
+      {% endif %}
+
+      <div
+        class="{% if use_slider %}cms-slider{% else %}cms-grid{% endif %}"
+        role="list"
+        {% if use_slider %}data-slider="true"{% endif %}
+      >
+        {% for block in section.blocks %}
+          {% assign col = block.settings.collection %}
+
+          <article class="cms-card" role="listitem" {{ block.shopify_attributes }}>
+            {% if col != blank %}
+              <a class="cms-link" href="{{ col.url }}">
+                <div class="cms-media">
+                  {% assign img = block.settings.image %}
+                  {% if img == blank %}
+                    {% assign img = col.featured_image %}
+                  {% endif %}
+
+                  {% if img != blank %}
+                    <img
+                      src="{{ img | image_url: width: 1600 }}"
+                      alt="{{ col.title | escape }}"
+                      loading="lazy"
+                      width="{{ img.width }}"
+                      height="{{ img.height }}"
+                      class="cms-img"
+                    >
+                  {% else %}
+                    <div class="cms-ph">
+                      {{ 'collection-1' | placeholder_svg_tag: 'cms-phsvg' }}
+                    </div>
+                  {% endif %}
+
+                  <div class="cms-overlay"></div>
+
+                  <div class="cms-badge">
+                    <span>
+                      {% if block.settings.badge != blank %}
+                        {{ block.settings.badge }}
+                      {% else %}
+                        Explore
+                      {% endif %}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="cms-body">
+                  <div class="cms-text">
+                    <h3 class="cms-ctitle">{{ col.title }}</h3>
+
+                    {% if block.settings.desc != blank %}
+                      <p class="cms-cdesc">{{ block.settings.desc }}</p>
+                    {% else %}
+                      {% if col.description != blank %}
+                        <p class="cms-cdesc">{{ col.description | strip_html | truncate: 90 }}</p>
+                      {% endif %}
+                    {% endif %}
+                  </div>
+
+                  <div class="cms-meta">
+                    <span class="cms-count">{{ col.products_count }} items</span>
+                    <span class="cms-arrow" aria-hidden="true">→</span>
+                  </div>
+
+                  {% if section.settings.show_prod and col.products_count > 0 %}
+                    <div class="cms-prows" aria-label="Top products preview">
+                      {% assign limit_n = section.settings.prod_limit %}
+                      {% for p in col.products limit: limit_n %}
+                        <span class="cms-p">
+                          {% if p.featured_image %}
+                            <img
+                              src="{{ p.featured_image | image_url: width: 200 }}"
+                              alt="{{ p.title | escape }}"
+                              loading="lazy"
+                              width="80"
+                              height="80"
+                              class="cms-pimg"
+                            >
+                          {% else %}
+                            <span class="cms-psvg">
+                              {{ 'product-1' | placeholder_svg_tag }}
+                            </span>
+                          {% endif %}
+                        </span>
+                      {% endfor %}
+                      {% if col.products_count > limit_n %}
+                        <span class="cms-more">+{{ col.products_count | minus: limit_n }}</span>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                </div>
+              </a>
+            {% else %}
+              <div class="cms-empty">
+                <div class="cms-empty-top">
+                  {{ 'collection-1' | placeholder_svg_tag: 'cms-phsvg' }}
+                </div>
+                <div class="cms-empty-body">
+                  <strong>Select a collection</strong>
+                  <p>Block settings থেকে collection pick করো।</p>
+                </div>
+              </div>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+
+      {% if use_slider and section.settings.slider_dots %}
+        <div class="cms-dots" aria-label="Slider pagination" data-dots></div>
+      {% endif %}
+    </div>
+
+    {% if section.settings.show_btn and section.settings.btn_link != blank %}
+      <div class="cms-cta">
+        <a class="cms-btn" href="{{ section.settings.btn_link }}">{{ section.settings.btn_text }}</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  #cms-{{ section.id }}{
+    --padT: {{ section.settings.pad_t }}px;
+    --padB: {{ section.settings.pad_b }}px;
+
+    --containerW: {{ section.settings.container_w }}%;
+    --headW: {{ section.settings.head_w }}%;
+
+    --bg: {{ section.settings.bg }};
+    --txt: {{ section.settings.txt }};
+    --muted: {{ section.settings.muted }};
+    --card: {{ section.settings.card }};
+    --stroke: {{ section.settings.stroke }};
+    --shadow: {{ section.settings.shadow }};
+    --radius: {{ section.settings.radius }}px;
+
+    --kicker: {{ section.settings.kicker_size }}px;
+    --hsize: {{ section.settings.head_size }}px;
+    --psize: {{ section.settings.sub_size }}px;
+
+    --gap: {{ section.settings.gap }}px;
+
+    --spv: {{ slides_d }};
+    --spvM: {{ slides_m }};
+
+    --gutter: 18px;
+    --gutterM: 14px;
+
+    --cardAlign: {{ card_text_align }};
+    background: var(--bg);
+    color: var(--txt);
+    padding: var(--padT) 0 var(--padB) 0;
+  }
+
+  #cms-{{ section.id }} .cms-inner{
+    width: var(--containerW);
+    margin: 0 auto;
+    padding: 0 {{ section.settings.side_pad }}px;
+  }
+
+  #cms-{{ section.id }} .cms-head{
+    margin-bottom: 18px;
+    display: grid;
+    gap: 8px;
+    width: var(--headW);
+    max-width: 920px;
+  }
+
+  #cms-{{ section.id }} .cms-align-left{ margin-left: 0; margin-right: auto; text-align: left; }
+  #cms-{{ section.id }} .cms-align-center{ margin-left: auto; margin-right: auto; text-align: center; }
+
+  #cms-{{ section.id }} .cms-kicker{
+    margin: 0;
+    font-size: var(--kicker);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  #cms-{{ section.id }} .cms-title{ margin: 0; font-size: var(--hsize); line-height: 1.1; }
+  #cms-{{ section.id }} .cms-sub{ margin: 0; font-size: var(--psize); color: var(--muted); max-width: 70ch; }
+
+  #cms-{{ section.id }} .cms-area{
+    position: relative;
+    overflow: visible;
+  }
+
+  /* GRID */
+  #cms-{{ section.id }} .cms-grid{
+    display: grid;
+    gap: var(--gap);
+    grid-template-columns: repeat({{ grid_cols_d }}, minmax(0, 1fr));
+    align-items: stretch;
+  }
+
+  /* SLIDER */
+  #cms-{{ section.id }} .cms-slider{
+    display: flex;
+    gap: var(--gap);
+    padding-left: var(--gutter);
+    padding-right: var(--gutter);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: var(--gutter);
+    scroll-padding-right: var(--gutter);
+    scrollbar-width: none;
+  }
+  #cms-{{ section.id }} .cms-slider::-webkit-scrollbar{ display:none; }
+
+  #cms-{{ section.id }} .cms-area--slider .cms-card{
+    flex: 0 0 calc((100% - (var(--gap) * (var(--spv) - 1))) / var(--spv));
+    scroll-snap-align: start;
+  }
+
+  #cms-{{ section.id }} .cms-nav{
+    position: absolute;
+    top: 42%;
+    transform: translateY(-50%);
+    z-index: 5;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: 1px solid var(--stroke);
+    background: rgba(255,255,255,.10);
+    color: var(--txt);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  #cms-{{ section.id }} .cms-prev{ left: 8px; }
+  #cms-{{ section.id }} .cms-next{ right: 8px; }
+
+  #cms-{{ section.id }} .cms-dots{
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  #cms-{{ section.id }} .cms-dot{
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    border: 1px solid var(--stroke);
+    background: rgba(255,255,255,.10);
+    cursor: pointer;
+  }
+  #cms-{{ section.id }} .cms-dot.is-active{ background: rgba(255,255,255,.55); }
+
+  /* CARD */
+#cms-{{ section.id }} .cms-card{
+  background: {% if section.settings.card_bg_off %}transparent{% else %}var(--card){% endif %};
+  border: {% if section.settings.card_bg_off %}0{% else %}1px solid var(--stroke){% endif %};
+  border-radius: var(--radius);
+  overflow: hidden;
+ box-shadow: 0 10px 25px rgba(0,0,0, calc(var(--shadow) * 0.6));
+
+  position: relative;
+  transform: translateZ(0);
+}
+
+/* ✅ bg off থাকলে body part টা সুন্দর দেখানোর জন্য */
+#cms-{{ section.id }} .cms-body{
+  {% if section.settings.card_bg_off %}
+    background: transparent;
+    padding: 14px 6px 0; /* text up, less blocky */
+  {% endif %}
+}
+
+/* ✅ bg off থাকলে thumbnails row একটু clean */
+#cms-{{ section.id }} .cms-p{
+  {% if section.settings.card_bg_off %}
+    background: transparent;
+  {% endif %}
+}
+
+
+  #cms-{{ section.id }} .cms-link{
+    display: grid;
+    grid-template-rows: auto 1fr;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+  }
+
+  #cms-{{ section.id }} .cms-media{
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+  }
+
+  #cms-{{ section.id }} .cms-img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .6s ease;
+  }
+
+  #cms-{{ section.id }} .cms-overlay{
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.55));
+    pointer-events: none;
+    opacity: .95;
+  }
+
+  #cms-{{ section.id }} .cms-badge{
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.22);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-size: 13px;
+  }
+
+  #cms-{{ section.id }} .cms-body{
+    padding: 16px 16px 18px;
+    display: grid;
+    gap: 12px;
+    text-align: var(--cardAlign);
+  }
+
+  #cms-{{ section.id }} .cms-ctitle{ margin: 0; font-size: 18px; line-height: 1.2; }
+  #cms-{{ section.id }} .cms-cdesc{ margin: 8px 0 0 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+  #cms-{{ section.id }} .cms-meta{
+    display: flex;
+    justify-content: {{ card_justify }};
+    align-items: center;
+    gap: 10px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  #cms-{{ section.id }} .cms-prows{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: {{ card_justify }};
+  }
+
+  #cms-{{ section.id }} .cms-arrow{
+    font-size: 18px;
+    transform: translateX(0);
+    transition: transform .25s ease;
+  }
+
+  #cms-{{ section.id }} .cms-p{
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--stroke);
+    background: rgba(255,255,255,.04);
+    display: grid;
+    place-items: center;
+  }
+  #cms-{{ section.id }} .cms-pimg{ width: 100%; height: 100%; object-fit: cover; display: block; }
+  #cms-{{ section.id }} .cms-more{ font-size: 12px; color: var(--muted); padding-left: 4px; }
+
+  #cms-{{ section.id }} .cms-card:hover .cms-img{ transform: scale(1.06); }
+  #cms-{{ section.id }} .cms-card:hover .cms-arrow{ transform: translateX(4px); }
+
+  /* Mobile */
+  @media (max-width: 989px){
+    #cms-{{ section.id }}{
+      --kicker: {{ section.settings.kicker_size_m }}px;
+      --hsize: {{ section.settings.head_size_m }}px;
+      --psize: {{ section.settings.sub_size_m }}px;
+
+      --containerW: {{ section.settings.container_w_m }}%;
+      --headW: {{ section.settings.head_w_m }}%;
+
+      --spv: var(--spvM);
+    }
+
+    #cms-{{ section.id }} .cms-grid{
+      grid-template-columns: repeat({{ grid_cols_m }}, minmax(0, 1fr));
+    }
+
+    #cms-{{ section.id }} .cms-slider{
+      padding-left: var(--gutterM);
+      padding-right: var(--gutterM);
+      scroll-padding-left: var(--gutterM);
+      scroll-padding-right: var(--gutterM);
+    }
+
+    #cms-{{ section.id }} .cms-area--slider .cms-card{
+      flex: 0 0 calc((100% - (var(--gap) * (var(--spv) - 1))) / var(--spv));
+    }
+
+    #cms-{{ section.id }} .cms-media{ aspect-ratio: 16 / 11; }
+    #cms-{{ section.id }} .cms-prev{ left: 6px; }
+    #cms-{{ section.id }} .cms-next{ right: 6px; }
+  }
+
+  /* CTA */
+  #cms-{{ section.id }} .cms-cta{
+    margin-top: 18px;
+    display: flex;
+    justify-content: center;
+  }
+  #cms-{{ section.id }} .cms-btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--stroke);
+    background: rgba(255,255,255,.06);
+    color: var(--txt);
+    text-decoration: none;
+    transition: transform .2s ease, background .2s ease;
+  }
+  #cms-{{ section.id }} .cms-btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.10); }
+</style>
+
+<script>
+  (function(){
+    var root = document.getElementById('cms-{{ section.id }}');
+    if(!root) return;
+
+    var layout = root.getAttribute('data-layout');
+    if(layout !== 'slider') return;
+
+    var track = root.querySelector('.cms-slider');
+    if(!track) return;
+
+    var prev = root.querySelector('.cms-prev');
+    var next = root.querySelector('.cms-next');
+    var dotsWrap = root.querySelector('[data-dots]');
+
+    function getGap(){
+      var styles = getComputedStyle(track);
+      return parseFloat(styles.gap || styles.columnGap || 0) || 0;
+    }
+
+    function getStep(){
+      var card = track.querySelector('.cms-card');
+      if(!card) return track.clientWidth;
+      return card.getBoundingClientRect().width + getGap();
+    }
+
+    function scrollByDir(dir){
+      track.scrollBy({ left: dir * getStep(), behavior: 'smooth' });
+    }
+
+    if(prev) prev.addEventListener('click', function(){ scrollByDir(-1); });
+    if(next) next.addEventListener('click', function(){ scrollByDir(1); });
+
+    function buildDots(){
+      if(!dotsWrap) return;
+      dotsWrap.innerHTML = '';
+
+      var cards = track.querySelectorAll('.cms-card');
+      if(!cards.length) return;
+
+      var step = getStep();
+      var pages = Math.max(1, Math.round((track.scrollWidth - track.clientWidth) / step) + 1);
+
+      for(var i=0;i<pages;i++){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'cms-dot' + (i===0 ? ' is-active' : '');
+        b.setAttribute('aria-label', 'Go to slide ' + (i+1));
+        (function(index){
+          b.addEventListener('click', function(){
+            track.scrollTo({ left: index * step, behavior: 'smooth' });
+          });
+        })(i);
+        dotsWrap.appendChild(b);
+      }
+    }
+
+    function syncDots(){
+      if(!dotsWrap) return;
+      var dots = dotsWrap.querySelectorAll('.cms-dot');
+      if(!dots.length) return;
+
+      var step = getStep();
+      var index = Math.round(track.scrollLeft / step);
+      if(index < 0) index = 0;
+      if(index >= dots.length) index = dots.length - 1;
+
+      dots.forEach(function(d){ d.classList.remove('is-active'); });
+      dots[index].classList.add('is-active');
+    }
+
+    function toggleNav(){
+      var hasOverflow = track.scrollWidth > (track.clientWidth + 5);
+      if(prev) prev.style.display = hasOverflow ? '' : 'none';
+      if(next) next.style.display = hasOverflow ? '' : 'none';
+      if(dotsWrap) dotsWrap.style.display = hasOverflow ? '' : 'none';
+    }
+
+    buildDots();
+    syncDots();
+    toggleNav();
+
+    track.addEventListener('scroll', function(){ window.requestAnimationFrame(syncDots); });
+    window.addEventListener('resize', function(){
+      buildDots();
+      syncDots();
+      toggleNav();
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Collection Mosaic",
+  "settings": [
+    { "type": "checkbox", "id": "show_head", "label": "Show heading", "default": true },
+    { "type": "text", "id": "kicker", "label": "Kicker (small top text)", "default": "Browse" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "Shop by Collections" },
+    { "type": "textarea", "id": "sub", "label": "Subheading", "default": "A unique grid/slider layout to spotlight your best categories." },
+
+    { "type": "select", "id": "layout_mode", "label": "Layout mode", "default": "slider",
+      "options": [
+        { "value": "grid", "label": "Grid" },
+        { "value": "slider", "label": "Slider" }
+      ]
+    },
+
+    { "type": "select", "id": "head_align", "label": "Title alignment", "default": "center",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ]
+    },
+
+    { "type": "range", "id": "container_w", "label": "Container width desktop (%)", "min": 60, "max": 100, "step": 5, "default": 100 },
+    { "type": "range", "id": "container_w_m", "label": "Container width mobile (%)", "min": 80, "max": 100, "step": 5, "default": 100 },
+
+    { "type": "range", "id": "head_w", "label": "Title block width desktop (%)", "min": 40, "max": 100, "step": 5, "default": 80 },
+    { "type": "range", "id": "head_w_m", "label": "Title block width mobile (%)", "min": 70, "max": 100, "step": 5, "default": 100 },
+
+    { "type": "select", "id": "card_text_align", "label": "Card content alignment", "default": "center",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ]
+    },
+
+    { "type": "range", "id": "side_pad", "label": "Side padding (px)", "min": 0, "max": 40, "step": 2, "default": 16 },
+    { "type": "range", "id": "pad_t", "label": "Padding top (px)", "min": 0, "max": 120, "step": 4, "default": 24 },
+    { "type": "range", "id": "pad_b", "label": "Padding bottom (px)", "min": 0, "max": 120, "step": 4, "default": 24 },
+
+    { "type": "range", "id": "gap", "label": "Gap (px)", "min": 8, "max": 40, "step": 2, "default": 16 },
+
+    { "type": "checkbox", "id": "auto_cols_d", "label": "Grid: auto desktop per row (match blocks)", "default": true },
+    { "type": "select", "id": "cols_d", "label": "Grid: desktop cards per row", "default": "4",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" },
+        { "value": "6", "label": "6" }
+      ]
+    },
+
+    { "type": "checkbox", "id": "auto_cols_m", "label": "Grid: auto mobile per row (match blocks)", "default": false },
+    { "type": "select", "id": "cols_m", "label": "Grid: mobile cards per row", "default": "2",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ]
+    },
+
+    { "type": "checkbox", "id": "auto_slides_d", "label": "Slider: auto slides per view desktop (match blocks)", "default": true },
+    { "type": "select", "id": "slides_d", "label": "Slider: slides per view (desktop)", "default": "4",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" },
+        { "value": "6", "label": "6" }
+      ]
+    },
+
+    { "type": "checkbox", "id": "auto_slides_m", "label": "Slider: auto slides per view mobile (match blocks)", "default": false },
+    { "type": "select", "id": "slides_m", "label": "Slider: slides per view (mobile)", "default": "2",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ]
+    },
+
+    { "type": "checkbox", "id": "center_track", "label": "Slider: center items (when few cards)", "default": false },
+    { "type": "checkbox", "id": "slider_arrows", "label": "Slider: show arrows", "default": true },
+    { "type": "checkbox", "id": "slider_dots", "label": "Slider: show dots", "default": true },
+
+    { "type": "color", "id": "bg", "label": "Background", "default": "#ffffff" },
+    { "type": "color", "id": "txt", "label": "Text color", "default": "#111111" },
+    { "type": "color", "id": "muted", "label": "Muted text", "default": "#8c8c9a" },
+    { "type": "color", "id": "card", "label": "Card background", "default": "#ffffff" },
+    { "type": "color", "id": "stroke", "label": "Border color", "default": "#ececf2" },
+
+    { "type": "range", "id": "shadow", "label": "Shadow strength", "min": 0, "max": 1, "step": 0.1, "default": 0.2 },
+    { "type": "range", "id": "radius", "label": "Card radius (px)", "min": 8, "max": 28, "step": 2, "default": 18 },
+
+    { "type": "range", "id": "kicker_size", "label": "Kicker size desktop", "min": 10, "max": 18, "step": 1, "default": 12 },
+    { "type": "range", "id": "head_size", "label": "Heading size desktop", "min": 20, "max": 56, "step": 1, "default": 34 },
+    { "type": "range", "id": "sub_size", "label": "Subheading size desktop", "min": 12, "max": 22, "step": 1, "default": 16 },
+
+    { "type": "range", "id": "kicker_size_m", "label": "Kicker size mobile", "min": 10, "max": 18, "step": 1, "default": 11 },
+    { "type": "range", "id": "head_size_m", "label": "Heading size mobile", "min": 18, "max": 40, "step": 1, "default": 26 },
+    { "type": "range", "id": "sub_size_m", "label": "Subheading size mobile", "min": 12, "max": 20, "step": 1, "default": 15 },
+
+    { "type": "checkbox", "id": "show_prod", "label": "Show top product thumbnails", "default": true },
+    { "type": "range", "id": "prod_limit", "label": "Thumbnails per collection", "min": 2, "max": 6, "step": 1, "default": 4 },
+
+    { "type": "checkbox", "id": "show_btn", "label": "Show bottom button", "default": false },
+    { "type": "text", "id": "btn_text", "label": "Bottom button text", "default": "Shop all" },
+    { "type": "url", "id": "btn_link", "label": "Bottom button link" },
+    { "type": "checkbox", "id": "card_bg_off", "label": "Remove card background", "default": true },
+
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection card",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Select collection" },
+        { "type": "image_picker", "id": "image", "label": "Custom image (optional)" },
+        { "type": "text", "id": "badge", "label": "Badge text", "default": "Explore" },
+        { "type": "textarea", "id": "desc", "label": "Custom description (optional)", "default": "Short description here..." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Mosaic",
+      "blocks": [
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" }
+      ]
+    }
+  ]
+}
+{% endschema %}
