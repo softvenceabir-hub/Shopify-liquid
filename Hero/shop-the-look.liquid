@@ -1,0 +1,52 @@
+
+Meta 
+<!-- ========== SHOP THE LOOK WIDGET ========== -->
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'shop_the_look' -%}
+              {%- assign stl_products = product.metafields.custom.shop_the_look.value -%}
+              
+              {%- if stl_products != blank -%}
+                <div class="shop-the-look-section" {{ block.shopify_attributes }}>
+                  {%- if block.settings.heading != blank -%}
+                    <h3 class="shop-the-look-title">{{ block.settings.heading }}</h3>
+                  {%- endif -%}
+                  
+                  <div class="stl-grid">
+                    {%- for stl_product in stl_products -%}
+                      <div class="stl-item">
+                        <a href="{{ stl_product.url }}" class="stl-image-wrap">
+                          <img class="stl-image" src="{{ stl_product.featured_image | img_url: '400x' }}" alt="{{ stl_product.title | escape }}" loading="lazy">
+                          
+                          {%- if stl_product.available -%}
+                            <form method="post" action="/cart/add" class="stl-quick-add-form" onsubmit="event.preventDefault(); window.location.href='{{ stl_product.url }}';">
+                              <input type="hidden" name="id" value="{{ stl_product.variants.first.id }}">
+                              <button type="submit" class="stl-quick-add" aria-label="Add to cart">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                                </svg>
+                              </button>
+                            </form>
+                          {%- endif -%}
+                        </a>
+                        
+                        <a href="{{ stl_product.url }}" class="stl-info" style="text-decoration: none;">
+                          <div class="stl-product-title">{{ stl_product.title }}</div>
+                          <div class="stl-prices">
+                            {%- if stl_product.compare_at_price > stl_product.price -%}
+                              <span class="stl-price-current">{{ stl_product.price | money }}</span>
+                              <span class="stl-price-compare">{{ stl_product.compare_at_price | money }}</span>
+                            {%- else -%}
+                              <span class="stl-price-current">{{ stl_product.price | money }}</span>
+                            {%- endif -%}
+                          </div>
+                        </a>
+                      </div>
+                    {%- endfor -%}
+                  </div>
+                </div>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+          <!-- ========== END SHOP THE LOOK WIDGET ========== -->
